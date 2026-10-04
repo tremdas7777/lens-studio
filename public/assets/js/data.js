@@ -193,8 +193,8 @@ window.HB_DATA = {
    "image": "https://images.ctfassets.net/h5kzo0k46quc/5SFIb9GtyWTbUeWwJuManC/92c535f37a67cd72111cb0e3c9fe44de/Hubble-Skyhy-Contacts-PCP-01.png",
    "hover": "https://images.ctfassets.net/h5kzo0k46quc/1Llxp3CtbJRUoDfCydpoCT/fc6c7e75eb41fe60acd617dadb9888a1/Hubble-Skyhy-Contacts-PCP-02.png",
    "gallery": [
-    "https://images.ctfassets.net/h5kzo0k46quc/4XyDOvT3CTmRu0wJFx8UIC/85521415694ba702145d09e44220a709/SkyHy-by-Hubble-PDP-01.png",
     "https://images.ctfassets.net/h5kzo0k46quc/6guriljWHFYHfQqi7usIFb/22ba94ceed3972f203875655fbb1de23/SkyHy-by-Hubble-PDP-02.png",
+    "https://images.ctfassets.net/h5kzo0k46quc/4XyDOvT3CTmRu0wJFx8UIC/85521415694ba702145d09e44220a709/SkyHy-by-Hubble-PDP-01.png",
     "https://images.ctfassets.net/h5kzo0k46quc/7udQ76V5Ngu51EJ0KU051y/ee11df2543f5990ab3a2ff78d86354a6/SkyHy-by-Hubble-PDP-03.png",
     "https://images.ctfassets.net/h5kzo0k46quc/3NhgCMDqB5cQPJcaZrD7X7/572a980ae8a1d7d97a9fa36e85115e77/SkyHy-by-Hubble-PDP-04.png"
    ],
