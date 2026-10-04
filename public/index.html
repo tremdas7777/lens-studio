@@ -9,6 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+.sky-one{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;background:var(--lav);border-radius:20px;padding:36px;max-width:1040px;margin:0 auto}
+.sky-one .pic{display:grid;place-items:center;background:#fff;border-radius:14px;padding:24px}
+.sky-one .pic img{max-height:360px;width:auto}
+.sky-one h3{font-size:clamp(28px,3vw,40px);color:var(--navy);margin:8px 0 12px}
+.sky-one .radio-card .p{font-size:16px}
+.sky-one .radio-card .p,.sky-one .radio-card .t{color:var(--ink)}
+@media (max-width:800px){.sky-one{grid-template-columns:minmax(0,1fr);padding:20px;gap:20px}.sky-one .pic img{max-height:240px}}
+</style>
 </head>
 <body>
 <main>
@@ -58,7 +67,7 @@
 <!-- ===== NOSSAS LENTES ===== -->
 <section class="sec" id="lentes">
   <div class="wrap">
-    <h2 class="title display">Escolha seu plano SkyHy</h2>
+    <h2 class="title display">Nossa Lente de Contato</h2>
     <div class="grid3" id="lensGrid" style="max-width:860px;margin:0 auto"></div>
     <p class="tagline">Com a Hubble, você não precisa abrir mão de nada. Preços imbatíveis, uma experiência sem complicação e lentes de qualidade que atendem às suas necessidades.</p>
   </div>
@@ -173,13 +182,20 @@ const IMG = 'https://images.ctfassets.net/h5kzo0k46quc/';
 
 /* Nossas lentes */
 const sky = find.lens('skyhy');
-$('#lensGrid').innerHTML = sky.packs.map((p,i)=>`<a class="lens" href="lente.html?id=skyhy&pack=${i}">
-  <div class="tag" style="background:${['#2ebadf','#ae90e5','#075581'][i]}">${p.badge ? esc(p.badge) : 'Plano ' + esc(p.label)}</div>
-  <div class="pic"><img class="main" src="${img(sky.image,500)}" alt="SkyHy by Hubble" loading="lazy"><img class="alt" src="${img(sky.hover,500)}" alt="" loading="lazy"></div>
-  <div class="body"><div class="sub">SkyHy by Hubble® Diária</div><h3>Plano ${esc(p.label)}</h3>
-  <div class="pk">${p.boxes} caixas · ${p.months} por olho</div>
-  <div class="pr"><b style="font-size:22px">${brl(p.total)}</b></div>
-  <div class="note">${p.months > 1 ? `${brl(p.perMonth)}/mês · economize ${brl(sky.packs[0].total*p.months - p.total)}` : 'Para experimentar'}</div></div></a>`).join('');
+let selPlan = 1;
+const planHTML = () => sky.packs.map((p,i)=>`<label class="radio-card${i===selPlan?' on':''}"><input type="radio" name="homePlan" value="${i}"${i===selPlan?' checked':''}><div><div class="t">${esc(p.label)}${p.badge?` <span class="pill green" style="margin-left:6px">${esc(p.badge)}</span>`:''}</div><div class="d">${p.boxes} caixas · ${p.months} por olho${p.months>1?` · ${brl(p.perMonth)}/mês · economize ${brl(sky.packs[0].total*p.months - p.total)}`:''}</div></div><div class="p">${brl(p.total)}</div></label>`).join('');
+$('#lensGrid').outerHTML = `<div class="sky-one">
+  <a class="pic" href="lente.html?id=skyhy"><img src="${img(sky.gallery && sky.gallery[0] || sky.image, 900)}" alt="SkyHy by Hubble Diária"></a>
+  <div class="info">
+    <div class="eyebrow">${esc(sky.tag)}</div>
+    <h3 class="display">SkyHy by Hubble<sup>®</sup> Diária</h3>
+    <p class="lead">Lentes diárias de silicone hidrogel, mais respiráveis, para <b>miopia</b> (grau negativo) e <b>hipermetropia</b> (grau positivo). 30 lentes por caixa.</p>
+    <div class="lbl" style="margin:18px 0 10px">Escolha seu plano</div>
+    <div id="homePlans">${planHTML()}</div>
+    <a class="btn indigo block" id="homeBuy" href="lente.html?id=skyhy&pack=${selPlan}">COMPRAR AGORA</a>
+    <p class="fine" style="margin-top:10px;text-align:center">Pagamento via Pix · Frete grátis para todo o Brasil</p>
+  </div></div>`;
+$('#homePlans').addEventListener('change', e => { if(e.target.name !== 'homePlan') return; selPlan = +e.target.value; $('#homePlans').innerHTML = planHTML(); $('#homeBuy').href = `lente.html?id=skyhy&pack=${selPlan}`; });
 /* Marcas populares */
 
 /* Como funciona */
