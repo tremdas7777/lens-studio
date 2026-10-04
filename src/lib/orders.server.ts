@@ -157,14 +157,12 @@ export async function createOrder(
     );
   }
   const rxNeeded = needsRx(q.lines);
-  const rx = rxNeeded ? data.rx : { method: "nao-precisa" as const };
-  if (rxNeeded) {
-    if (!rx || rx.method === "nao-precisa")
-      throw new HttpError(422, "Informe como vamos receber sua receita.");
-    if (rx.method === "medico" && (!rx.doctor?.nome || digits(rx.doctor.crm).length < 4)) {
-      throw new HttpError(422, "Informe nome e CRM do seu oftalmologista.");
-    }
-  }
+  // O checkout não pede a receita: pedidos com grau ficam como "enviar depois" (por e-mail).
+  const rx = rxNeeded
+    ? data.rx && data.rx.method !== "nao-precisa"
+      ? data.rx
+      : { method: "depois" as const }
+    : { method: "nao-precisa" as const };
 
   // Configuração conferida depois da validação: erros de cupom/itens aparecem mesmo sem gateway.
   if (!isPixGateConfigured()) {

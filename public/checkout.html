@@ -170,7 +170,8 @@ $('#ckLogo').innerHTML = ICON.logo; $('#pixFoot').innerHTML = PIX_SVG.replace('w
 
 const UFS = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
 const FRETES = [{id:'gratis', name:'Frete Grátis', eta:'5 a 10 dias úteis', price:0}, {id:'expresso', name:'Expresso', eta:'2 a 4 dias úteis', price:29.90}];
-const needRx = cart.hasRx();
+const needRx = false; /* a receita não é pedida no checkout */
+const rxLater = cart.hasRx();
 const hasLens = cart.items().some(i => i.kind === 'lente');
 /* Oferta do checkout (order bump) */
 const bumpAcc = HB.find.accessory(hasLens ? 'biotrue-hydration-boost-new' : 'optiplus-anti-fog-microfiber-cloth') || D.accessories[0];
@@ -208,7 +209,7 @@ const ok = {
   rua: () => !!S.addr.rua.trim(), numero: () => !!S.addr.numero.trim(), bairro: () => !!S.addr.bairro.trim(),
   cidade: () => !!S.addr.cidade.trim(), uf: () => UFS.includes(S.addr.uf)
 };
-const idValid = () => ok.name() && ok.email() && ok.cpf() && ok.phone() && (!S.create || user.current() || pass.length >= 6);
+const idValid = () => ok.name() && ok.email() && ok.cpf() && ok.phone();
 const addrValid = () => ok.cep() && ok.rua() && ok.numero() && ok.bairro() && ok.cidade() && ok.uf();
 const rxValid = () => S.rx.ok && (S.rx.method === 'depois' || (S.rx.method === 'upload' && !!(rxFile || S.rx.fileName)) || (S.rx.method === 'medico' && !!S.rx.doctor.nome.trim() && digits(S.rx.doctor.crm).length >= 4 && UFS.includes(S.rx.doctor.uf)));
 const cardBrand = n => { const d = digits(n); if(/^(4011|4312|4389|4514|4576|5041|5066|5067|509|6277|6362|6363|650|6516|6550)/.test(d)) return 'Elo'; if(/^(606282|3841)/.test(d)) return 'Hipercard'; if(/^4/.test(d)) return 'Visa'; if(/^(5[1-5]|2(2[2-9]|[3-6]\d|7[01]|720))/.test(d)) return 'Mastercard'; if(/^3[47]/.test(d)) return 'Amex'; return ''; };
@@ -245,7 +246,6 @@ function idCard(){
       ${field('id.email','E-mail',S.id.email,{ok:ok.email(),attrs:`type="email" autocomplete="email" required ${u?'readonly':''}`})}
       <div style="max-width:240px">${field('id.cpf','CPF',S.id.cpf,{ok:ok.cpf(),attrs:'inputmode="numeric" data-m="cpf" required',hint:digits(S.id.cpf).length===11&&!ok.cpf()?'CPF inválido.':''})}</div>
       <div style="max-width:240px">${field('id.phone','Celular/WhatsApp',S.id.phone,{ok:ok.phone(),pre:'+55',attrs:'inputmode="tel" data-m="phone" autocomplete="tel-national" required'})}</div>
-      ${u ? '' : `<label class="ck-terms" style="margin:0;color:var(--ink)"><input type="checkbox" id="ckCreate" ${S.create?'checked':''}><span>Criar uma conta para acompanhar meus pedidos e comprar novamente</span></label>${S.create?`<label class="ck-f"><span class="l">Crie uma senha <small>(mín. 6 caracteres)</small></span><span class="ck-in ${pass.length>=6?'is-ok':''}"><input type="password" id="ckPass" autocomplete="new-password" value="${esc(pass)}">${CHECK}</span></label>`:''}`}
       <button class="ck-btn" ${idValid()?'':'disabled'}>Ir para Entrega</button>
       ${u ? `<p class="ck-login">Conectado como <b>${esc(u.name)}</b>.</p>` : `<p class="ck-login">Já tem conta? <button type="button" id="goLogin">Entrar</button></p><div id="loginBox" class="hidden"><div class="ck-form" style="margin-top:0"><label class="ck-f"><span class="l">E-mail</span><span class="ck-in"><input type="email" id="lgEmail" autocomplete="username"></span></label><label class="ck-f"><span class="l">Senha</span><span class="ck-in"><input type="password" id="lgPass" autocomplete="current-password"></span></label><button type="button" class="ck-btn" id="lgBtn" style="height:46px;background:var(--ink)">Entrar</button><div class="ck-hint" id="lgMsg"></div></div></div>`}
     </form></div>`;
@@ -383,7 +383,7 @@ function bind(){
   const cc = $('#ckCreate'); if(cc) cc.onchange = () => { S.create = cc.checked; render(); };
   const cp = $('#ckPass'); if(cp) cp.addEventListener('input', () => { pass = cp.value; cp.closest('.ck-in').classList.toggle('is-ok', pass.length >= 6); refreshButtons(); });
   const fId = $('#fId'); if(fId) fId.onsubmit = e => { e.preventDefault(); if(!idValid()) return;
-    if(S.create && !user.current()){ const r = user.register({name:S.id.name.trim(), email:S.id.email.trim(), password:pass, phone:digits(S.id.phone), cpf:digits(S.id.cpf)}); if(!r.ok){ HB.toast(r.msg + ' Use "Entrar" para continuar.'); return; } pass = ''; S.create = false; HB.toast('Conta criada! Você já está conectado(a).'); }
+    if(false){ const r = user.register({name:S.id.name.trim(), email:S.id.email.trim(), password:pass, phone:digits(S.id.phone), cpf:digits(S.id.cpf)}); if(!r.ok){ HB.toast(r.msg + ' Use "Entrar" para continuar.'); return; } pass = ''; S.create = false; HB.toast('Conta criada! Você já está conectado(a).'); }
     S.step = addrValid() ? stepNo(needRx?'rx':'pay') : 2; render(); };
   const fAddr = $('#fAddr'); if(fAddr) fAddr.onsubmit = e => { e.preventDefault(); if(!addrValid()) return; S.step = stepNo(needRx?'rx':'pay'); render(); };
   const fRx = $('#fRx'); if(fRx) fRx.onsubmit = e => { e.preventDefault(); if(!rxValid()) return; S.step = stepNo('pay'); render(); };
@@ -415,7 +415,7 @@ async function finish(){
   const t = totals();
   const cartList = cart.items().map(x => ({...x}));
   const rx = needRx ? {method:S.rx.method, fileName:S.rx.method==='upload' ? (S.rx.fileName||'').slice(0,200) || undefined : undefined,
-    doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica||'', telefone:S.rx.doctor.tel||''} : undefined} : {method:'nao-precisa'};
+    doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica||'', telefone:S.rx.doctor.tel||''} : undefined} : (rxLater ? {method:'depois'} : {method:'nao-precisa'});
   const r = await HBAPI.checkout({
     customer: {name:S.id.name.trim(), email:S.id.email.trim().toLowerCase(), cpf:digits(S.id.cpf), phone:digits(S.id.phone)},
     address: {cep:digits(S.addr.cep), rua:S.addr.rua, numero:S.addr.numero, complemento:S.addr.complemento||'', bairro:S.addr.bairro, cidade:S.addr.cidade, uf:S.addr.uf},
@@ -432,7 +432,7 @@ async function finish(){
     shipping: FRETES.find(f=>f.id===S.frete),
     address: {...S.addr},
     payment: {method:'pix'},
-    rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : {method:'nao-precisa'},
+    rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : (rxLater ? {method:'depois'} : {method:'nao-precisa'}),
     status: 'Pagamento pendente',
     qrcode: d.qrcode,
     pixExpires: Date.parse(d.expiresAt) || now + 30*60*1000
