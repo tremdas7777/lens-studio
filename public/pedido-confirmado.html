@@ -134,7 +134,7 @@
     if(rxm === 'medico') next.push('Vamos entrar em contato com o consultório do seu oftalmologista para confirmar a receita.');
     if(rxm === 'upload') next.push(`Envie também a foto da receita para <b>receitas@hubble.com.br</b> com o número <b>${esc(o.number)}</b> — nossa equipe confere em até 1 dia útil.`);
     if(subs.length) next.push(`Sua assinatura está ativa: a próxima entrega será em ${fmtDate(Math.min(...subs.map(s => s.next)))}. Você pode alterar, pausar ou cancelar em Minha Conta.`);
-    next.push(`Prazo de entrega: ${o.shipping ? esc(o.shipping.eta) : '5 a 10 dias úteis'} após a ${needsRx(o)?'validação da receita':'confirmação do pagamento'}.`);
+    next.push(`Prazo de entrega: ${o.shipping ? esc(o.shipping.eta) : '7 a 10 dias úteis'} após a ${needsRx(o)?'validação da receita':'confirmação do pagamento'}.`);
     next.push(`Acompanhe a entrega em <a href="rastreio.html?pedido=${encodeURIComponent(o.number)}" class="link-u">Rastrear pedido</a>.`);
     return `
       <div class="card"><h3>Andamento</h3>${timelineHTML(o)}</div>

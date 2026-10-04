@@ -138,10 +138,10 @@ const cart = {
   clear(){ cart.save([]); store.set('coupon', null); },
   count(){ return cart.items().reduce((s,x) => s + x.qty, 0); },
   subtotal(){ return cart.items().reduce((s,x) => s + x.price * x.qty, 0); },
-  coupon(){ return store.get('coupon', null); },
+  coupon(){ return null; }, // loja sem cupons (ignora cupom salvo de visitas antigas)
   applyCoupon(code){
     const c = String(code||'').trim().toUpperCase();
-    const map = {BEMVINDO10:{code:'BEMVINDO10', pct:.10, label:'10% OFF'}, HUBBLE15:{code:'HUBBLE15', pct:.15, label:'15% OFF', min:300}};
+    const map = {}; // loja sem cupons
     const cp = map[c];
     if(!cp) return {ok:false, msg:'Cupom inválido.'};
     if(cp.min && cart.subtotal() < cp.min) return {ok:false, msg:`Cupom válido para compras acima de ${brl(cp.min)}.`};
@@ -258,7 +258,7 @@ function renderCartUI(){
   const t = cart.totals();
   box.innerHTML = list.map(it => `<div class="mini-item"><img src="${img(it.image,200)}" alt=""><div><div class="nm">${sup(it.name)}${it.qty>1?` <span style="color:var(--muted);font-weight:400">× ${it.qty}</span>`:''}</div><div class="meta">${itemMeta(it)}</div><div class="pr">${brl(it.price*it.qty)}</div></div><button class="x" data-rm="${it.key}" aria-label="Remover">×</button></div>`).join('')
     + `<div class="mini-total"><span>Subtotal</span><span>${brl(t.sub - t.discount)}</span></div>
-       <div class="mini-note">Frete grátis · pagamento via Pix</div>
+       <div class="mini-note">Frete grátis acima de R$ 100 · pagamento via Pix</div>
        <a href="checkout.html" class="btn block">Finalizar Compra</a><div style="text-align:center;margin-top:12px"><a href="carrinho.html" class="link-u">Ver carrinho</a></div>`;
   $$('[data-rm]', box).forEach(b => b.onclick = () => cart.remove(b.dataset.rm));
 }

@@ -28,9 +28,9 @@ export const PIX_OFF = 0;
 export const LENS = { id: "skyhy", name: "SkyHy by Hubble® Diária" } as const;
 
 export const LENS_PLANS = {
-  "1m": { label: "1 mês", months: 1, boxes: 2, price: 180 },
-  "2m": { label: "2 meses", months: 2, boxes: 4, price: 267 },
-  "3m": { label: "3 meses", months: 3, boxes: 6, price: 367 },
+  "1m": { label: "1 mês", months: 1, boxes: 2, price: 97 },
+  "2m": { label: "2 meses", months: 2, boxes: 4, price: 147 },
+  "3m": { label: "3 meses", months: 3, boxes: 6, price: 197 },
 } as const;
 export type LensPlanId = keyof typeof LENS_PLANS;
 const PLAN_IDS = Object.keys(LENS_PLANS) as [LensPlanId, ...LensPlanId[]];
@@ -43,16 +43,17 @@ export const BUMP_FACTOR = 0.6;
 export const BUMP_WITH_LENS = "biotrue-hydration-boost-new";
 export const BUMP_WITHOUT_LENS = "optiplus-anti-fog-microfiber-cloth";
 
-export const COUPONS = {
-  BEMVINDO10: { code: "BEMVINDO10", pct: 0.1, label: "10% OFF" },
-  HUBBLE15: { code: "HUBBLE15", pct: 0.15, label: "15% OFF", min: 300 },
-} as const satisfies Record<string, { code: string; pct: number; label: string; min?: number }>;
+/** Loja sem cupons: qualquer código é recusado. Para voltar, adicione aqui (ex.: BEMVINDO10: { code: "BEMVINDO10", pct: 0.1, label: "10% OFF" }). */
+export const COUPONS: Record<string, { code: string; pct: number; label: string; min?: number }> = {};
 
 export const FRETES = {
-  gratis: { id: "gratis", name: "Frete Grátis", eta: "5 a 10 dias úteis", price: 0 },
-  expresso: { id: "expresso", name: "Expresso", eta: "2 a 4 dias úteis", price: 29.9 },
+  gratis: { id: "gratis", name: "Frete Grátis", eta: "7 a 10 dias úteis", price: 0 },
+  padrao: { id: "padrao", name: "Frete Padrão", eta: "5 dias úteis", price: 20 },
+  expresso: { id: "expresso", name: "Frete Express", eta: "1 a 2 dias úteis", price: 37.53 },
 } as const;
 export type FreteId = keyof typeof FRETES;
+/** Frete grátis só para pedidos com produtos (+ oferta) a partir deste valor. */
+export const FREE_SHIPPING_MIN = 100;
 
 /* ---------------- Validação dos itens ---------------- */
 const qty = z.number().int().min(1).max(10).default(1);
@@ -280,9 +281,9 @@ export function quote(input: {
     .trim()
     .toUpperCase();
   if (code) {
-    const cp = (COUPONS as Record<string, (typeof COUPONS)[keyof typeof COUPONS]>)[code];
+    const cp = COUPONS[code];
     if (!cp) throw new PricingError("Cupom inválido.");
-    if ("min" in cp && itemsSub < cp.min) {
+    if (cp.min && itemsSub < cp.min) {
       throw new PricingError(`Cupom ${cp.code} válido para compras acima de R$ ${cp.min},00.`);
     }
     coupon = { code: cp.code, pct: cp.pct, label: cp.label };
@@ -291,6 +292,9 @@ export function quote(input: {
   const after = sub - discount;
   const pix = +(after * PIX_OFF).toFixed(2);
   const frete = FRETES[input.frete];
+  if (frete.id === "gratis" && sub < FREE_SHIPPING_MIN) {
+    throw new PricingError(`Frete grátis válido para compras acima de R$ ${FREE_SHIPPING_MIN},00.`);
+  }
   const shipping = frete.price;
   const total = +(after - pix + shipping).toFixed(2);
   if (!(total > 0)) throw new PricingError("Valor do pedido inválido.");

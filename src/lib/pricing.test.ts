@@ -13,9 +13,10 @@ const nonSunFrame = Object.entries(catalog.frames).find(([, f]) => !f.sun);
 
 describe("pricing", () => {
   it("cobra o ticket do plano SkyHy sem desconto Pix", () => {
-    expect(quote({ items: [lens("1m")], bump: false, frete: "gratis" }).total).toBe(180);
-    expect(quote({ items: [lens("2m")], bump: false, frete: "gratis" }).total).toBe(267);
-    expect(quote({ items: [lens("3m")], bump: false, frete: "gratis" }).totalCents).toBe(36700);
+    expect(quote({ items: [lens("1m")], bump: false, frete: "padrao" }).total).toBe(117);
+    expect(() => quote({ items: [lens("1m")], bump: false, frete: "gratis" })).toThrow(/acima de R\$ 100/);
+    expect(quote({ items: [lens("2m")], bump: false, frete: "gratis" }).total).toBe(147);
+    expect(quote({ items: [lens("3m")], bump: false, frete: "gratis" }).totalCents).toBe(19700);
   });
 
   it("valida o sinal do grau e exige um olho", () => {
@@ -73,28 +74,23 @@ describe("pricing", () => {
     }
   });
 
-  it("aplica bump, cupom e frete na mesma ordem do checkout.html", () => {
+  it("aplica bump e frete na mesma ordem do checkout.html", () => {
     const bumpAcc =
       catalog.accessories["biotrue-hydration-boost-new" as keyof typeof catalog.accessories];
     const bump = +(bumpAcc.price * 0.6).toFixed(2);
-    const q = quote({ items: [lens("2m")], bump: true, coupon: "bemvindo10", frete: "expresso" });
-    const sub = 267 + bump;
-    const discount = +(sub * 0.1).toFixed(2);
+    const q = quote({ items: [lens("2m")], bump: true, frete: "expresso" });
     expect(q.bump?.id).toBe("biotrue-hydration-boost-new");
-    expect(q.discount).toBe(discount);
-    expect(q.total).toBe(+(sub - discount + 29.9).toFixed(2));
+    expect(q.discount).toBe(0);
+    expect(q.total).toBe(+(147 + bump + 37.53).toFixed(2));
+    expect(quote({ items: [lens("1m")], bump: false, frete: "padrao" }).total).toBe(117);
   });
 
-  it("HUBBLE15 exige R$ 300 em produtos e cupom inválido falha", () => {
-    expect(() =>
-      quote({ items: [lens("2m")], bump: false, coupon: "HUBBLE15", frete: "gratis" }),
-    ).toThrow(/300/);
-    expect(
-      quote({ items: [lens("3m")], bump: false, coupon: "HUBBLE15", frete: "gratis" }).total,
-    ).toBe(+(367 - +(367 * 0.15).toFixed(2)).toFixed(2));
-    expect(() =>
-      quote({ items: [lens("1m")], bump: false, coupon: "XYZ", frete: "gratis" }),
-    ).toThrow(/inválido/);
+  it("loja sem cupons: qualquer código é recusado", () => {
+    for (const coupon of ["BEMVINDO10", "HUBBLE15", "XYZ"]) {
+      expect(() =>
+        quote({ items: [lens("3m")], bump: false, coupon, frete: "gratis" }),
+      ).toThrow(/inválido/);
+    }
   });
 
   it("oferta do checkout troca conforme o carrinho e some se o item já está no carrinho", () => {

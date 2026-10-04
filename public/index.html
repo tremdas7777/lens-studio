@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SkyHy by Hubble: Lentes de Contato Diárias para Miopia e Hipermetropia | Hubble</title>
-<meta name="description" content="Lentes de contato diárias SkyHy by Hubble para miopia e hipermetropia. Planos de 1, 2 ou 3 meses a partir de R$ 122,33/mês, pagamento no Pix e frete grátis.">
+<meta name="description" content="Lentes de contato diárias SkyHy by Hubble para miopia e hipermetropia. Planos de 1, 2 ou 3 meses a partir de R$ 65,67/mês, pagamento no Pix e frete grátis.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
 <!-- ===== HERO ===== -->
 <section class="hero">
   <div class="hero-track" id="hero">
-    <div class="hero-ship">Frete grátis em todos os pedidos!</div>
+    <div class="hero-ship">Frete grátis acima de R$ 100!</div>
 
     <div class="slide on">
       <picture><source media="(max-width:560px)" srcset="https://images.ctfassets.net/h5kzo0k46quc/3kSiWWdkxOFyNO8Mdw3hP5/18106f03a1576a0847cd296de49f7530/SkyHy-by-Hubble-HP-Hero-Mobile.jpg?w=900&q=80&fm=webp"><img src="https://images.ctfassets.net/h5kzo0k46quc/vfmCwv4fIavwP1BGT1pw5/c3d090e706759c374342790b55cad460/SkyHy-by-Hubble-HP-Hero-Desktop.jpg?w=2000&q=80&fm=webp" alt="Lentes SkyHy by Hubble Diária"></picture>
@@ -135,7 +135,7 @@
     <div class="vp-grid">
       <div class="vp-item"><img src="https://images.ctfassets.net/h5kzo0k46quc/4xf5NF2i1Q027A2FQr1uyU/e5490330e2a7d3a03db523e5ff5d207c/ValuePropsSection-Quality-Materials.png?w=200&q=80&fm=webp" alt=""><h3>Materiais de Qualidade</h3><p>Nossas lentes são feitas com a melhor tecnologia do mercado, para mais hidratação e respirabilidade.</p></div>
       <div class="vp-item"><img src="https://images.ctfassets.net/h5kzo0k46quc/1cGjXk17MOC05UyYbFa8FT/83761fce4ea748dae147097fc829b7d1/ValuePropsSection-Fair-Prices.png?w=200&q=80&fm=webp" alt=""><h3>Preços Justos</h3><p>Não pague mais caro pelas suas lentes. Temos o que você procura, por menos que a concorrência.</p></div>
-      <div class="vp-item"><img src="https://images.ctfassets.net/h5kzo0k46quc/3vT5cRkmxu0aRqCKBoPwRf/21c7c81b4cefeb4fb33bb9a20ab60627/ValuePropsSection-Seamless-Service.png?w=200&q=80&fm=webp" alt=""><h3>Serviço Sem Complicação</h3><p>Planos de 1 a 3 meses para você não ficar sem lentes. E todos os pedidos têm frete grátis!</p></div>
+      <div class="vp-item"><img src="https://images.ctfassets.net/h5kzo0k46quc/3vT5cRkmxu0aRqCKBoPwRf/21c7c81b4cefeb4fb33bb9a20ab60627/ValuePropsSection-Seamless-Service.png?w=200&q=80&fm=webp" alt=""><h3>Serviço Sem Complicação</h3><p>Planos de 1 a 3 meses para você não ficar sem lentes. E o frete é grátis em compras acima de R$ 100!</p></div>
       <div class="vp-item"><img src="https://images.ctfassets.net/h5kzo0k46quc/6QcKZkyaRk6qHZIQhZSQIG/b5a6b7bc7c4491b90c38b78759c47e36/ValuePropsSection-Safety-First.png?w=200&q=80&fm=webp" alt=""><h3>Segurança em Primeiro Lugar</h3><p>Todas as lentes Hubble são registradas na ANVISA e desenvolvidas pensando na saúde dos seus olhos.</p></div>
       <div class="vp-item"><img src="https://images.ctfassets.net/h5kzo0k46quc/2TbRQFyUPuBVgU2xOV8Hhv/29b1f6129c3ab651cfdfa2bf82aa2854/ValuePropsSection-Real-Support.png?w=200&q=80&fm=webp" alt=""><h3>Suporte de Verdade</h3><p>Estamos aqui quando você precisar, prontos para responder qualquer dúvida. Sua satisfação é nossa prioridade.</p></div>
     </div>
@@ -206,7 +206,7 @@ $('#lensGrid').outerHTML = `<div class="sky-one">
     <div class="lbl" style="margin:18px 0 10px">Escolha seu plano</div>
     <div id="homePlans">${planHTML()}</div>
     <a class="btn indigo block" id="homeBuy" href="lente.html?id=skyhy&pack=${selPlan}">COMPRAR AGORA</a>
-    <p class="fine" style="margin-top:10px;text-align:center">Pagamento via Pix · Frete grátis para todo o Brasil</p>
+    <p class="fine" style="margin-top:10px;text-align:center">Pagamento via Pix · Frete grátis acima de R$ 100 para todo o Brasil</p>
   </div></div>`;
 $('#homePlans').addEventListener('change', e => { if(e.target.name !== 'homePlan') return; selPlan = +e.target.value; $('#homePlans').innerHTML = planHTML(); $('#homeBuy').href = `lente.html?id=skyhy&pack=${selPlan}`; });
 /* Marcas populares */
@@ -215,9 +215,9 @@ $('#homePlans').addEventListener('change', e => { if(e.target.name !== 'homePlan
 const steps = [
   {t:'Você informa seu grau.', p:'Escolha miopia ou hipermetropia e o grau de cada olho, como está na sua receita.', img:IMG+'1ZepvgFfuDwqHqmjxaHuL6/5907938b0abb66bdc8e425684d018576/HP-How-Hubble-Works-01.webp'},
   {t:'Nós validamos sua receita.', p:'Para deixar tudo nos mínimos detalhes. Avisaremos por e-mail assim que estiver tudo certo.', img:IMG+'5zsoFYGR3hHI3fhauvNcHS/952908ee94a3e1d19173a6c6062c0870/HP-How-Hubble-Works-02.jpg'},
-  {t:'Enviamos suas lentes.', p:'Preparamos, embalamos e enviamos suas lentes de contato direto para a sua casa, com entrega em cerca de 5 a 10 dias úteis.', img:IMG+'yWQI3wcRT6nsS457OYBcc/bda8432c852b2a7a29e81ea653c732aa/HP-How-Hubble-Works-03.webp'},
+  {t:'Enviamos suas lentes.', p:'Preparamos, embalamos e enviamos suas lentes de contato direto para a sua casa, com entrega em cerca de 7 a 10 dias úteis.', img:IMG+'yWQI3wcRT6nsS457OYBcc/bda8432c852b2a7a29e81ea653c732aa/HP-How-Hubble-Works-03.webp'},
   {t:'Você escolhe o plano.', p:'1, 2 ou 3 meses de lentes: quanto maior o plano, menor o valor por mês.', img:IMG+'40KBbNNd2KrNKzhZm7e3hA/315798d6493afa3a37ccf57dd53b36c5/HP-How-Hubble-Works-04.webp'},
-  {t:'Pague com Pix.', p:'Pagamento rápido e seguro no Pix, com aprovação na hora e frete grátis para todo o Brasil.', img:IMG+'1quLIJi2iDEB9DQtb8hbPY/e8e661a7c04672b11cfb8c2aa9834a74/HP-How-Hubble-Works-05.webp'},
+  {t:'Pague com Pix.', p:'Pagamento rápido e seguro no Pix, com aprovação na hora e frete grátis acima de R$ 100 para todo o Brasil.', img:IMG+'1quLIJi2iDEB9DQtb8hbPY/e8e661a7c04672b11cfb8c2aa9834a74/HP-How-Hubble-Works-05.webp'},
 ];
 $('#wRail').innerHTML = steps.map((s,i)=>`<div class="step"><img src="${s.img}?w=720&q=80" alt="" loading="lazy"><div class="num">${i+1}</div><h3>${s.t}</h3><p>${s.p}</p></div>`).join('');
 

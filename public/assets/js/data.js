@@ -143,7 +143,7 @@ window.HB_DATA = {
    "dia": 14.1,
    "manufacturer": "Visco",
    "material": "Olifilcon B",
-   "description": "Feitas de hidrogel de silicone avançado e respirável – o mesmo tipo de material usado em muitas das principais lentes de contato diárias descartáveis. As lentes SkyHy by Hubble deixam mais oxigênio chegar aos seus olhos, com respirabilidade e conforto o dia todo.",
+   "description": "Feitas de hidrogel de silicone, o mesmo material de muitas das principais lentes diárias do mercado. Ele deixa o oxigênio chegar com facilidade aos seus olhos, para você usar o dia inteiro com conforto e sensação de frescor. No fim do dia, é só descartar: um par novo a cada manhã, sem estojo nem solução de limpeza.",
    "bullets": [
     "Lentes de contato diárias descartáveis de hidrogel de silicone",
     "Alta permeabilidade ao oxigênio para olhos com aparência mais saudável",
@@ -157,10 +157,10 @@ window.HB_DATA = {
      "boxes": 2,
      "qty": 15,
      "days": 28,
-     "total": 180,
-     "perMonth": 180,
-     "price": 180,
-     "sale": 180,
+     "total": 97,
+     "perMonth": 97,
+     "price": 97,
+     "sale": 97,
      "off": null
     },
     {
@@ -169,10 +169,10 @@ window.HB_DATA = {
      "boxes": 4,
      "qty": 15,
      "days": 56,
-     "total": 267,
-     "perMonth": 133.5,
-     "price": 267,
-     "sale": 267,
+     "total": 147,
+     "perMonth": 73.5,
+     "price": 147,
+     "sale": 147,
      "off": null,
      "badge": "Mais vendido"
     },
@@ -182,10 +182,10 @@ window.HB_DATA = {
      "boxes": 6,
      "qty": 15,
      "days": 84,
-     "total": 367,
-     "perMonth": 122.33,
-     "price": 367,
-     "sale": 367,
+     "total": 197,
+     "perMonth": 65.67,
+     "price": 197,
+     "sale": 197,
      "off": null,
      "badge": "Melhor custo"
     }
