@@ -18,7 +18,7 @@ export const Route = createFileRoute("/api/public/rastreio")({
         if (!/^HB-\d{4}-\d{5}$/.test(number))
           return fail(400, "Número do pedido inválido. Ex.: HB-2610-12345.");
         if (cpf.length !== 11) return fail(400, "CPF inválido. Digite os 11 números.");
-        const { isSupabaseConfigured } = await import("@/integrations/supabase/client.server");
+        const { isSupabaseConfigured } = await import("@/lib/db.server");
         if (!isSupabaseConfigured()) return fail(503, "Consulta indisponível no momento.");
         const { getOrderByNumber, refreshOrder } = await import("@/lib/orders.server");
         const found = await getOrderByNumber(number);

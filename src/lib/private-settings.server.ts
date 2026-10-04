@@ -1,9 +1,9 @@
 // Configurações privadas (tokens de integração) guardadas na tabela private_settings.
 // Só o servidor (service role) lê/escreve. Gerenciadas pelo /admin.
-import { isSupabaseConfigured } from "@/integrations/supabase/client.server";
+import { isSupabaseConfigured } from "@/lib/db.server";
 
 async function db() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/lib/db.server");
   return supabaseAdmin;
 }
 
