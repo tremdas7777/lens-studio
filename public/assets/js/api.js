@@ -114,7 +114,7 @@ async function settings(){
   const cached = SS.get('hubble-br-settings');
   if(cached){ try{ return JSON.parse(cached); }catch(e){} }
   const r = await get('/api/public/settings', 8000);
-  if(r.ok){ SS.set('hubble-br-settings', JSON.stringify(r.data)); return r.data; }
+  if(r.ok){ if(r.data && r.data.metaPixelId) SS.set('hubble-br-settings', JSON.stringify(r.data)); return r.data; }
   return {};
 }
 
@@ -172,6 +172,16 @@ metaTrack('PageView');
 if(page === 'lente'){
   const l = window.HB && HB.find && HB.find.lens(qsId);
   if(l) metaTrack('ViewContent', {value: (l.packs && l.packs[0] && (l.packs[0].total || l.packs[0].sale)) || undefined, contentName: l.name, contentIds: [l.id]});
+}
+/* AddToCart: envolve HB.cart.add (vale para lente, óculos e acessórios) */
+if(window.HB && HB.cart && !HB.cart._metaWrapped){
+  const add = HB.cart.add.bind(HB.cart);
+  HB.cart.add = function(item){
+    const r = add(item);
+    try{ metaTrack('AddToCart', {value: +(item.price * (item.qty || 1)).toFixed(2), contentName: item.name, contentIds: [item.id]}); }catch(e){}
+    return r;
+  };
+  HB.cart._metaWrapped = true;
 }
 if(page === 'checkout' && window.HB && HB.cart && HB.cart.items().length){
   track('checkout_click', {value: HB.cart.subtotal()});
