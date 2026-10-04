@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import type { FunnelEventRow, OrderRow } from "@/integrations/supabase/types";
+import type { FunnelEventRow, OrderRow } from "@/lib/db-types";
 import { assertAdmin, checkAdminPassword } from "@/lib/admin-auth.server";
 
 async function db() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/lib/db.server");
   return supabaseAdmin;
 }
 

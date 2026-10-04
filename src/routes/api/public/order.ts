@@ -12,7 +12,7 @@ export const Route = createFileRoute("/api/public/order")({
         const url = new URL(request.url);
         const id = url.searchParams.get("id") ?? "";
         if (!UUID.test(id)) return fail(400, "Pedido inválido.");
-        const { isSupabaseConfigured } = await import("@/integrations/supabase/client.server");
+        const { isSupabaseConfigured } = await import("@/lib/db.server");
         if (!isSupabaseConfigured()) return fail(503, "Consulta indisponível no momento.");
         const { getOrder, refreshOrder, publicOrder } = await import("@/lib/orders.server");
         const order = await getOrder(id);

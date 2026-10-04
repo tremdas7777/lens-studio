@@ -2,8 +2,8 @@
 // (UTMify + Meta CAPI + RastroCode) mesmo que o cliente feche a página. Somente servidor.
 import { z } from "zod";
 import { brand } from "@/lib/brand";
-import { isSupabaseConfigured } from "@/integrations/supabase/client.server";
-import type { OrderItem, OrderRow, OrderTotals } from "@/integrations/supabase/types";
+import { isSupabaseConfigured } from "@/lib/db.server";
+import type { OrderItem, OrderRow, OrderTotals } from "@/lib/db-types";
 import { HttpError } from "@/lib/http.server";
 import { insertFunnelEvent } from "@/lib/funnel.server";
 import { sendCapiEvent } from "@/lib/meta.server";
@@ -33,7 +33,7 @@ export { isPaidStatus };
 export const PIX_TTL_MS = 30 * 60 * 1000;
 
 async function db() {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin } = await import("@/lib/db.server");
   return supabaseAdmin;
 }
 

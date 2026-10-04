@@ -1,6 +1,6 @@
 // Eventos de funil (visitas, produto, checkout e etapas do checkout) gravados pelo servidor.
 // Nunca lança: rastreio não pode atrapalhar a compra.
-import { isSupabaseConfigured } from "@/integrations/supabase/client.server";
+import { isSupabaseConfigured } from "@/lib/db.server";
 
 /** Etapas do checkout, na ordem. "pix" = Pix gerado (o pagamento é conferido em orders). */
 export const CHECKOUT_STEPS = ["checkout", "dados", "entrega", "pix"] as const;
@@ -24,7 +24,7 @@ export type FunnelInsert = {
 export async function insertFunnelEvent(e: FunnelInsert): Promise<void> {
   if (!isSupabaseConfigured()) return;
   try {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin } = await import("@/lib/db.server");
     const { error } = await supabaseAdmin.from("funnel_events").insert({
       session_id: e.session_id,
       event_type: e.event_type,

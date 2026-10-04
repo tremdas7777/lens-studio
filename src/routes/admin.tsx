@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Activity, CreditCard, Eye, Loader2, LogOut, ShoppingBag, Users } from "lucide-react";
 import { getAdminFunnel, getAdminHealth, verifyAdminPassword } from "@/lib/admin.functions";
-import type { FunnelEventRow } from "@/integrations/supabase/types";
+import type { FunnelEventRow } from "@/lib/db-types";
 import { UtmifyCard } from "@/components/admin/UtmifyCard";
 import { MetaPixelCard } from "@/components/admin/MetaPixelCard";
 import { OrdersTab } from "@/components/admin/OrdersTab";
