@@ -83,7 +83,7 @@ body.ov-open{overflow:hidden}
   .rx-same input{width:16px;height:16px;accent-color:var(--indigo)}
   .rx-wrap{position:relative}
   .rx-table{display:grid;gap:10px}
-  .rx-row{display:grid;grid-template-columns:78px minmax(0,1fr);align-items:center;gap:10px}
+  .rx-row{display:grid;grid-template-columns:72px minmax(0,1.3fr) minmax(0,1fr);align-items:center;gap:10px}
   .rx-h{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.04em}
   .rx-eye{font-size:14px;font-weight:600;color:var(--ink)}
   .rx-trig{display:flex;align-items:center;justify-content:space-between;width:100%;height:42px;border:1.5px solid transparent;background:#f3f4f8;border-radius:999px;padding:0 16px;font:500 15px "Work Sans";color:var(--muted);cursor:pointer}
@@ -91,6 +91,10 @@ body.ov-open{overflow:hidden}
   .rx-trig.open{border-color:var(--indigo);background:#fff}
   .rx-trig.err{border-color:var(--red)}
   .rx-trig svg{color:var(--ink)}
+  .rx-trig.rx-bc{cursor:default;opacity:.75}
+  .rx-trig.rx-bc.set{opacity:1}
+  .rx-row>div{align-self:start}
+  .rx-row .rx-eye{align-self:center;height:42px;display:flex;align-items:center}
   .rx-kind{font-size:12px;color:var(--indigo);margin:4px 0 0 16px}
   .gp{position:absolute;left:0;right:0;z-index:30;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);border:1px solid var(--line);padding:14px 14px 10px}
   .gp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -272,7 +276,7 @@ function buildLensItem(l, packIdx, od, oe){
   const r2 = v => Math.round(v * 100) / 100;
   const weeks = Math.max(1, Math.round(p.days / 7));
   const KN = {miopia:'Miopia', hipermetropia:'Hipermetropia'};
-  const line = (lbl, e) => `${lbl}: ${e.kind ? KN[e.kind] + ' ' : ''}${fmtRx(e.sph)}` + (l.toric ? ` · CIL ${fmtRx(e.cyl)} · EIXO ${e.axis}` : '');
+  const line = (lbl, e) => `${lbl}: ${e.kind ? KN[e.kind] + ' ' : ''}${fmtRx(e.sph)}${l.bc ? ' · CB ' + Number(l.bc).toFixed(2).replace('.', ',') : ''}` + (l.toric ? ` · CIL ${fmtRx(e.cyl)} · EIXO ${e.axis}` : '');
   const meta = [];
   if(od) meta.push(line('OD', od));
   if(oe) meta.push(line('OE', oe));
@@ -386,8 +390,10 @@ const sameEl = $('#sameRx');
 function eyeLabel(e){ return e.sph ? fmtRx(e.sph) : 'Selecione'; }
 function renderRx(){
   const noPower = st.tried && !hasKind('od') && !hasKind('oe');
-  const row = (eye, label) => `<div class="rx-row"><div class="rx-eye">${label}</div><div><button type="button" class="rx-trig${st[eye].sph ? ' set' : ''}${noPower ? ' err' : ''}${openEye === eye ? ' open' : ''}" data-eye="${eye}" aria-haspopup="listbox" aria-expanded="${openEye === eye}"><span>${eyeLabel(st[eye])}</span><svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M5 6L9.33 0H.67z" fill="currentColor"/></svg></button>${st[eye].kind === 'miopia' || st[eye].kind === 'hipermetropia' ? `<div class="rx-kind">${st[eye].kind === 'miopia' ? 'Miopia' : 'Hipermetropia'}</div>` : ''}</div></div>`;
-  $('#rxGrid').innerHTML = `<div class="rx-row rx-h"><div>Olho</div><div>Grau esférico</div></div>` +
+  const BC = Number(lens.bc).toFixed(2).replace('.', ',');
+  const bcCell = eye => `<div><button type="button" class="rx-trig rx-bc${st[eye].sph ? ' set' : ''}" disabled aria-label="Curva base"><span>${st[eye].sph ? BC : 'Selecione'}</span><svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M5 6L9.33 0H.67z" fill="currentColor"/></svg></button></div>`;
+  const row = (eye, label) => `<div class="rx-row"><div class="rx-eye">${label}</div><div><button type="button" class="rx-trig${st[eye].sph ? ' set' : ''}${noPower ? ' err' : ''}${openEye === eye ? ' open' : ''}" data-eye="${eye}" aria-haspopup="listbox" aria-expanded="${openEye === eye}"><span>${eyeLabel(st[eye])}</span><svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M5 6L9.33 0H.67z" fill="currentColor"/></svg></button>${st[eye].kind === 'miopia' || st[eye].kind === 'hipermetropia' ? `<div class="rx-kind">${st[eye].kind === 'miopia' ? 'Miopia' : 'Hipermetropia'}</div>` : ''}</div>${bcCell(eye)}</div>`;
+  $('#rxGrid').innerHTML = `<div class="rx-row rx-h"><div>Olho</div><div>Grau esférico</div><div>Curva base</div></div>` +
     (sameEl.checked ? row('od', 'Ambos') : row('oe', 'Esquerdo') + row('od', 'Direito'));
   $$('#rxGrid .rx-trig').forEach(b => b.onclick = () => openPop(b.dataset.eye, b));
   $('#rxTotal').textContent = brl(pack().total || pack().sale);
@@ -432,7 +438,7 @@ function validate(){
   $('#formErr').classList.toggle('hidden', !errs.length);
   return !errs.length;
 }
-const eyeData = eye => chosen(eye) ? (lens.toric ? {kind: st[eye].kind, sph: st[eye].sph, cyl: st[eye].cyl, axis: st[eye].axis} : {kind: st[eye].kind, sph: st[eye].sph}) : null;
+const eyeData = eye => chosen(eye) ? (lens.toric ? {kind: st[eye].kind, sph: st[eye].sph, cyl: st[eye].cyl, axis: st[eye].axis} : {kind: st[eye].kind, sph: st[eye].sph, bc: lens.bc}) : null;
 
 /* ================= Overlay de e-mail → checkout ================= */
 const ov = $('#stepOv');
