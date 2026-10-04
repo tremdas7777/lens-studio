@@ -214,20 +214,6 @@ body.ov-open{overflow:hidden}
     </div>
   </section>
 
-  <section class="video">
-    <div class="dots"></div>
-    <div class="wrap">
-      <div class="vbox" id="vbox" role="button" tabindex="0" aria-label="Assistir ao vídeo">
-        <img src="https://images.ctfassets.net/h5kzo0k46quc/Pv2yV1VxE97RK3zNMhi05/796dd66d0737397f5c5ef731ea3bbea7/Hubble-Contacts-PDP-Video-Still.jpg?w=1400&q=80&fm=webp" alt="Mulher abrindo uma nova entrega de lentes Hubble" loading="lazy">
-        <div class="vcopy">
-          <div class="play"><svg width="14" height="16" viewBox="0 0 14 16"><path d="M0 0l14 8-14 8z" fill="#fff"/></svg></div>
-          <h2 class="display">Lentes de contato direto na sua casa</h2>
-          <p>Veja por dentro como a Hubble prepara e entrega as suas lentes.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="sec">
     <div class="wrap">
       <div class="faq-head"><div class="eyebrow">Perguntas frequentes</div><h2 class="display">Tem dúvidas? Nós respondemos.</h2></div>
@@ -525,11 +511,6 @@ const steps = [
 $('#wRail').innerHTML = steps.map((s, i) => `<div class="step"><img src="${AS + s.img}?w=720&q=80&fm=webp" alt="" loading="lazy"><div class="num">${i + 1}</div><h3>${s.t}</h3><p>${s.p}</p></div>`).join('');
 const wPer = () => innerWidth <= 900 ? 1 : 2;
 HB.carousel({prev:'#wPrev', next:'#wNext', idx:'#wIdx', pages:() => Math.ceil(steps.length / wPer()), rail:i => $('#wRail').style.transform = `translateX(-${Math.min(i * wPer(), steps.length - wPer()) * (100 / wPer())}%)`});
-
-/* ================= Vídeo ================= */
-const vbox = $('#vbox');
-const play = () => { if(vbox.querySelector('iframe')) return; vbox.insertAdjacentHTML('beforeend', '<iframe src="https://www.youtube.com/embed/w4YCLxsUxyI?autoplay=1&rel=0&hl=pt-BR&cc_lang_pref=pt&cc_load_policy=1" title="Lentes de contato Hubble" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'); };
-vbox.onclick = play; vbox.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); play(); } };
 
 /* ================= FAQ ================= */
 const Q = {
