@@ -226,7 +226,10 @@ export async function createOrder(
   if (!row) throw new HttpError(503, PIX_UNAVAILABLE);
 
   // 2) Cobrança Pix.
-  const postbackBase = (process.env["PUBLIC_SITE_URL"] || ctx.origin).replace(/\/+$/, "");
+  // Usa o domínio em que o cliente está comprando (funciona em qualquer domínio conectado).
+  // PUBLIC_SITE_URL só entra quando a origem não é pública (ex.: localhost).
+  const isPublicOrigin = /^https:\/\//.test(ctx.origin) && !/localhost|127\.0\.0\.1/.test(ctx.origin);
+  const postbackBase = (isPublicOrigin ? ctx.origin : process.env["PUBLIC_SITE_URL"] || ctx.origin).replace(/\/+$/, "");
   let charge;
   try {
     charge = await gatewayCashin({

@@ -97,7 +97,7 @@ Catálogo de armações/acessórios: depois de editar `public/assets/js/data.js`
 | `SUPABASE_SERVICE_ROLE_KEY` | sim | Chave service role (servidor; nunca vai ao navegador). |
 | `PIXGATE_API_KEY` | sim | Chave da API PixGate. Sem ela o checkout responde “Pagamento indisponível no momento.” |
 | `HUBBLE_ADMIN_PASSWORD` | sim | Senha do `/admin` (mín. 8 caracteres). |
-| `PUBLIC_SITE_URL` | recomendada | Domínio público (ex.: `https://www.seudominio.com.br`), usado no postback da PixGate. Sem ela, usa o domínio da requisição. |
+| `PUBLIC_SITE_URL` | opcional | Só fallback do postback da PixGate quando a origem não é pública (ex.: testes em localhost). Em produção o postback usa automaticamente o domínio em que o cliente comprou, então a loja funciona em qualquer domínio conectado no Lovable. |
 | `RASTROCODE_API_KEY` | opcional | Envia pedidos pagos à RastroCode e mostra o código de rastreio. |
 | `PIXGATE_CHARGE_DESCRIPTION` | opcional | Descrição da cobrança no gateway (padrão “Pedido Hubble”). |
 | `UTMIFY_API_TOKEN` | opcional | Token UTMify, se preferir env ao token salvo no `/admin` (o do admin tem prioridade). |

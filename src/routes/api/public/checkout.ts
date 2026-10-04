@@ -12,7 +12,7 @@ export const Route = createFileRoute("/api/public/checkout")({
         }
         const { checkoutSchema, createOrder } = await import("@/lib/orders.server");
         const body = checkoutSchema.parse(await readJson(request, 64_000));
-        const o = await createOrder(body, { ...meta, origin: new URL(request.url).origin });
+        const o = await createOrder(body, { ...meta, origin: publicOrigin(request) });
         return json({
           ok: true,
           orderId: o.orderId,
@@ -35,3 +35,13 @@ export const Route = createFileRoute("/api/public/checkout")({
     },
   },
 });
+
+/** Domínio público onde o cliente está comprando: Origin do navegador (já validado como mesma
+ * origem), depois cabeçalhos do proxy, por fim a própria URL da requisição. */
+function publicOrigin(request: Request): string {
+  const o = request.headers.get("origin");
+  if (o && /^https?:\/\//.test(o)) return o;
+  const host = request.headers.get("x-forwarded-host");
+  if (host) return `${request.headers.get("x-forwarded-proto") ?? "https"}://${host.split(",")[0]!.trim()}`;
+  return new URL(request.url).origin;
+}
