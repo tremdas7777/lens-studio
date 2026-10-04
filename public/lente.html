@@ -465,8 +465,9 @@ $('#buyForm').onsubmit = e => {
   e.preventDefault();
   st.tried = true;
   const ok = validate(); renderRx();
-  if(!ok){ const b = $('#rxGrid .select.err'); if(b) b.focus(); return; }
-  openOv();
+  if(!ok){ const b = $('#rxGrid .rx-trig.err'); if(b) b.focus(); return; }
+  HB.cart.add(buildLensItem(lens, st.pack, eyeData('od'), eyeData('oe')));
+  location.href = 'checkout.html';
 };
 $('#ovForm').onsubmit = e => {
   e.preventDefault();
