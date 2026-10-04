@@ -288,7 +288,7 @@ function idCard(){
       <div style="max-width:240px">${field('id.cpf','CPF',S.id.cpf,{ok:ok.cpf(),attrs:'inputmode="numeric" data-m="cpf" required',hint:digits(S.id.cpf).length===11&&!ok.cpf()?'CPF inválido.':''})}</div>
       <div style="max-width:240px">${field('id.phone','Celular/WhatsApp',S.id.phone,{ok:ok.phone(),pre:'+55',attrs:'inputmode="tel" data-m="phone" autocomplete="tel-national" required'})}</div>
       <button class="ck-btn" ${idValid()?'':'disabled'}>Ir para Entrega</button>
-      ${u ? `<p class="ck-login">Conectado como <b>${esc(u.name)}</b>.</p>` : `<p class="ck-login">Já tem conta? <button type="button" id="goLogin">Entrar</button></p><div id="loginBox" class="hidden"><div class="ck-form" style="margin-top:0"><label class="ck-f"><span class="l">E-mail</span><span class="ck-in"><input type="email" id="lgEmail" autocomplete="username"></span></label><label class="ck-f"><span class="l">Senha</span><span class="ck-in"><input type="password" id="lgPass" autocomplete="current-password"></span></label><button type="button" class="ck-btn" id="lgBtn" style="height:46px;background:var(--ink)">Entrar</button><div class="ck-hint" id="lgMsg"></div></div></div>`}
+      ${u ? `<p class="ck-login">Conectado como <b>${esc(u.name)}</b>.</p>` : ''}
     </form></div>`;
 }
 function addrCard(){
