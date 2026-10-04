@@ -65,6 +65,111 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          address: Json
+          amount_cents: number
+          created_at: string
+          customer: Json
+          expires_at: string | null
+          fbc: string | null
+          fbp: string | null
+          gateway_id: string | null
+          id: string
+          ip: string | null
+          items: Json
+          number: string
+          paid_at: string | null
+          paid_reported_at: string | null
+          qrcode: string | null
+          report_result: Json | null
+          rx: Json | null
+          session_id: string | null
+          status: string
+          summary: string
+          totals: Json
+          ua: string | null
+          updated_at: string
+          url: string | null
+          utm: Json | null
+        }
+        Insert: {
+          address: Json
+          amount_cents: number
+          created_at?: string
+          customer: Json
+          expires_at?: string | null
+          fbc?: string | null
+          fbp?: string | null
+          gateway_id?: string | null
+          id?: string
+          ip?: string | null
+          items: Json
+          number: string
+          paid_at?: string | null
+          paid_reported_at?: string | null
+          qrcode?: string | null
+          report_result?: Json | null
+          rx?: Json | null
+          session_id?: string | null
+          status?: string
+          summary?: string
+          totals: Json
+          ua?: string | null
+          updated_at?: string
+          url?: string | null
+          utm?: Json | null
+        }
+        Update: {
+          address?: Json
+          amount_cents?: number
+          created_at?: string
+          customer?: Json
+          expires_at?: string | null
+          fbc?: string | null
+          fbp?: string | null
+          gateway_id?: string | null
+          id?: string
+          ip?: string | null
+          items?: Json
+          number?: string
+          paid_at?: string | null
+          paid_reported_at?: string | null
+          qrcode?: string | null
+          report_result?: Json | null
+          rx?: Json | null
+          session_id?: string | null
+          status?: string
+          summary?: string
+          totals?: Json
+          ua?: string | null
+          updated_at?: string
+          url?: string | null
+          utm?: Json | null
+        }
+        Relationships: []
+      }
+      private_settings: {
+        Row: {
+          created_at: string
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
