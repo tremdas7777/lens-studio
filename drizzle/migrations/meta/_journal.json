@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791136794942,
+      "tag": "0000_hubble_funnel_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791136807530,
+      "tag": "0001_hubble_private_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791136814147,
+      "tag": "0002_hubble_orders",
+      "breakpoints": true
+    }
+  ]
+}
