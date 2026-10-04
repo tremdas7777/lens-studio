@@ -105,7 +105,7 @@ body.ov-open{overflow:hidden}
             <div id="packs"></div>
           </div>
           <h2 id="rxTitle"></h2>
-          <p class="fine" style="margin:-4px 0 12px">Para cada olho, escolha <b>Miopia</b> (grau negativo, com sinal –) ou <b>Hipermetropia</b> (grau positivo, com sinal +) e depois o grau que está na sua receita.</p>
+          <p class="fine" style="margin:-4px 0 12px">Escolha o grau de cada olho como está na sua receita: <b>miopia</b> = grau negativo (–), <b>hipermetropia</b> = grau positivo (+).</p>
           <div class="rx" id="rxGrid"></div>
           <p class="err-msg hidden" id="formErr" role="alert"></p>
           <button class="btn indigo block" type="submit">COMPRAR AGORA</button>
@@ -341,9 +341,10 @@ function renderRx(){
   const noPower = st.tried && !chosen('od') && !chosen('oe');
   const col = (eye, label, noneTxt) => {
     const e = st[eye], bad = k => st.tried && chosen(eye) && e[k] === '' ? ' err' : '';
-    const kindOpts = `<option value="">Selecionar</option><option value="none"${e.kind === 'none' ? ' selected' : ''}>${noneTxt}</option>` + Object.entries(KINDS).map(([k, t]) => `<option value="${k}"${e.kind === k ? ' selected' : ''}>${t}</option>`).join('');
-    let h = `<div><div class="field"><label for="${eye}-kind">${label}</label><select class="select${noPower && !hasKind(eye) ? ' err' : ''}" id="${eye}-kind" data-eye="${eye}" data-k="kind">${kindOpts}</select></div>`;
-    if(hasKind(eye)) h += `<div class="field"><label for="${eye}-sph">Grau ${e.kind === 'miopia' ? '(negativo)' : '(positivo)'}</label><select class="select${st.tried && e.sph === '' ? ' err' : ''}" id="${eye}-sph" data-eye="${eye}" data-k="sph">${opts(powersFor(e.kind), 'Selecionar', e.sph)}</select></div>`;
+    const grp = (k, t) => `<optgroup label="${t}">` + powersFor(k).map(v => `<option value="${v}"${v === e.sph ? ' selected' : ''}>${fmtRx(v)}</option>`).join('') + '</optgroup>';
+    const sphOpts = `<option value="">Selecionar grau</option><option value="none"${e.kind === 'none' ? ' selected' : ''}>${noneTxt}</option>` + grp('miopia', 'Miopia (grau negativo)') + grp('hipermetropia', 'Hipermetropia (grau positivo)');
+    let h = `<div><div class="field"><label for="${eye}-sph">${label}</label><select class="select${noPower && !hasKind(eye) ? ' err' : ''}" id="${eye}-sph" data-eye="${eye}" data-k="sph">${sphOpts}</select></div>`;
+    if(hasKind(eye)) h += `<p class="fine" style="margin:-8px 0 10px">${e.kind === 'miopia' ? 'Miopia' : 'Hipermetropia'}</p>`;
     if(lens.toric && hasKind(eye)){
       h += `<div class="field"><label for="${eye}-cyl">Cilíndrico (CIL)</label><select class="select${bad('cyl')}" id="${eye}-cyl" data-eye="${eye}" data-k="cyl">${opts(HB.rx.cyl(), 'Selecionar', e.cyl)}</select></div>`;
       h += `<div class="field"><label for="${eye}-axis">Eixo</label><select class="select${bad('axis')}" id="${eye}-axis" data-eye="${eye}" data-k="axis">${opts(HB.rx.axis(), 'Selecionar', e.axis)}</select></div>`;
@@ -352,8 +353,9 @@ function renderRx(){
   };
   $('#rxGrid').innerHTML = col('od', 'Olho direito (OD)', 'Não preciso de lente no olho direito') + col('oe', 'Olho esquerdo (OE)', 'Não preciso de lente no olho esquerdo');
   $$('#rxGrid select').forEach(s => s.onchange = () => {
-    st[s.dataset.eye][s.dataset.k] = s.value;
-    if(s.dataset.k === 'kind') st[s.dataset.eye].sph = '';
+    const E = st[s.dataset.eye];
+    if(s.dataset.k === 'sph'){ const v = s.value; E.kind = v === 'none' ? 'none' : v.startsWith('-') ? 'miopia' : v.startsWith('+') ? 'hipermetropia' : ''; E.sph = (v === 'none') ? '' : v; }
+    else E[s.dataset.k] = s.value;
     if(st.tried) validate();
     renderRx();
     const again = $('#' + s.id); if(again) again.focus();
@@ -361,8 +363,7 @@ function renderRx(){
 }
 function validate(){
   const errs = [];
-  if(!hasKind('od') && !hasKind('oe')) errs.push('Selecione miopia ou hipermetropia em pelo menos um olho.');
-  [['od', 'olho direito'], ['oe', 'olho esquerdo']].forEach(([eye, n]) => { if(hasKind(eye) && st[eye].sph === '') errs.push(`Selecione o grau do ${n}.`); });
+  if(!hasKind('od') && !hasKind('oe')) errs.push('Selecione o grau de pelo menos um olho.');
   if(lens.toric){
     [['od', 'olho direito'], ['oe', 'olho esquerdo']].forEach(([eye, n]) => {
       if(chosen(eye) && (st[eye].cyl === '' || st[eye].axis === '')) errs.push(`Selecione o cilíndrico e o eixo do ${n}.`);
