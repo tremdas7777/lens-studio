@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedido | Hubble</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .ck{min-height:100vh;display:flex;flex-direction:column;background:#fff;color:var(--ink)}
+  .ck-head{display:flex;justify-content:center;padding:28px 16px 24px}
+  .ck-head .logo svg{width:112px}
+  .ck-main{flex:1;padding-top:8px}
+  .box{max-width:560px;margin:0 auto;padding:0 16px 80px;text-align:center}
+  .box h1{font-size:28px;font-weight:700;letter-spacing:-.01em}
+  .box .lead{font-size:14px;color:var(--muted);margin-top:8px}
+  .box .lead b{color:var(--ink)}
+  .pill{display:inline-block;border-radius:30px;padding:8px 20px;font-size:13px;font-weight:600;margin-top:16px;letter-spacing:0;text-transform:none}
+  .pill.wait{background:#fdf3d1;color:#8a6a12}
+  .pill.ok{background:#d8f2e2;color:#1f8a5b}
+  .pill.no{background:#fde2e0;color:#a3291f}
+  .qr{margin:18px auto 0;width:220px;height:220px;border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}
+  .qr svg{width:100%;height:100%}
+  .amt{font-size:14px;color:var(--muted);margin-top:16px}
+  .amt b{font-size:15px;color:#1f8a5b}
+  .codebox{margin-top:16px;background:var(--lav-solid);border-radius:8px;padding:12px 16px;text-align:left;font-size:12px;color:var(--muted);word-break:break-all;font-family:ui-monospace,Menlo,monospace}
+  .copy{margin-top:12px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;border:0;border-radius:8px;background:var(--navy-btn);color:#fff;font:600 15px "Work Sans";padding:15px;cursor:pointer}
+  .copy:hover{filter:brightness(1.12)}
+  .paid-link{margin-top:14px;font-size:13px}
+  .paid-link button{background:none;border:0;text-decoration:underline;color:var(--indigo);font:inherit;cursor:pointer}
+  .how{margin-top:40px;text-align:left}
+  .how h2{font-size:17px;font-weight:700}
+  .how ol{list-style:none;margin-top:16px;display:grid;gap:14px}
+  .how li{display:flex;gap:12px;align-items:center;font-size:14px}
+  .how li i{width:28px;height:28px;border-radius:50%;background:var(--navy-btn);color:#fff;font-style:normal;font-size:13px;font-weight:600;display:grid;place-items:center;flex:none}
+  .okic{width:64px;height:64px;border-radius:50%;background:#1f8a5b;display:grid;place-items:center;margin:0 auto 16px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:22px;text-align:left;margin-top:22px}
+  .card h3{font-size:15px;font-weight:600;margin-bottom:12px}
+  .it{display:flex;gap:12px;font-size:13px;padding:8px 0}
+  .it img{width:52px;height:52px;border:1px solid var(--line);border-radius:6px;object-fit:contain;background:var(--lav-solid);flex:none}
+  .it .m{color:var(--muted);font-size:12px;margin-top:2px;line-height:1.45}
+  .it .v{margin-left:auto;white-space:nowrap}
+  .ln{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+  .ln.t{font-weight:600;font-size:15px;border-top:1px solid var(--line);margin-top:6px;padding-top:10px}
+  .ln .g{color:#1f8a5b}
+  .tl{list-style:none;display:flex;gap:4px;margin-top:4px}
+  .tl li{flex:1;text-align:center;font-size:11px;color:var(--muted);position:relative}
+  .tl li i{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;margin:0 auto 6px;background:#eef0f2;color:var(--muted);font-style:normal;font-weight:600;font-size:12px}
+  .tl li.done i{background:#1f8a5b;color:#fff}
+  .tl li.cur i{background:var(--indigo);color:#fff}
+  .tl li.cur{color:var(--ink);font-weight:600}
+  .next{font-size:13.5px;line-height:1.55;display:grid;gap:8px;list-style:none}
+  .next li{padding-left:18px;position:relative}
+  .next li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--indigo)}
+  .acts{display:grid;gap:10px;margin-top:26px}
+  .ck-foot{background:var(--navy);color:#fff;text-align:center;padding:32px 16px;font-size:13px}
+  .ck-foot .lock{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px;font-size:12px;text-align:left;line-height:1.2}
+</style>
+</head>
+<body data-no-chrome="1">
+<div class="ck">
+  <header class="ck-head"><a href="index.html" class="logo" id="ckLogo" aria-label="Hubble — voltar à loja"></a></header>
+  <main class="ck-main"><div class="box" id="root"></div></main>
+  <footer class="ck-foot">
+    <p style="font-weight:500">HUBBLE | Todos os direitos reservados</p>
+    <p style="margin-top:8px">© <span id="yr"></span> · E-mail: atendimento@hubble.com.br</p>
+    <div class="lock"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span><b>PAGAMENTO</b><br>100% SEGURO</span></div>
+  </footer>
+</div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const {$, brl, esc, sup, img, user, ICON} = HB;
+  $('#ckLogo').innerHTML = ICON.logo; $('#yr').textContent = new Date().getFullYear();
+  const root = $('#root');
+  const n = HB.qs('n') || '';
+  let timer = null;
+  const EXPIRES = 30*60*1000;
+
+  const hashStr = s => { let h = 2166136261; for(const c of String(s)){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+  const prng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const digits = (r, k) => { let s = ''; for(let i = 0; i < k; i++) s += Math.floor(r() * 10); return s; };
+  function qrSVG(seed){
+    const N = 29, q = 3, S = 6, r = prng(hashStr(seed)), cells = [];
+    const finder = (x, y) => { for(let i = 0; i < 7; i++) for(let j = 0; j < 7; j++){ const edge = i === 0 || i === 6 || j === 0 || j === 6, core = i >= 2 && i <= 4 && j >= 2 && j <= 4; if(edge || core) cells.push([x + i, y + j]); } };
+    const inFinder = (x, y) => (x < 8 && y < 8) || (x >= N - 8 && y < 8) || (x < 8 && y >= N - 8);
+    finder(0, 0); finder(N - 7, 0); finder(0, N - 7);
+    for(let x = 0; x < N; x++) for(let y = 0; y < N; y++){
+      if(inFinder(x, y)) continue;
+      if(y === 6 || x === 6){ if((x + y) % 2 === 0) cells.push([x, y]); continue; }
+      if(r() < 0.5) cells.push([x, y]);
+    }
+    const W = (N + q * 2) * S;
+    const d = cells.map(([x, y]) => `M${(x + q) * S} ${(y + q) * S}h${S}v${S}h-${S}z`).join('');
+    return `<svg width="200" height="200" viewBox="0 0 ${W} ${W}" role="img" aria-label="QR Code Pix" xmlns="http://www.w3.org/2000/svg"><rect width="${W}" height="${W}" fill="#fff"/><path d="${d}" fill="#2b3235"/></svg>`;
+  }
+  const tlv = (id, val) => id + String(val.length).padStart(2, '0') + val;
+  function crc16(str){ let c = 0xFFFF; for(let i = 0; i < str.length; i++){ c ^= str.charCodeAt(i) << 8; for(let b = 0; b < 8; b++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF; } return c.toString(16).toUpperCase().padStart(4, '0'); }
+  function pixCode(o){
+    const r = prng(hashStr(o.number + 'pix'));
+    const hex = k => Array.from({length: k}, () => Math.floor(r() * 16).toString(16)).join('');
+    const key = `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}`;
+    const txid = o.number.replace(/-/g, '');
+    const p = tlv('00', '01') + tlv('26', tlv('00', 'br.gov.bcb.pix') + tlv('01', key)) + tlv('52', '0000') + tlv('53', '986') + tlv('54', o.totals.total.toFixed(2)) + tlv('58', 'BR') + tlv('59', 'HUBBLE BRASIL') + tlv('60', 'SAO PAULO') + tlv('62', tlv('05', txid)) + '6304';
+    return p + crc16(p);
+  }
+  function addBusinessDays(ts, k){ const d = new Date(ts); while(k > 0){ d.setDate(d.getDate() + 1); const w = d.getDay(); if(w !== 0 && w !== 6) k--; } return d; }
+  function boletoLine(o, due){
+    const r = prng(hashStr(o.number + 'boleto'));
+    const days = Math.floor((Date.UTC(due.getFullYear(), due.getMonth(), due.getDate()) - Date.UTC(1997, 9, 7)) / 864e5);
+    const factor = String(days > 9999 ? ((days - 10000) % 9000) + 1000 : days).padStart(4, '0');
+    const amount = String(Math.round(o.totals.total * 100)).padStart(10, '0').slice(-10);
+    const raw = digits(r, 10) + digits(r, 11) + digits(r, 11) + digits(r, 1) + factor + amount; // 47 dígitos
+    const fmt = `${raw.slice(0,5)}.${raw.slice(5,10)} ${raw.slice(10,15)}.${raw.slice(15,21)} ${raw.slice(21,26)}.${raw.slice(26,32)} ${raw[32]} ${raw.slice(33)}`;
+    return {raw, fmt};
+  }
+  async function copyText(t){
+    try{ if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(t); return true; } }catch(e){}
+    try{ const ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; }catch(e){ return false; }
+  }
+  const fmtDate = ts => new Date(ts).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+  const needsRx = o => !!(o.rx && o.rx.method && o.rx.method !== 'nao-precisa');
+
+  /* ---------- Linha do tempo ---------- */
+  function timelineHTML(o){
+    if(o.status === 'Cancelado') return '<div class="notice">Este pedido foi cancelado. Se o pagamento já tinha sido feito, o estorno é processado em até 7 dias úteis.</div>';
+    const rx = needsRx(o);
+    const steps = ['Pagamento', ...(rx ? ['Receita validada'] : []), 'Em preparação', 'Enviado', 'Entregue'];
+    const curIdx = {'Pagamento pendente': 0, 'Receita em análise': 1, 'Em preparação': steps.indexOf('Em preparação'), 'Enviado': steps.indexOf('Enviado'), 'Entregue': steps.length}[o.status] ?? 0;
+    return `<ol class="tl" aria-label="Andamento do pedido">${steps.map((s, i) => `<li class="${i < curIdx ? 'done' : i === curIdx ? 'cur' : ''}"${i === curIdx ? ' aria-current="step"' : ''}><i>${i < curIdx ? '✓' : i + 1}</i>${s}</li>`).join('')}</ol>`;
+  }
+
+  const COPY_IC = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+  const howTo = (pix) => `<div class="how"><h2>Como pagar o ${pix?'Pix':'boleto'}</h2><ol>${(pix ? [
+      'Clique em <b>copiar o código</b>, logo acima',
+      'Abra o <b>aplicativo</b> do seu banco',
+      'Selecione a opção <b>Pix</b>',
+      'Toque em <b>"Pix Copia e Cola"</b>',
+      'Insira o código copiado e finalize seu pagamento'
+    ] : [
+      'Clique em <b>copiar o código</b>, logo acima',
+      'Abra o <b>aplicativo</b> do seu banco',
+      'Escolha <b>Pagar boleto</b>',
+      'Cole a <b>linha digitável</b> copiada',
+      'Confirme os dados e finalize o pagamento'
+    ]).map((t,i)=>`<li><i>${i+1}</i><span>${t}</span></li>`).join('')}</ol></div>`;
+
+  function detailsHTML(o){
+    const t = o.totals, a = o.address || {}, rxm = o.rx && o.rx.method;
+    const subs = HB.store.get('subs', []).filter(s => s.order === o.number && s.status !== 'cancelada');
+    const next = [];
+    if(rxm === 'depois') next.push(`Envie a foto ou o PDF da sua receita para <b>receitas@hubble.com.br</b> informando o número <b>${esc(o.number)}</b>.`);
+    if(rxm === 'medico') next.push('Vamos entrar em contato com o consultório do seu oftalmologista para confirmar a receita.');
+    if(rxm === 'upload') next.push('Nossa equipe vai conferir a receita enviada em até 1 dia útil.');
+    if(subs.length) next.push(`Sua assinatura está ativa: a próxima entrega será em ${fmtDate(Math.min(...subs.map(s => s.next)))}. Você pode alterar, pausar ou cancelar em Minha Conta.`);
+    next.push(`Prazo de entrega: ${o.shipping ? esc(o.shipping.eta) : '5 a 10 dias úteis'} após a ${needsRx(o)?'validação da receita':'confirmação do pagamento'}.`);
+    return `
+      <div class="card"><h3>Andamento</h3>${timelineHTML(o)}</div>
+      <div class="card"><h3>Próximos passos</h3><ul class="next">${next.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      <div class="card"><h3>Pedido ${esc(o.number)}</h3>
+        ${o.items.map(it=>`<div class="it"><img src="${img(it.image,140)}" alt=""><div><div>${sup(it.name)}${it.qty>1?` × ${it.qty}`:''}</div><div class="m">${(it.meta||[]).map(esc).join('<br>')}</div></div><span class="v">${brl(it.price*it.qty)}</span></div>`).join('')}
+        <div style="margin-top:8px">
+          <div class="ln"><span>Produtos</span><span>${brl(t.sub)}</span></div>
+          ${t.discount?`<div class="ln"><span>Cupom</span><span class="g">-${brl(t.discount)}</span></div>`:''}
+          ${t.pix?`<div class="ln"><span>Desconto Pix (5%)</span><span class="g">-${brl(t.pix)}</span></div>`:''}
+          <div class="ln"><span>Frete</span><span class="g">${t.shipping?brl(t.shipping):'Grátis'}</span></div>
+          <div class="ln t"><span>Total</span><span>${brl(t.total)}</span></div>
+        </div></div>
+      <div class="card"><h3>Entrega</h3><p style="font-size:13px">${esc(o.name)}<br>${esc(a.rua)}, ${esc(a.numero)}${a.complemento?' - '+esc(a.complemento):''}<br>${esc(a.bairro)}, ${esc(a.cidade)}/${esc(a.uf)} ${esc(a.cep)}</p></div>
+      <div class="acts"><a href="conta.html#pedidos" class="btn block">Acompanhar em Minha Conta</a><a href="index.html" class="btn ghost block">Continuar comprando</a></div>`;
+  }
+
+  function render(){
+    clearInterval(timer);
+    const o = n ? user.getOrder(n) : null;
+    if(!o){
+      root.innerHTML = `<h1>Pedido não encontrado</h1><p class="lead">Não encontramos ${n ? `o pedido <b>${esc(n)}</b>` : 'um número de pedido'} neste navegador.</p><div class="acts"><a href="conta.html" class="btn block">Ir para Minha Conta</a><a href="index.html" class="btn ghost block">Voltar ao início</a></div>`;
+      return;
+    }
+    document.title = `Pedido ${o.number} | Hubble`;
+    const p = o.payment || {};
+    const pending = o.status === 'Pagamento pendente';
+    if(o.status === 'Cancelado'){
+      root.innerHTML = `<h1>Pedido cancelado</h1><span class="pill no">Cancelado</span>${detailsHTML(o)}`; return;
+    }
+    if(pending && p.method === 'pix'){
+      const exp = o.pixExpires || (o.date + EXPIRES);
+      const code = pixCode(o);
+      root.innerHTML = `<h1>Quase lá...</h1>
+        <p class="lead" id="pixLead">Pague via Pix em até <b id="mmss">30:00</b> para confirmar seu pedido.</p>
+        <span class="pill wait">Aguardando pagamento</span>
+        <div class="qr">${qrSVG(o.number)}</div>
+        <p class="amt">Total via Pix: <b>${brl(o.totals.total)}</b></p>
+        <div class="codebox" id="code">${esc(code)}</div>
+        <button type="button" class="copy" id="copyBtn">${COPY_IC} <span>Copiar código</span></button>
+        <p class="paid-link">Já pagou? <button type="button" id="paidBtn">Confirmar pagamento</button></p>
+        ${howTo(true)}
+        <p class="lead" style="margin-top:30px">Pedido <b>${esc(o.number)}</b> · confirmação enviada para <b>${esc(o.email)}</b></p>`;
+      const tick = () => { const left = Math.max(0, exp - Date.now()); const m = Math.floor(left/60000), s = Math.floor(left%60000/1000);
+        if(left <= 0){ clearInterval(timer); $('#pixLead').innerHTML = 'O código Pix expirou. <button type="button" class="link-u" id="renew" style="font-size:14px">Gerar novo código</button>'; $('#renew').onclick = () => { o.pixExpires = Date.now() + EXPIRES; user.saveOrder(o); render(); }; return; }
+        $('#mmss').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
+      tick(); timer = setInterval(tick, 1000);
+      $('#copyBtn').onclick = async () => { const ok = await copyText(code); $('#copyBtn span').textContent = ok ? 'Código copiado!' : 'Não foi possível copiar'; setTimeout(()=>{ const s = $('#copyBtn span'); if(s) s.textContent = 'Copiar código'; }, 2500); };
+      $('#paidBtn').onclick = () => { o.status = needsRx(o) ? 'Receita em análise' : 'Em preparação'; user.saveOrder(o); render(); window.scrollTo(0,0); };
+      return;
+    }
+    if(pending && p.method === 'boleto'){
+      const due = addBusinessDays(o.date, 3), line = boletoLine(o, due);
+      root.innerHTML = `<h1>Quase lá...</h1>
+        <p class="lead">Pague o boleto até <b>${due.toLocaleDateString('pt-BR')}</b> para confirmar seu pedido.</p>
+        <span class="pill wait">Aguardando pagamento</span>
+        <p class="amt">Valor do boleto: <b style="color:var(--ink)">${brl(o.totals.total)}</b></p>
+        <div class="codebox">${line.fmt}</div>
+        <button type="button" class="copy" id="copyBtn">${COPY_IC} <span>Copiar código</span></button>
+        <p class="lead" style="font-size:12.5px;margin-top:10px">A compensação leva até 3 dias úteis. Também enviamos o boleto para ${esc(o.email)}.</p>
+        ${howTo(false)}
+        <p class="lead" style="margin-top:30px">Pedido <b>${esc(o.number)}</b></p>`;
+      $('#copyBtn').onclick = async () => { const ok = await copyText(line.raw); $('#copyBtn span').textContent = ok ? 'Código copiado!' : 'Não foi possível copiar'; setTimeout(()=>{ const s = $('#copyBtn span'); if(s) s.textContent = 'Copiar código'; }, 2500); };
+      return;
+    }
+    const inst = p.method === 'cartao' ? (o.totals.inst || {n:p.inst||1, value:o.totals.total/(p.inst||1)}) : null;
+    root.innerHTML = `<div class="okic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h1>Obrigado, ${esc((o.name||'').split(' ')[0])}!</h1>
+      <p class="lead">Seu pedido <b>${esc(o.number)}</b> foi confirmado. Enviamos os detalhes para <b>${esc(o.email)}</b>.</p>
+      <span class="pill ok">Pagamento aprovado</span>
+      ${inst ? `<p class="lead" style="margin-top:12px">${esc(p.brand||'Cartão')} •••• ${esc(p.last4||'')} · ${inst.n}x de ${brl(inst.value)} sem juros</p>` : ''}
+      ${detailsHTML(o)}`;
+  }
+  render();
+})();
+</script>
+</body>
+</html>

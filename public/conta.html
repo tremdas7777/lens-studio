@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minha conta | Hubble</title>
+<meta name="description" content="Entre na sua conta Hubble para acompanhar pedidos, comprar suas lentes novamente, ver suas receitas e atualizar seus dados.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.auth-wrap{max-width:460px;margin:20px auto 0}
+.auth-wrap h1{font-size:clamp(32px,4.4vw,46px);color:var(--ink);margin-bottom:22px;text-align:center}
+.auth-wrap .intro{font-size:15px;color:var(--ink);margin-bottom:18px;text-align:center}
+.auth-links{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:-4px 0 20px}
+.auth-links button,.back-login{background:none;border:0;padding:0;font:500 14px "Work Sans";color:var(--indigo);text-decoration:underline;cursor:pointer}
+.form-msg{font-size:13.5px;min-height:20px;margin-bottom:8px;color:var(--red)}
+.select.err{border-color:var(--red)}
+.acc-h{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:4px 0 22px}
+.acc-h h1{font-size:clamp(32px,4.4vw,52px);color:var(--ink)}
+.acc-h .em{font-size:14px;color:var(--muted);margin-top:4px}
+.sec-title{font-size:24px;color:var(--ink);font-weight:600;margin-bottom:18px}
+.k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.v{font-size:15px;color:var(--ink);font-weight:600}
+.plan{display:grid;grid-template-columns:110px 1fr;gap:20px}
+.plan img{width:110px;height:90px;object-fit:contain;background:var(--lav-solid);border-radius:8px}
+.plan .nm{font-weight:600;color:var(--ink);font-size:17px}
+.plan .mt{font-size:13px;color:var(--muted);margin:2px 0 10px}
+.plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:14px 0}
+.sched{list-style:none;font-size:14px;color:var(--ink);line-height:1.7}
+.plan-acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-top:14px;border-top:1px solid var(--line)}
+.plan-edit{background:var(--lav-solid);border-radius:10px;padding:16px;margin-top:12px}
+.plan.off{opacity:.75}
+.link-btn{background:none;border:0;padding:0;font:600 14px "Work Sans";color:var(--indigo);text-decoration:underline;cursor:pointer}
+.link-btn.red{color:var(--red)}
+.order{padding:0;overflow:hidden}
+.order summary{list-style:none;cursor:pointer;padding:18px 22px;display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:center}
+.order summary::-webkit-details-marker{display:none}
+.order summary .no{font-weight:700;color:var(--ink);font-size:15.5px}
+.order summary .dt{font-size:13px;color:var(--muted)}
+.order summary .tot{font-weight:700;color:var(--ink);text-align:right}
+.order summary .chev{font-size:13px;color:var(--indigo);font-weight:600;text-align:right}
+.order[open] summary{border-bottom:1px solid var(--line)}
+.order[open] summary .chev span::after{content:" ▲"} .order:not([open]) summary .chev span::after{content:" ▼"}
+.order .body{padding:18px 22px 22px}
+.o-item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.o-item img{width:64px;height:52px;object-fit:contain;background:var(--lav-solid);border-radius:6px}
+.o-item .nm{font-weight:600;color:var(--ink);font-size:14.5px}
+.o-item .mt{font-size:12.5px;color:var(--muted)}
+.o-item .pr{font-weight:600;color:var(--ink);white-space:nowrap;font-size:14px}
+.o-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:18px 0}
+.o-cols h4,.mini-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+.o-cols p{font-size:13.5px;line-height:1.6}
+.tl{list-style:none;display:flex;margin:14px 0 4px}
+.tl li{flex:1;position:relative;text-align:center;font-size:12px;color:var(--muted);padding-top:32px}
+.tl li::before{content:"";position:absolute;top:11px;left:-50%;right:50%;height:3px;background:var(--line)}
+.tl li:first-child::before{display:none}
+.tl li i{position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700;z-index:1}
+.tl li.done{color:var(--ink)} .tl li.done i{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.tl li.done::before,.tl li.cur::before{background:var(--indigo)}
+.tl li.cur{color:var(--indigo);font-weight:700} .tl li.cur i{border-color:var(--indigo);color:var(--indigo);box-shadow:0 0 0 4px rgba(70,76,167,.15)}
+.inv{background:var(--lav-solid);border-radius:12px;padding:22px;margin-top:28px}
+.inv h3{font-size:18px;color:var(--ink);margin-bottom:4px}
+.inv-list{display:grid;gap:8px;margin:14px 0}
+.rx-card .row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.rx-card .t{font-weight:600;color:var(--ink)}
+.rx-card .d{font-size:13.5px;color:var(--text);line-height:1.65;margin-top:6px}
+.acct-box h3{font-size:18px;color:var(--ink);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acct-view{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.empty-box{text-align:center;padding:36px 20px;color:var(--muted)}
+.empty-box p{margin-bottom:18px}
+.reorder{display:grid;grid-template-columns:110px 1fr;gap:20px}
+.reorder img{width:110px;height:90px;object-fit:contain;background:var(--lav-solid);border-radius:8px}
+.reorder .nm{font-weight:600;color:var(--ink);font-size:17px}
+.reorder .mt{font-size:13px;color:var(--muted);margin:2px 0 12px}
+.rx-lines{font-size:14.5px;color:var(--ink);line-height:1.7;margin:6px 0 4px}
+.plans-mini{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.plans-mini li{background:var(--lav-solid);border-radius:10px;padding:12px;font-size:13.5px;color:var(--ink)}
+.plans-mini b{display:block;font-size:15px}
+@media (max-width:900px){.o-cols{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){
+  .o-cols,.plan-grid,.acct-view,.plans-mini{grid-template-columns:1fr}
+  .reorder{grid-template-columns:64px 1fr;gap:12px}
+  .reorder img{width:64px;height:52px}
+  .plan{grid-template-columns:64px 1fr;gap:12px}
+  .plan img{width:64px;height:52px}
+  .order summary{padding:16px}
+  .order .body{padding:16px}
+  .tl{flex-direction:column;gap:12px}
+  .tl li{text-align:left;padding:3px 0 0 36px;min-height:24px}
+  .tl li i{left:0;transform:none}
+  .tl li::before{left:11px;right:auto;width:3px;height:14px;top:-12px}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Navegação estrutural"><a href="index.html">Início</a><span class="sep">/</span><span>Minha conta</span></nav>
+    <div id="root"></div>
+  </div>
+  <div style="height:70px"></div>
+</main>
+
+<div class="modal" id="mConfirm" role="dialog" aria-modal="true" aria-labelledby="mConfirmH">
+  <div class="bg" data-mclose></div>
+  <div class="box">
+    <button class="close" data-mclose aria-label="Fechar">×</button>
+    <h2 id="mConfirmH" class="step-h"></h2>
+    <p id="mConfirmT" class="step-sub"></p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end"><button class="btn ghost sm" type="button" data-mclose>Voltar</button><button class="btn sm" type="button" id="mConfirmOk"></button></div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const {$, $$, brl, esc, sup, img, user, store, valid} = HB;
+  const root = $('#root');
+  const TABS = [['pedidos', 'Pedidos'], ['recomprar', 'Recomprar'], ['receitas', 'Receitas'], ['dados', 'Sua conta']];
+  const TAB_ALIAS = {assinaturas: 'recomprar', assinatura: 'recomprar'};
+  const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+  const FREQS = [[28, 'A cada 4 semanas'], [42, 'A cada 6 semanas'], [56, 'A cada 8 semanas'], [84, 'A cada 12 semanas']];
+  const DAY = 864e5;
+  const backTo = HB.qs('voltar') === 'checkout' ? 'checkout.html' : null;
+  let authView = 'entrar';
+
+  /* ---------- Utilitários ---------- */
+  const dt = ts => new Date(ts).toLocaleDateString('pt-BR');
+  const dtLong = ts => new Date(ts).toLocaleDateString('pt-BR', {day:'numeric', month:'long', year:'numeric'});
+  const pillCls = s => s === 'Cancelado' ? 'gray' : s === 'Pagamento pendente' ? 'orange' : (s === 'Entregue' || s === 'Enviado') ? 'green' : '';
+  const needsRx = o => !!(o.rx && o.rx.method && o.rx.method !== 'nao-precisa');
+  // Rótulos de pagamento. Hoje só aceitamos Pix; os demais aparecem apenas no histórico de pedidos antigos.
+  const PM = {pix:'Pix', cartao:'Cartão de crédito', boleto:'Boleto bancário'};
+  const firstName = s => String(s || '').split(' ')[0];
+  const num = x => x === '' || x == null ? '' : String(x).replace('.', ',');
+  const val = (form, name) => { const el = form.elements[name]; if(!el) return ''; return el.type === 'checkbox' ? el.checked : String(el.value || '').trim(); };
+
+  function showErrs(scope, errs){
+    $$('.err-msg', scope).forEach(x => x.remove());
+    $$('.err', scope).forEach(x => { x.classList.remove('err'); x.removeAttribute('aria-invalid'); });
+    errs.forEach(([name, msg]) => {
+      const el = $(`[name="${name}"]`, scope); if(!el) return;
+      const m = document.createElement('div'); m.className = 'err-msg'; m.setAttribute('role', 'alert'); m.textContent = msg;
+      el.classList.add('err'); el.setAttribute('aria-invalid', 'true');
+      const f = el.closest('.field'); if(f) f.appendChild(m); else el.insertAdjacentElement('afterend', m);
+    });
+    if(errs.length){ const first = $(`[name="${errs[0][0]}"]`, scope); if(first) first.focus(); }
+    return !errs.length;
+  }
+  function bindLiveClear(form){ form.addEventListener('input', e => { const el = e.target; el.classList.remove('err'); const f = el.closest('.field'); const m = f && $('.err-msg', f); if(m) m.remove(); }); }
+
+  /* ---------- Modal de confirmação ---------- */
+  $$('.modal').forEach(m => m.addEventListener('click', e => { if(e.target.closest('[data-mclose]')) m.classList.remove('on'); }));
+  function confirmBox({title, text, ok, danger, onOk}){
+    const m = $('#mConfirm');
+    $('#mConfirmH').textContent = title; $('#mConfirmT').textContent = text;
+    const b = $('#mConfirmOk'); b.textContent = ok; b.style.background = danger ? 'var(--red)' : '';
+    b.onclick = () => { m.classList.remove('on'); onOk(); };
+    m.classList.add('on'); setTimeout(() => b.focus(), 30);
+  }
+
+  /* ---------- Linha do tempo ---------- */
+  function timelineHTML(o){
+    if(o.status === 'Cancelado') return '<div class="notice" style="margin-top:12px">Pedido cancelado.</div>';
+    const rx = needsRx(o);
+    const steps = ['Pagamento', ...(rx ? ['Receita validada'] : []), 'Em preparação', 'Enviado', 'Entregue'];
+    const cur = {'Pagamento pendente': 0, 'Receita em análise': 1, 'Em preparação': steps.indexOf('Em preparação'), 'Enviado': steps.indexOf('Enviado'), 'Entregue': steps.length}[o.status] ?? 0;
+    return `<ol class="tl" aria-label="Andamento do pedido">${steps.map((s, i) => `<li class="${i < cur ? 'done' : i === cur ? 'cur' : ''}"${i === cur ? ' aria-current="step"' : ''}><i>${i < cur ? '✓' : i + 1}</i>${s}</li>`).join('')}</ol>`;
+  }
+  const itemsHTML = o => o.items.map(it => `<div class="o-item"><img src="${img(it.image, 160)}" alt="" loading="lazy"><div><div class="nm">${sup(it.name)}${it.qty > 1 ? ` × ${it.qty}` : ''}</div>${(it.meta || []).length ? `<div class="mt">${it.meta.map(esc).join(' · ')}</div>` : ''}</div><div class="pr">${brl(it.price * it.qty)}</div></div>`).join('');
+  const addrHTML = a => a ? `${esc(a.rua)}, ${esc(a.numero)}${a.complemento ? ' – ' + esc(a.complemento) : ''}<br>${esc(a.bairro)} · ${esc(a.cidade)}/${esc(a.uf)}<br>CEP ${esc(a.cep)}` : '';
+  function payText(o){
+    const p = o.payment || {};
+    let s = PM[p.method] || '';
+    if(p.method === 'cartao') s += `<br>${esc(p.brand || '')} •••• ${esc(p.last4 || '')}${p.inst ? ` · ${p.inst.n}x de ${brl(p.inst.value)}` : ''}`;
+    return s;
+  }
+
+  /* ======================================================
+     Visitante: entrar / link de acesso único / redefinir senha
+     ====================================================== */
+  function renderGuest(){
+    if(authView === 'entrar'){
+      root.innerHTML = `<div class="auth-wrap">
+        <h1 class="display">Entrar</h1>
+        <form id="loginForm" novalidate>
+          <div class="field"><label for="l-email">E-mail</label><input class="input" type="email" id="l-email" name="email" autocomplete="username" placeholder="Digite seu e-mail" autocapitalize="off"></div>
+          <div class="field"><label for="l-pass">Senha</label><input class="input" type="password" id="l-pass" name="senha" autocomplete="current-password" placeholder="Digite sua senha"></div>
+          <div class="auth-links"><button type="button" data-view="link">Receber link de acesso único</button><button type="button" data-view="senha">Esqueceu sua senha?</button></div>
+          <div class="form-msg" id="loginMsg" role="alert"></div>
+          <button class="btn block" type="submit">Entrar</button>
+        </form>
+      </div>`;
+      const lf = $('#loginForm'); bindLiveClear(lf);
+      lf.onsubmit = e => {
+        e.preventDefault();
+        const em = val(lf, 'email'), pw = lf.elements.senha.value, errs = [];
+        if(!valid.email(em)) errs.push(['email', 'Digite um e-mail válido.']);
+        if(!pw) errs.push(['senha', 'Campo obrigatório']);
+        $('#loginMsg').textContent = '';
+        if(!showErrs(lf, errs)) return;
+        const r = user.login(em, pw);
+        if(!r.ok){ $('#loginMsg').textContent = r.msg; lf.elements.senha.focus(); return; }
+        HB.toast(`Olá, ${firstName(user.current().name)}!`);
+        if(backTo){ location.href = backTo; return; }
+        render();
+      };
+    } else {
+      const isLink = authView === 'link';
+      root.innerHTML = `<div class="auth-wrap">
+        <h1 class="display">${isLink ? 'Acesso único' : 'Redefinir senha'}</h1>
+        <p class="intro">${isLink ? 'Digite seu e-mail abaixo e enviaremos um link de acesso único.' : 'Esqueceu sua senha? Digite seu e-mail abaixo e enviaremos um link para redefini-la.'}</p>
+        <form id="mailForm" novalidate>
+          <div class="field"><label for="m-email">E-mail</label><input class="input" type="email" id="m-email" name="email" autocomplete="email" placeholder="Digite seu e-mail"></div>
+          <button class="btn block" type="submit">${isLink ? 'Enviar link de acesso' : 'Enviar e-mail de redefinição de senha'}</button>
+        </form>
+        <div id="mailDone" class="success hidden" role="status"></div>
+        <div style="text-align:center;margin-top:18px"><button type="button" class="back-login" data-view="entrar">Voltar para o login</button></div>
+      </div>`;
+      const mf = $('#mailForm'); bindLiveClear(mf);
+      mf.onsubmit = e => {
+        e.preventDefault();
+        const em = val(mf, 'email');
+        if(!showErrs(mf, valid.email(em) ? [] : [['email', 'Digite um e-mail válido.']])) return;
+        mf.classList.add('hidden');
+        const d = $('#mailDone'); d.classList.remove('hidden');
+        d.textContent = `Se houver uma conta cadastrada com ${em}, você receberá ${isLink ? 'um link de acesso único' : 'um link para redefinir sua senha'} em alguns minutos. Confira também a caixa de spam.`;
+      };
+    }
+    $$('[data-view]', root).forEach(b => b.onclick = () => { authView = b.dataset.view; renderGuest(); const f = $('input', root); if(f) f.focus(); });
+  }
+
+  /* ======================================================
+     Logado
+     ====================================================== */
+  function currentTab(){ const raw = location.hash.replace('#', ''), h = TAB_ALIAS[raw] || raw; return TABS.some(t => t[0] === h) ? h : 'pedidos'; }
+  function renderUser(){
+    const u = user.current(), tab = currentTab();
+    root.innerHTML = `
+      <div class="acc-h"><div><h1 class="display">Minha conta</h1><div class="em">Olá, ${esc(firstName(u.name))} · ${esc(u.email)}</div></div><button class="btn ghost sm" type="button" id="logoutBtn">Sair</button></div>
+      <div class="tabs" role="tablist">${TABS.map(([k, l]) => `<button role="tab" type="button" data-tab="${k}" class="${k === tab ? 'on' : ''}" aria-selected="${k === tab}">${l}</button>`).join('')}</div>
+      <div id="panel" role="tabpanel"></div>`;
+    $('#logoutBtn').onclick = () => { user.logout(); HB.toast('Você saiu da sua conta.'); history.replaceState(null, '', location.pathname); authView = 'entrar'; render(); };
+    $$('[data-tab]').forEach(b => b.onclick = () => { history.replaceState(null, '', '#' + b.dataset.tab); renderUser(); });
+    ({recomprar: panelReorder, pedidos: panelOrders, receitas: panelRx, dados: panelData})[tab]($('#panel'));
+  }
+
+  /* ---------- Recomprar ---------- */
+  const KIND_LABEL = {miopia: 'Miopia', hipermetropia: 'Hipermetropia'};
+  function lastSkyhy(){
+    for(const o of user.orders()){
+      if(o.status === 'Cancelado') continue;
+      const it = o.items.find(x => x.kind === 'lente' && x.id === 'skyhy');
+      if(it) return {o, it};
+    }
+    return null;
+  }
+  function rxEye(label, e){
+    if(!e || !e.sph) return `${label}: <span style="color:var(--muted)">sem lente</span><br>`;
+    return `${label}: ${e.kind && KIND_LABEL[e.kind] ? esc(KIND_LABEL[e.kind]) + ' · ' : ''}grau ${esc(num(e.sph))}<br>`;
+  }
+  function panelReorder(p){
+    const sky = HB.find.lens('skyhy'), last = lastSkyhy();
+    const plans = sky && sky.packs ? `<ul class="plans-mini">${sky.packs.map(pk => `<li><b>${esc(pk.label)}</b>${pk.boxes} caixas · ${brl(pk.total)}${pk.months > 1 ? `<br><span style="color:var(--muted)">${brl(pk.perMonth)}/mês</span>` : ''}</li>`).join('')}</ul>` : '';
+    let h = '<h2 class="sec-title">Comprar novamente</h2>';
+    if(!last){
+      h += `<div class="card-box empty-box"><p>Você ainda não comprou lentes SkyHy by Hubble®. Escolha um plano de 1, 2 ou 3 meses, com pagamento via Pix e frete grátis.</p>${plans}<a href="lente.html?id=skyhy" class="btn">Comprar SkyHy by Hubble®</a></div>`;
+    } else {
+      const {o, it} = last, d = it.details || {}, [st, cls] = rxStatus(o);
+      h += `<div class="card-box reorder">
+        <img src="${img(it.image || (sky && sky.image), 220)}" alt="" loading="lazy">
+        <div>
+          <div class="nm">${sup(it.name)}</div>
+          <div class="mt">Último pedido: ${esc(o.number)} · ${dt(o.date)}${d.plan ? ` · Plano ${esc(d.plan)}` : ''}</div>
+          <div class="k">Receita usada no último pedido <span class="pill ${cls}" style="margin-left:6px">${st}</span></div>
+          <div class="rx-lines">${rxEye('Olho direito (OD)', d.od)}${rxEye('Olho esquerdo (OE)', d.oe)}</div>
+          ${st === 'Expirada' ? '<div class="notice" style="margin-top:10px">Essa receita pode estar vencida. Para comprar novamente, você vai precisar de uma receita válida.</div>' : ''}
+          ${plans}
+          <div class="btn-row"><a href="lente.html?id=skyhy" class="btn">Comprar novamente</a><a href="#receitas" class="link-btn" data-goto="receitas">Ver todas as receitas</a></div>
+          <p class="fine" style="margin-top:12px">Na página da SkyHy, informe o mesmo grau acima (ou o da sua receita atualizada) e escolha o plano. Pagamento único via Pix, frete grátis.</p>
+        </div></div>`;
+    }
+    const subs = mySubs();
+    if(subs.length){ h += '<div id="legacySubs" style="margin-top:34px"></div>'; }
+    p.innerHTML = h;
+    const g = $('[data-goto]', p); if(g) g.onclick = e => { e.preventDefault(); history.replaceState(null, '', '#receitas'); renderUser(); };
+    if(subs.length) panelSubs($('#legacySubs', p));
+  }
+
+  /* ---------- Envios programados de pedidos antigos (exibido só se houver registros em 'subs') ---------- */
+  const mySubs = () => store.get('subs', []).filter(s => s.email === user.current().email);
+  function saveSub(id, patch){ store.set('subs', store.get('subs', []).map(s => s.id === id ? {...s, ...patch} : s)); }
+  const isoDate = ts => { const d = new Date(ts); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  let editing = null; // {id, kind:'freq'|'date'}
+  function panelSubs(p){
+    const list = mySubs().sort((a, b) => (a.status === 'cancelada') - (b.status === 'cancelada') || a.next - b.next);
+    if(!list.length){ p.innerHTML = ''; return; }
+    p.innerHTML = '<h2 class="sec-title">Envios programados anteriores</h2>' + list.map(s => {
+      const st = s.status, active = st === 'ativa';
+      const freqs = FREQS.some(f => f[0] === s.everyDays) ? FREQS : [...FREQS, [s.everyDays, `A cada ${Math.round(s.everyDays / 7)} semanas`]].sort((a, b) => a[0] - b[0]);
+      const freqLabel = (freqs.find(f => f[0] === s.everyDays) || [0, ''])[1];
+      const sched = [0, 1, 2].map(i => s.next + i * s.everyDays * DAY);
+      const ed = editing && editing.id === s.id ? editing.kind : null;
+      return `<div class="card-box plan ${active ? '' : 'off'}" data-sub="${esc(s.id)}">
+        <img src="${img(s.image, 220)}" alt="" loading="lazy">
+        <div>
+          <div class="nm">${sup(s.name)}</div>
+          <div class="mt">${(s.meta || []).map(esc).join(' · ')}</div>
+          <div><span class="k">Status da assinatura:</span> <span class="pill ${active ? 'green' : st === 'pausada' ? 'orange' : 'gray'}">${active ? 'Ativa' : st === 'pausada' ? 'Pausada' : 'Desativada'}</span></div>
+          ${st === 'pausada' ? '<div class="notice" style="margin-top:12px">Sua assinatura está pausada.</div>' : ''}
+          ${st === 'cancelada' ? '<div class="notice" style="margin-top:12px">Sua assinatura está desativada.</div>' : ''}
+          <div class="plan-grid">
+            <div><div class="k">Preço por envio</div><div class="v">${brl(s.price)}</div></div>
+            <div><div class="k">Frequência</div><div class="v">${esc(freqLabel)}</div></div>
+            <div><div class="k">Próximo envio</div><div class="v">${active ? (s.next <= Date.now() + DAY ? 'Hoje' : dtLong(s.next)) : '—'}</div></div>
+          </div>
+          ${active ? `<p style="font-size:14px;color:var(--ink)">Seu próximo pedido será enviado em <b>${dtLong(s.next)}</b>.</p>
+            <div style="margin-top:12px"><div class="k" style="margin-bottom:4px">Cronograma de pedidos</div><ul class="sched">${sched.map(t => `<li>${dtLong(t)}</li>`).join('')}</ul></div>` : ''}
+          ${ed === 'freq' ? `<div class="plan-edit"><div class="field" style="margin-bottom:12px"><label for="fq-${esc(s.id)}">Altere sua frequência</label><select class="select" id="fq-${esc(s.id)}" data-freq>${freqs.map(([d, l]) => `<option value="${d}" ${d === s.everyDays ? 'selected' : ''}>${l}</option>`).join('')}</select></div><div class="btn-row"><button class="btn sm" type="button" data-save-freq>Salvar alterações</button><button class="btn sm ghost" type="button" data-cancel-edit>Cancelar alterações</button></div></div>` : ''}
+          ${ed === 'date' ? `<div class="plan-edit"><p style="font-size:14px;color:var(--ink);margin-bottom:10px">Seu próximo pedido será enviado em ${dtLong(s.next)}. Este pedido pode ser enviado a partir de ${dtLong(Date.now() + DAY)}.</p><div class="field" style="margin-bottom:12px"><label for="dt-${esc(s.id)}">Escolha uma nova data</label><input class="input" type="date" id="dt-${esc(s.id)}" data-date min="${isoDate(Date.now() + DAY)}" value="${isoDate(Math.max(s.next, Date.now() + DAY))}"></div><div class="btn-row"><button class="btn sm" type="button" data-save-date>Salvar alterações</button><button class="btn sm ghost" type="button" data-cancel-edit>Cancelar alterações</button></div></div>` : ''}
+          <div class="plan-acts">
+            ${active ? `<button type="button" class="btn sm" data-now>Enviar agora</button>
+              <button type="button" class="btn sm ghost" data-skip>Pular envio</button>
+              <button type="button" class="link-btn" data-edit="date">Ajustar data de envio</button>
+              <button type="button" class="link-btn" data-edit="freq">Alterar frequência</button>
+              <a href="#receitas" class="link-btn" data-goto="receitas">Atualizar receita</a>
+              <button type="button" class="link-btn" data-pause>Pausar assinatura</button>
+              <button type="button" class="link-btn red" data-cancel>Cancelar assinatura</button>`
+              : `<button type="button" class="btn sm" data-resume>Reativar assinatura</button><a href="contato.html" class="link-btn">Fale conosco</a>`}
+          </div>
+        </div></div>`;
+    }).join('');
+    $$('[data-sub]', p).forEach(card => {
+      const id = card.dataset.sub, get = () => mySubs().find(x => x.id === id);
+      const on = (sel, fn) => { const b = $(sel, card); if(b) b.onclick = fn; };
+      $$('[data-edit]', card).forEach(b => b.onclick = () => { editing = {id, kind: b.dataset.edit}; renderUser(); const f = $(`[data-sub="${id}"] .plan-edit select, [data-sub="${id}"] .plan-edit input`); if(f) f.focus(); });
+      on('[data-cancel-edit]', () => { editing = null; renderUser(); });
+      on('[data-save-freq]', () => {
+        const s = get(), nd = +$('[data-freq]', card).value;
+        const last = s.next - s.everyDays * DAY;
+        saveSub(id, {everyDays: nd, next: Math.max(Date.now() + DAY, last + nd * DAY)});
+        editing = null; HB.toast('Frequência atualizada.'); renderUser();
+      });
+      on('[data-save-date]', () => {
+        const v = $('[data-date]', card).value; if(!v) return;
+        const [y, m, d] = v.split('-').map(Number), ts = new Date(y, m - 1, d, 12).getTime();
+        if(ts < Date.now()){ HB.toast('Escolha uma data a partir de amanhã.'); return; }
+        saveSub(id, {next: ts}); editing = null; HB.toast('Data de envio atualizada.'); renderUser();
+      });
+      on('[data-goto]', e => { e.preventDefault(); history.replaceState(null, '', '#receitas'); renderUser(); });
+      on('[data-now]', () => confirmBox({title: 'Enviar agora?', text: 'Isso fará imediatamente um pedido deste produto. Seu pedido seguinte chegará de acordo com a frequência definida nas configurações da assinatura.', ok: 'Confirmar', onOk(){ saveSub(id, {next: Date.now()}); HB.toast('Pronto! Seu pedido será preparado hoje.'); renderUser(); }}));
+      on('[data-skip]', () => { const s = get(); confirmBox({title: 'Tem certeza de que deseja pular este envio?', text: `Isso vai pular o próximo pedido deste produto, previsto para ${dtLong(s.next)}. A cobrança seguinte seguirá a frequência definida nas configurações da assinatura.`, ok: 'Pular envio', onOk(){ saveSub(id, {next: s.next + s.everyDays * DAY}); HB.toast('Envio pulado.'); renderUser(); }}); });
+      on('[data-pause]', () => confirmBox({title: 'Pausar assinatura?', text: 'Nenhum envio será feito enquanto a assinatura estiver pausada. Você pode reativar quando quiser.', ok: 'Pausar assinatura', onOk(){ saveSub(id, {status: 'pausada'}); HB.toast('Assinatura pausada.'); renderUser(); }}));
+      on('[data-resume]', () => { const s = get(); saveSub(id, {status: 'ativa', next: s.next > Date.now() ? s.next : Date.now() + s.everyDays * DAY}); HB.toast('Assinatura reativada.'); renderUser(); });
+      on('[data-cancel]', () => confirmBox({title: 'Cancelar assinatura?', text: 'Você deixará de receber os próximos envios desta assinatura. Pedidos já enviados não são afetados.', ok: 'Cancelar assinatura', danger: true, onOk(){ saveSub(id, {status: 'cancelada'}); HB.toast('Assinatura cancelada.'); renderUser(); }}));
+    });
+  }
+
+  /* ---------- Pedidos ---------- */
+  function panelOrders(p){
+    const list = user.orders();
+    if(!list.length){ p.innerHTML = `<h2 class="sec-title">Seus pedidos</h2><div class="card-box empty-box"><p>Você ainda não fez nenhum pedido.</p><a href="lente.html?id=skyhy" class="btn">Comprar lentes de contato</a></div>`; return; }
+    const invoiceable = list.filter(o => o.status !== 'Cancelado' && o.status !== 'Pagamento pendente');
+    p.innerHTML = '<h2 class="sec-title">Seus pedidos</h2>' + list.map((o, i) => {
+      const t = o.totals, n = o.items.reduce((s, x) => s + x.qty, 0);
+      return `<details class="card-box order" ${i === 0 ? 'open' : ''}>
+        <summary><div><div class="no">Pedido ${esc(o.number)} <span class="pill ${pillCls(o.status)}" style="margin-left:6px">${esc(o.status)}</span></div><div class="dt">${dt(o.date)} · ${n} ${n === 1 ? 'item' : 'itens'}</div></div>
+          <div><div class="tot">${brl(t.total)}</div><div class="chev"><span>Detalhes</span></div></div></summary>
+        <div class="body">
+          ${timelineHTML(o)}
+          <div style="margin-top:16px">${itemsHTML(o)}</div>
+          <div class="o-cols">
+            <div><h4>Entrega</h4><p>${addrHTML(o.address)}</p></div>
+            <div><h4>Pagamento</h4><p>${payText(o)}</p></div>
+            <div><h4>Valores</h4><p>Subtotal ${brl(t.sub)}${t.discount ? `<br>Cupom − ${brl(t.discount)}` : ''}${t.pix ? `<br>Pix − ${brl(t.pix)}` : ''}<br>Frete ${t.shipping ? brl(t.shipping) : 'grátis'}<br><b>Total ${brl(t.total)}</b></p></div>
+          </div>
+          <a href="pedido-confirmado.html?n=${encodeURIComponent(o.number)}" class="btn sm">${o.status === 'Pagamento pendente' ? 'Ver dados de pagamento' : 'Ver pedido'}</a>
+        </div></details>`;
+    }).join('') + `
+      <div class="inv">
+        <h3>Baixar notas fiscais para reembolso do convênio</h3>
+        <p class="fine" style="font-size:14px">Seu convênio pode precisar da nota fiscal para aprovar o reembolso.</p>
+        ${invoiceable.length ? `<div class="inv-list">${invoiceable.map(o => `<label class="check"><input type="checkbox" name="inv" value="${esc(o.number)}"> Pedido ${esc(o.number)} · ${dt(o.date)} · ${brl(o.totals.total)}</label>`).join('')}</div>
+          <div class="err-msg" id="invErr" role="alert" style="margin-bottom:8px"></div>
+          <button type="button" class="btn sm" id="invBtn">Baixar notas selecionadas</button>` : '<p class="fine" style="margin-top:10px">Nenhum pedido disponível para nota fiscal. As notas ficam disponíveis após a confirmação do pagamento.</p>'}
+      </div>`;
+    const ib = $('#invBtn');
+    if(ib) ib.onclick = () => {
+      const sel = $$('[name="inv"]:checked', p).map(c => user.getOrder(c.value)).filter(Boolean);
+      if(!sel.length){ $('#invErr').textContent = 'Escolha pelo menos 1 pedido.'; return; }
+      $('#invErr').textContent = '';
+      downloadInvoices(sel);
+      HB.toast('Download iniciado.');
+    };
+  }
+  function downloadInvoices(orders){
+    const rows = o => o.items.map(it => `<tr><td>${esc(it.name)}${(it.meta || []).length ? `<br><small>${it.meta.map(esc).join(' · ')}</small>` : ''}</td><td>${it.qty}</td><td>${brl(it.price)}</td><td>${brl(it.price * it.qty)}</td></tr>`).join('');
+    const body = orders.map(o => `<section><h2>Pedido ${esc(o.number)}</h2>
+      <p>Data: ${dt(o.date)}<br>Cliente: ${esc(o.name)} · CPF ${esc(o.cpf)}<br>E-mail: ${esc(o.email)}<br>Endereço: ${esc(o.address.rua)}, ${esc(o.address.numero)} – ${esc(o.address.bairro)} – ${esc(o.address.cidade)}/${esc(o.address.uf)} – CEP ${esc(o.address.cep)}</p>
+      <table><thead><tr><th>Produto</th><th>Qtd.</th><th>Valor unit.</th><th>Total</th></tr></thead><tbody>${rows(o)}</tbody></table>
+      <p>Subtotal: ${brl(o.totals.sub)}${o.totals.discount ? ` · Desconto: − ${brl(o.totals.discount)}` : ''}${o.totals.pix ? ` · Desconto Pix: − ${brl(o.totals.pix)}` : ''} · Frete: ${o.totals.shipping ? brl(o.totals.shipping) : 'grátis'}<br><b>Total pago: ${brl(o.totals.total)}</b> (${PM[o.payment.method] || ''})</p></section>`).join('');
+    const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Notas fiscais Hubble</title><style>body{font-family:system-ui,sans-serif;color:#2b3235;max-width:780px;margin:30px auto;padding:0 16px}section{border-bottom:1px solid #ddd;padding:18px 0}table{width:100%;border-collapse:collapse;margin:10px 0}th,td{border:1px solid #ddd;padding:6px 8px;text-align:left;font-size:14px}</style></head><body><h1>Hubble — notas fiscais</h1><p>Documento de demonstração para reembolso do convênio.</p>${body}</body></html>`;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], {type: 'text/html'}));
+    a.download = `notas-hubble-${new Date().toISOString().slice(0, 10)}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  /* ---------- Receitas ---------- */
+  function rxStatus(o){
+    if(o.status === 'Cancelado') return ['Cancelada', 'gray'];
+    if(Date.now() - o.date > 365 * DAY) return ['Expirada', 'gray'];
+    if(o.status === 'Pagamento pendente') return ['Pendente', 'orange'];
+    if(o.status === 'Receita em análise') return ['Em verificação', ''];
+    return ['Verificada', 'green'];
+  }
+  function eyeLine(label, e, bc){
+    if(!e || !e.sph) return '';
+    let s = `${label}: ${bc ? `BC = ${num(bc)} · ` : ''}ESF = ${num(e.sph)}`;
+    if(e.cyl && +e.cyl !== 0) s += ` · CIL = ${num(e.cyl)}${e.axis ? ` · EIXO = ${esc(e.axis)}` : ''}`;
+    return esc(s) + '<br>';
+  }
+  function panelRx(p){
+    const orders = user.orders().filter(needsRx);
+    const lens = [], frames = [];
+    orders.forEach(o => o.items.forEach(it => {
+      const d = it.details || {};
+      if(it.kind === 'lente'){ const l = HB.find.lens(it.id); lens.push({o, it, bc: l && l.bc, d}); }
+      if(it.kind === 'oculos' && d.uso !== 'sem-grau') frames.push({o, it, d});
+    }));
+    const doc = o => o.rx && o.rx.doctor ? `<br>Oftalmologista: ${esc(o.rx.doctor.nome)}${o.rx.doctor.clinica ? ` · ${esc(o.rx.doctor.clinica)}` : ''}${o.rx.doctor.crm ? ` · CRM ${esc(o.rx.doctor.crm)}` : ''}${o.rx.doctor.uf ? `/${esc(o.rx.doctor.uf)}` : ''}` : '';
+    const card = (title, body, o) => { const [st, cls] = rxStatus(o); return `<div class="card-box rx-card"><div class="row"><div class="t">${title}</div><span class="pill ${cls}">${st}</span></div><div class="d">${body}<span style="color:var(--muted)">Pedido ${esc(o.number)} · ${dt(o.date)}</span>${doc(o)}</div></div>`; };
+    p.innerHTML = `<h2 class="sec-title">Suas receitas</h2>
+      <h3 class="mini-h" style="margin:4px 0 10px">Lentes de contato</h3>
+      ${lens.length ? lens.map(({o, it, bc, d}) => card(sup(it.name), (eyeLine('Direito (OD)', d.od, bc) + eyeLine('Esquerdo (OE)', d.oe, bc)) || ((it.meta || []).map(esc).join('<br>') + '<br>'), o)).join('') : '<p class="fine" style="margin-bottom:16px">Nenhuma receita de lentes de contato ainda.</p>'}
+      <h3 class="mini-h" style="margin:22px 0 10px">Óculos de grau e de sol</h3>
+      ${frames.length ? frames.map(({o, it, d}) => card(`Receita de armação · ${sup(it.name)}`, d.uso === 'sem-grau' ? 'Sem grau<br>' : d.uso === 'leitura' ? `Leitura ${esc(d.leitura || '')}<br>` : (eyeLine('Direito (OD)', d.od) + eyeLine('Esquerdo (OE)', d.oe) + (d.dp ? `DP: ${esc(d.dp)}<br>` : '') || (d.rx === 'depois' ? 'Receita a enviar<br>' : '')), o)).join('') : '<p class="fine" style="margin-bottom:16px">Nenhuma receita de óculos ainda.</p>'}
+      <p class="fine" style="margin-top:18px;font-size:14px">Para atualizar sua receita, você também pode enviá-la por e-mail para <b>receitas@hubble.com.br</b>.</p>`;
+  }
+
+  /* ---------- Sua conta ---------- */
+  let editAcct = null; // 'pessoal' | 'endereco'
+  function panelData(p){
+    const pr = user.profile() || {}, a = (pr.addresses || [])[0];
+    const parts = String(pr.name || '').trim().split(/\s+/), fn = parts[0] || '', ln = parts.slice(1).join(' ');
+    const cpfView = pr.cpf ? HB.mask.cpf(pr.cpf).replace(/^(\d{3})\.\d{3}\.\d{3}/, '$1.***.***') : '—';
+    const ufOpts = sel => `<option value="">Selecione o estado</option>` + UFS.map(u => `<option ${u === sel ? 'selected' : ''}>${u}</option>`).join('');
+    p.innerHTML = `<h2 class="sec-title">Sua conta</h2>
+      <div class="card-box acct-box"><h3>Informações pessoais ${editAcct === 'pessoal' ? '' : '<button type="button" class="link-btn" data-edit-acct="pessoal">Editar</button>'}</h3>
+        ${editAcct === 'pessoal' ? `<form id="pdForm" novalidate>
+          <div class="row2"><div class="field"><label for="d-fn">Nome</label><input class="input" id="d-fn" name="nome" value="${esc(fn)}" autocomplete="given-name"></div><div class="field"><label for="d-ln">Sobrenome</label><input class="input" id="d-ln" name="sobrenome" value="${esc(ln)}" autocomplete="family-name"></div></div>
+          <div class="row2"><div class="field"><label for="d-cel">Telefone</label><input class="input" id="d-cel" name="cel" data-mask="phone" inputmode="tel" value="${esc(pr.phone ? HB.mask.phone(pr.phone) : '')}"></div>
+          ${pr.cpf ? '' : '<div class="field"><label for="d-cpf">CPF</label><input class="input" id="d-cpf" name="cpf" data-mask="cpf" inputmode="numeric" placeholder="000.000.000-00"></div>'}</div>
+          <div class="btn-row"><button class="btn sm" type="submit">Salvar alterações</button><button class="btn sm ghost" type="button" data-cancel-acct>Cancelar alterações</button></div></form>`
+        : `<div class="acct-view"><div><div class="k">Nome</div><div class="v">${esc(fn) || '—'}</div></div><div><div class="k">Sobrenome</div><div class="v">${esc(ln) || '—'}</div></div><div><div class="k">E-mail</div><div class="v">${esc(pr.email)}</div></div><div><div class="k">Telefone</div><div class="v">${pr.phone ? esc(HB.mask.phone(pr.phone)) : '—'}</div></div><div><div class="k">CPF</div><div class="v">${esc(cpfView)}</div></div></div>`}
+      </div>
+      <div class="card-box acct-box"><h3>Pagamento</h3>
+        <p style="font-size:14px;color:var(--ink)">Todas as compras são pagas via Pix, em pagamento único no momento do pedido.</p>
+        <p class="fine" style="margin-top:6px">Não guardamos dados de pagamento e não fazemos cobranças recorrentes.</p>
+      </div>
+      <div class="card-box acct-box"><h3>Endereço de entrega ${editAcct === 'endereco' ? '' : `<button type="button" class="link-btn" data-edit-acct="endereco">${a ? 'Editar' : 'Adicionar'}</button>`}</h3>
+        ${editAcct === 'endereco' ? `<form id="adForm" novalidate>
+          <div class="row2"><div class="field"><label for="a-cep">CEP</label><input class="input" id="a-cep" name="cep" data-mask="cep" inputmode="numeric" value="${esc(a ? a.cep : '')}" placeholder="Digite o CEP"><span class="fine" id="cepMsg" role="status"></span></div><div class="field"><label for="a-rua">Endereço</label><input class="input" id="a-rua" name="rua" value="${esc(a ? a.rua : '')}"></div></div>
+          <div class="row2"><div class="field"><label for="a-num">Número</label><input class="input" id="a-num" name="numero" value="${esc(a ? a.numero : '')}"></div><div class="field"><label for="a-comp">Complemento (opcional)</label><input class="input" id="a-comp" name="complemento" value="${esc(a ? a.complemento : '')}" placeholder="Apartamento, bloco etc. (opcional)"></div></div>
+          <div class="row3"><div class="field"><label for="a-bairro">Bairro</label><input class="input" id="a-bairro" name="bairro" value="${esc(a ? a.bairro : '')}"></div><div class="field"><label for="a-cidade">Cidade</label><input class="input" id="a-cidade" name="cidade" value="${esc(a ? a.cidade : '')}"></div><div class="field"><label for="a-uf">Estado</label><select class="select" id="a-uf" name="uf">${ufOpts(a && a.uf)}</select></div></div>
+          <div class="btn-row"><button class="btn sm" type="submit">Salvar alterações</button><button class="btn sm ghost" type="button" data-cancel-acct>Cancelar alterações</button></div></form>`
+        : `<p style="font-size:14px;color:var(--ink);line-height:1.6">${a ? addrHTML(a) : 'Nenhum endereço salvo.'}</p>`}
+      </div>`;
+    HB.bindMasks(p);
+    $$('[data-edit-acct]', p).forEach(b => b.onclick = () => { editAcct = b.dataset.editAcct; renderUser(); const f = $('#panel form input'); if(f) f.focus(); });
+    $$('[data-cancel-acct]', p).forEach(b => b.onclick = () => { editAcct = null; renderUser(); });
+
+    const pf = $('#pdForm');
+    if(pf){
+      bindLiveClear(pf);
+      pf.onsubmit = e => {
+        e.preventDefault();
+        const errs = [], nome = val(pf, 'nome'), sob = val(pf, 'sobrenome'), cel = val(pf, 'cel'), cpf = pf.elements.cpf ? val(pf, 'cpf') : '';
+        if(!nome) errs.push(['nome', 'Campo obrigatório']);
+        if(!sob) errs.push(['sobrenome', 'Campo obrigatório']);
+        if(cel && !valid.phone(cel)) errs.push(['cel', 'Telefone inválido.']);
+        if(cpf && !valid.cpf(cpf)) errs.push(['cpf', 'CPF inválido.']);
+        if(!showErrs(pf, errs)) return;
+        const patch = {name: `${nome} ${sob}`, phone: cel.replace(/\D/g, '')};
+        if(cpf) patch.cpf = cpf.replace(/\D/g, '');
+        user.saveProfile(patch);
+        editAcct = null; HB.toast('Informações atualizadas.'); renderUser();
+      };
+    }
+    const af = $('#adForm');
+    if(af){
+      bindLiveClear(af);
+      let lastCep = String(a ? a.cep : '').replace(/\D/g, ''), tok = 0;
+      const cepIn = af.elements.cep;
+      const lookup = async () => {
+        const c = cepIn.value.replace(/\D/g, ''), msg = $('#cepMsg');
+        if(c.length !== 8 || c === lastCep) return;
+        lastCep = c; const t = ++tok; msg.textContent = 'Buscando endereço…'; msg.style.color = '';
+        const r = await HB.lookupCep(c); if(t !== tok) return;
+        if(!r){ msg.textContent = 'Não encontramos o CEP automaticamente. Preencha o endereço manualmente.'; msg.style.color = 'var(--rust)'; return; }
+        if(r.logradouro) af.elements.rua.value = r.logradouro;
+        if(r.bairro) af.elements.bairro.value = r.bairro;
+        if(r.localidade) af.elements.cidade.value = r.localidade;
+        if(r.uf) af.elements.uf.value = r.uf;
+        msg.textContent = 'Endereço encontrado.'; msg.style.color = 'var(--green)';
+        af.elements.numero.focus();
+      };
+      cepIn.addEventListener('input', lookup); cepIn.addEventListener('blur', lookup);
+      af.onsubmit = e => {
+        e.preventDefault();
+        const d = {cep: val(af, 'cep'), rua: val(af, 'rua'), numero: val(af, 'numero'), complemento: val(af, 'complemento'), bairro: val(af, 'bairro'), cidade: val(af, 'cidade'), uf: val(af, 'uf')};
+        const errs = [];
+        if(!valid.cep(d.cep)) errs.push(['cep', 'CEP inválido.']);
+        ['rua', 'numero', 'bairro', 'cidade', 'uf'].forEach(k => { if(!d[k]) errs.push([k, 'Campo obrigatório']); });
+        if(!showErrs(af, errs)) return;
+        user.saveProfile({addresses: [d]});
+        editAcct = null; HB.toast('Endereço salvo.'); renderUser();
+      };
+    }
+  }
+
+  /* ---------- Render principal ---------- */
+  function render(){
+    if(user.current() && user.profile()){ if(backTo){ location.replace(backTo); return; } renderUser(); }
+    else { if(user.current()) user.logout(); renderGuest(); }
+  }
+  render();
+  addEventListener('hashchange', () => { if(user.current()) renderUser(); });
+  addEventListener('storage', e => { if(['hubble-br-user', 'hubble-br-orders', 'hubble-br-subs', 'hubble-br-users'].includes(e.key)) render(); });
+})();
+</script>
+</body>
+</html>

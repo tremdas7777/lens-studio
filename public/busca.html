@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Busca | Hubble</title>
+<meta name="description" content="Busque lentes de contato, óculos de grau, óculos de sol e acessórios na Hubble.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .sb{display:flex;gap:10px;max-width:680px;margin-top:22px}
+  .sb .wrap-in{position:relative;flex:1}
+  .sb svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted);pointer-events:none}
+  .sb .input{padding-left:46px;font-size:16px}
+  .summary-line{font-size:15px;color:var(--ink);margin-top:16px}
+  .jump{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .grp{margin-bottom:56px;scroll-margin-top:80px}
+  .grp-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:22px}
+  .grp-h h2{font-size:22px;color:var(--ink)}
+  .grp-h span{font-size:14px;color:var(--muted)}
+  .pages{list-style:none;display:grid;gap:10px}
+  .pages a{display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid var(--line);border-radius:10px;padding:16px 18px;color:var(--ink)}
+  .pages a:hover{border-color:var(--indigo)}
+  .pages b{display:block;font-size:16px}
+  .pages small{color:var(--muted);font-size:13.5px}
+  .pages .go{color:var(--indigo);font-weight:600;white-space:nowrap}
+  .noresult{text-align:center;padding:30px 0 10px}
+  .noresult h2{font-size:clamp(24px,3vw,34px);color:var(--navy);margin-bottom:10px}
+  .noresult p{color:var(--ink);margin-bottom:18px}
+  .noresult .chips{justify-content:center}
+</style>
+</head>
+<body>
+<main>
+
+<section class="page-hero lav">
+  <div class="wrap">
+    <h1 class="display" style="color:var(--navy)" id="sTitle">Buscar</h1>
+    <form class="sb" id="sForm" action="busca.html" role="search">
+      <div class="wrap-in">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4"/></svg>
+        <label for="sQ" class="sr">Buscar produtos e páginas</label>
+        <input class="input" id="sQ" name="q" type="search" placeholder="Buscar lentes, óculos, acessórios…" autocomplete="off">
+      </div>
+      <button class="btn" type="submit">Buscar</button>
+    </form>
+    <p class="summary-line" id="sSum" aria-live="polite"></p>
+    <div class="jump chips" id="sJump"></div>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:44px">
+  <div class="wrap" id="sOut"></div>
+</section>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const {$, $$, D, esc, card, find} = HB;
+  const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+
+  // Páginas institucionais adicionais (complementam o índice do HB.search)
+  const EXTRA = [
+    {t:'Sobre a Hubble', s:'Nossa história, lentes, óculos e garantia', u:'sobre.html', k:'sobre empresa historia quem somos garantia'},
+    {t:'Política de Privacidade', s:'LGPD, dados pessoais e cookies', u:'legal.html?doc=privacidade', k:'privacidade lgpd dados pessoais cookies'},
+    {t:'Termos de Serviço', s:'Uso do site, planos, pagamento via Pix e entregas', u:'legal.html?doc=termos', k:'termos servico uso condicoes planos pix pagamento entrega frete prazo'},
+    {t:'Trocas e Devoluções', s:'Arrependimento, trocas, defeitos e reembolso', u:'legal.html?doc=trocas', k:'troca trocas devolucao devolucoes reembolso arrependimento defeito garantia'},
+    {t:'Acessibilidade', s:'Declaração de acessibilidade', u:'legal.html?doc=acessibilidade', k:'acessibilidade wcag deficiencia'},
+    {t:'Minha conta', s:'Pedidos, receitas e recompra', u:'conta.html', k:'conta login entrar cadastro pedidos recomprar comprar novamente receita senha'},
+    {t:'Carrinho', s:'Itens que você escolheu', u:'carrinho.html', k:'carrinho sacola compra cupom'}
+  ];
+  const extraSearch = q => { const t = norm(q).trim().split(/\s+/).filter(Boolean); if(!t.length) return []; return EXTRA.filter(x => { const k = norm(x.t+' '+x.s+' '+x.k); return t.every(w => k.includes(w)); }); };
+
+  const idOf = u => { try{ return new URL(u, location.href).searchParams.get('id'); }catch(e){ return null; } };
+  const isSun = u => /[?&]tipo=sol/.test(u);
+
+  function run(q){
+    q = (q||'').trim();
+    $('#sQ').value = q;
+    $('#sTitle').textContent = q ? `Resultados para “${q}”` : 'Buscar';
+    document.title = (q ? `Busca: ${q}` : 'Busca') + ' | Hubble';
+    const res = q ? HB.search(q) : [];
+    const G = {lentes:[], oculos:[], acessorios:[], paginas:[]};
+    const seen = new Set();
+    res.forEach(r => {
+      if(seen.has(r.u)) return; seen.add(r.u);
+      if(r.u.startsWith('lente.html')){ const l = find.lens(idOf(r.u)); if(l) G.lentes.push(l); }
+      else if(r.u.startsWith('oculos-produto.html')){ const g = find.glasses(idOf(r.u)); if(g) G.oculos.push({g, sun:isSun(r.u)}); }
+      else if(r.u.startsWith('acessorio.html')){ const a = find.accessory(idOf(r.u)); if(a) G.acessorios.push(a); }
+      else G.paginas.push(r);
+    });
+    extraSearch(q).forEach(r => { if(!seen.has(r.u)){ seen.add(r.u); G.paginas.push(r); } });
+
+    const groups = [
+      {id:'lentes', t:'Lentes de contato', n:G.lentes.length, html:`<div class="grid4">${G.lentes.map(card.lens).join('')}</div>`},
+      {id:'oculos', t:'Óculos', n:G.oculos.length, html:`<div class="grid3">${G.oculos.map(o => card.frame(o.g, o.sun)).join('')}</div>`},
+      {id:'acessorios', t:'Acessórios', n:G.acessorios.length, html:`<div class="grid4">${G.acessorios.map(card.accessory).join('')}</div>`},
+      {id:'paginas', t:'Páginas', n:G.paginas.length, html:`<ul class="pages">${G.paginas.map(p => `<li><a href="${esc(p.u)}"><span><b>${esc(p.t)}</b><small>${esc(p.s === 'Página' ? 'Página do site' : p.s)}</small></span><span class="go">Abrir →</span></a></li>`).join('')}</ul>`}
+    ].filter(g => g.n);
+    const total = groups.reduce((s,g) => s + g.n, 0);
+
+    $('#sSum').textContent = !q ? 'Digite o que você procura: uma marca, um tipo de lente, um modelo de óculos ou um acessório.' : total ? `${total} ${total === 1 ? 'resultado encontrado' : 'resultados encontrados'}.` : '';
+    $('#sJump').innerHTML = groups.length > 1 ? groups.map(g => `<a class="chip" href="#g-${g.id}">${g.t} (${g.n})</a>`).join('') : '';
+
+    if(total){
+      $('#sOut').innerHTML = groups.map(g => `<section class="grp" id="g-${g.id}"><div class="grp-h"><h2>${g.t}</h2><span>${g.n} ${g.n === 1 ? 'item' : 'itens'}</span></div>${g.html}</section>`).join('');
+      HB.bindFrameCards($('#sOut'));
+    } else {
+      const sugg = ['SkyHy','Lente diária','Miopia','Hipermetropia','Óculos de sol','Solução','Colírio','Armação'];
+      const pop = D.lenses.filter(l => l.kind === 'hubble').slice(0,4);
+      $('#sOut').innerHTML = `<div class="noresult">
+          <h2 class="display">${q ? 'Nenhum resultado encontrado' : 'O que você está procurando?'}</h2>
+          <p>${q ? `Não encontramos nada para “${esc(q)}”. Confira a ortografia ou tente um termo mais geral.` : 'Experimente uma das buscas abaixo.'}</p>
+          <div class="chips">${sugg.map(s => `<a class="chip" href="busca.html?q=${encodeURIComponent(s)}">${s}</a>`).join('')}</div>
+        </div>
+        <section class="grp" style="margin-top:56px"><div class="grp-h"><h2>Mais procurados</h2><a class="link-u" href="lente.html?id=skyhy">Ver a SkyHy by Hubble®</a></div><div class="grid4">${pop.map(card.lens).join('')}</div></section>
+        <section class="grp"><div class="grp-h"><h2>Navegue pelas categorias</h2></div><div class="btn-row"><a class="btn" href="lente.html?id=skyhy">Lentes de contato</a><a class="btn rust" href="oculos.html">Óculos de grau</a><a class="btn rust" href="oculos.html?tipo=sol">Óculos de sol</a><a class="btn dark" href="acessorios.html">Acessórios</a></div>
+        <p style="margin-top:22px;font-size:15px">Precisa de ajuda? Veja as <a class="link-u" href="faq.html">perguntas frequentes</a> ou <a class="link-u" href="contato.html">fale conosco</a>.</p></section>`;
+    }
+  }
+
+  let t;
+  $('#sQ').addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => { const v = $('#sQ').value; history.replaceState(null, '', v.trim() ? `busca.html?q=${encodeURIComponent(v.trim())}` : 'busca.html'); run(v); }, 220); });
+  $('#sForm').addEventListener('submit', e => { e.preventDefault(); const v = $('#sQ').value; history.replaceState(null, '', v.trim() ? `busca.html?q=${encodeURIComponent(v.trim())}` : 'busca.html'); run(v); });
+
+  run(HB.qs('q'));
+  if(!HB.qs('q')) $('#sQ').focus();
+})();
+</script>
+</body>
+</html>

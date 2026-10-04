@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout Seguro | Hubble</title>
+<meta name="description" content="Finalize sua compra Hubble com segurança. Pagamento via Pix e frete grátis para todo o Brasil.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .ck{--ck-ok:#1f8a5b;--ck-field:#eef0ff;--ck-accent:var(--indigo);--ck-btn:var(--navy-btn);--ck-muted:#f5f6ff;min-height:100vh;display:flex;flex-direction:column;background:#fff;color:var(--ink)}
+  .ck-head{display:flex;justify-content:center;align-items:center;padding:28px 16px 30px;position:relative}
+  .ck-head .logo svg{width:112px}
+  .ck-head .safe{position:absolute;right:max(16px,calc((100vw - 1160px)/2 + 16px));display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .ck-main{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:1160px;width:100%;margin:0 auto;padding:4px 16px 90px;align-items:start}
+  .ck-col{display:flex;flex-direction:column;gap:20px}
+  .ck-card{border:1px solid var(--line);border-radius:10px;padding:26px;background:#fff}
+  .ck-card.done{border-color:var(--ck-accent);background:rgba(70,76,167,.025)}
+  .ck-card.muted{border-color:transparent;background:var(--ck-muted)}
+  .ck-card.muted h2,.ck-card.muted .ck-sub,.ck-card.muted .ck-step{color:var(--muted)}
+  .ck-h{display:flex;justify-content:space-between;align-items:center}
+  .ck-h h2{font-size:18px;font-weight:500;color:var(--ink)}
+  .ck-step{font-size:12px;color:var(--ink)}
+  .ck-edit{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer}
+  .ck-edit:hover{color:var(--ink)}
+  .ck-sub{font-size:13px;margin-top:4px;color:var(--ink)}
+  .ck-form{margin-top:22px;display:flex;flex-direction:column;gap:16px}
+  .ck-f{display:block}
+  .ck-f>span.l{display:block;font-size:13px;font-weight:500;margin-bottom:8px;color:var(--ink)}
+  .ck-f>span.l small{font-size:11px;color:var(--muted);font-weight:400}
+  .ck-in{position:relative;display:flex;align-items:center}
+  .ck-in input,.ck-in select{height:46px;width:100%;border:1px solid var(--line);border-radius:8px;padding:0 36px 0 12px;font:15px "Work Sans";color:var(--ink);background:#fff;outline:none;transition:border-color .15s,background .15s}
+  .ck-in select{appearance:none;-webkit-appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232b3235' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center}
+  .ck-in input:focus,.ck-in select:focus{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+  .ck-in input.filled{background:var(--ck-field);border-color:rgba(70,76,167,.2)}
+  .ck-in .pre{position:absolute;left:12px;font-size:14px;color:var(--muted)}
+  .ck-in .pre+input{padding-left:48px}
+  .ck-in .ok{position:absolute;right:12px;width:16px;height:16px;color:var(--ck-ok);display:none}
+  .ck-in.is-ok .ok{display:block}
+  .ck-hint{font-size:12px;color:var(--red);margin-top:6px}
+  .ck-row{display:flex;gap:10px;align-items:flex-end}
+  .ck-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:56px;border:0;border-radius:6px;background:var(--ck-btn);color:#fff;font:600 16px "Work Sans";cursor:pointer;transition:filter .15s,opacity .15s}
+  .ck-btn:hover{filter:brightness(1.12)}
+  .ck-btn:disabled{opacity:.55;cursor:not-allowed;filter:none}
+  .ck-opt{display:flex;align-items:center;gap:14px;width:100%;border:1px solid var(--line);border-radius:8px;padding:18px 16px;background:#fff;text-align:left;cursor:pointer;font:inherit;color:inherit}
+  .ck-opt.on{border-color:var(--ck-accent);background:var(--ck-muted)}
+  .ck-opt .t{display:block;font-size:13px;font-weight:500}
+  .ck-opt .d{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+  .ck-opt .p{font-size:13px;font-weight:600;white-space:nowrap}
+  .radio{width:18px;height:18px;flex:none;border:1px solid #9aa3aa;border-radius:50%;display:grid;place-items:center}
+  .on>.radio,.radio.on{border-color:var(--ck-accent)}
+  .on>.radio::after,.radio.on::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--ck-accent)}
+  .ck-done p{font-size:13px;margin-top:4px}
+  .ck-done p.b{font-weight:600;margin-top:12px}
+  .ship-ok{border:1px solid var(--ck-ok);background:#e9f7ef;border-radius:8px;padding:12px 16px;font-size:13px;display:flex;align-items:center;gap:8px}
+  .ship-ok b{color:var(--ck-ok)}
+  .bump{border:2px dashed #f2b33d;background:#fffaf0;border-radius:10px;overflow:hidden;transition:border-color .2s,background .2s}
+  .bump.on{border-color:var(--ck-ok);background:#f3fbf6}
+  .bump .bar{background:#f2b33d;color:#4a3300;text-align:center;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:6px}
+  .bump .in{padding:16px}
+  .bump p.q{font-size:14px;font-weight:600;line-height:1.35}
+  .bump p.x{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+  .bump .row{display:flex;gap:14px;margin-top:14px}
+  .bump .row img{width:84px;height:84px;object-fit:contain;border:1px solid var(--line);border-radius:6px;background:#fff;flex:none}
+  .bump ul{list-style:none;font-size:12.5px;display:grid;gap:5px}
+  .bump li{display:flex;gap:6px}
+  .bump li::before{content:"✓";color:var(--ck-ok);font-weight:700}
+  .bump .pr{margin-top:12px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
+  .bump .pr s{font-size:13px;color:var(--muted)}
+  .bump .pr b{font-size:20px;color:var(--ck-ok)}
+  .bump .pr .tag{background:#d8f2e2;color:var(--ck-ok);font-size:11px;font-weight:700;border-radius:4px;padding:2px 6px}
+  .bump .pr small{width:100%;font-size:12px;color:var(--muted)}
+  .bump label{margin-top:14px;display:flex;gap:10px;align-items:center;border:2px solid #f2b33d;border-radius:6px;padding:12px;background:#fff;cursor:pointer;font-size:13.5px;font-weight:600}
+  .bump.on label{border-color:var(--ck-ok)}
+  .bump label input{width:20px;height:20px;accent-color:var(--ck-ok);flex:none}
+  .pay{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .pay+.pay{margin-top:10px}
+  .pay.on{border-color:var(--ck-accent);background:var(--ck-muted)}
+  .pay-h{display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer;width:100%;background:none;border:0;font:inherit;color:inherit;text-align:left}
+  .pay-h .ic{width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
+  .pay-h .nm{font-size:15px}
+  .pay-h .tg{margin-left:auto;font-size:11px;font-weight:700;color:var(--ck-ok);background:#d8f2e2;border-radius:4px;padding:3px 7px}
+  .pay-b{padding:4px 16px 16px;display:none}
+  .pay.on .pay-b{display:block}
+  .pay-b p{font-size:13.5px;color:var(--muted);margin:10px 0}
+  .pay-b p b{color:var(--ck-ok)}
+  .ck-terms{display:flex;gap:10px;font-size:12.5px;color:var(--muted);margin:14px 0;align-items:flex-start}
+  .ck-terms input{margin-top:2px;width:16px;height:16px;accent-color:var(--ck-accent);flex:none}
+  .ck-terms a{text-decoration:underline;color:var(--ink)}
+  .demo{font-size:11.5px;color:var(--muted);text-align:center;margin-top:10px}
+  .rx-file{margin-top:10px;font-size:13px}
+  .rx-file img{max-height:110px;border-radius:6px;margin-top:8px;border:1px solid var(--line)}
+  .sum{border:1px solid var(--line);border-radius:10px;padding:24px;position:sticky;top:16px}
+  .sum h2{font-size:15px;font-weight:500;margin-bottom:20px}
+  .sum-l{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+  .sum-l .g{color:var(--ck-ok)}
+  .sum-l.t{font-size:16px;font-weight:600;padding-top:8px}
+  .sum-items{margin-top:20px;border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:16px}
+  .sum-it{display:flex;gap:12px;font-size:13px}
+  .sum-it img{width:56px;height:56px;border:1px solid var(--line);border-radius:6px;object-fit:contain;background:var(--lav-solid);flex:none}
+  .sum-it .m{color:var(--muted);margin-top:3px;font-size:12px;line-height:1.45}
+  .sum-it .v{margin-left:auto;white-space:nowrap}
+  .sum-cp{display:flex;gap:8px;margin-top:18px}
+  .sum-cp input{flex:1;min-width:0;height:40px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font:14px "Work Sans"}
+  .sum-cp button{height:40px;padding:0 14px;border:1px solid var(--ink);background:#fff;border-radius:6px;font:600 13px "Work Sans";cursor:pointer}
+  .sum-msg{font-size:12px;margin-top:6px}
+  .sum-mob{display:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--ck-muted)}
+  .sum-mob>button{display:flex;width:100%;justify-content:space-between;align-items:center;padding:12px 20px;background:none;border:0;font:inherit;color:inherit;cursor:pointer}
+  .sum-mob>button span:first-child{font-size:13px}
+  .sum-mob>button span:last-child{font-size:18px;font-weight:500;display:flex;gap:8px;align-items:center}
+  .sum-mob>button svg{transition:transform .2s}
+  .sum-mob.open>button svg{transform:rotate(180deg)}
+  .sum-mob .body{display:none;background:#fff;padding:20px}
+  .sum-mob.open .body{display:block}
+  .ck-foot{margin-top:auto;background:var(--navy);color:#fff;text-align:center;padding:32px 16px;font-size:13px}
+  .ck-foot .pm{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .ck-foot .pm span{width:42px;height:24px;border-radius:3px;background:#fff;color:var(--ink);font-size:8px;font-weight:700;display:grid;place-items:center}
+  .ck-foot .lock{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;font-size:12px;text-align:left;line-height:1.2}
+  .ck-login{font-size:13px;margin-top:4px}
+  .ck-login button{background:none;border:0;text-decoration:underline;cursor:pointer;font:inherit;color:var(--indigo)}
+  @media (max-width:1023px){
+    .ck-main{grid-template-columns:minmax(0,1fr);max-width:620px}
+    .sum{display:none}
+    .sum-mob{display:block}
+    .ck-head .safe{display:none}
+  }
+  @media (max-width:560px){ .ck-card{padding:20px} .ck-head{padding:22px 16px} .ck-head .logo svg{width:96px} }
+</style>
+</head>
+<body data-no-chrome="1">
+<div class="ck">
+  <header class="ck-head">
+    <a href="index.html" class="logo" aria-label="Hubble — voltar à loja" id="ckLogo"></a>
+    <span class="safe"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Checkout seguro</span>
+  </header>
+  <div class="sum-mob" id="sumMob"><button type="button" aria-expanded="false"><span id="sumMobLbl">Resumo do pedido</span><span><b id="sumMobTotal" style="font-weight:500"></b><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></span></button><div class="body" id="sumMobBody"></div></div>
+  <main class="ck-main">
+    <div class="ck-col" id="col1"></div>
+    <div class="ck-col" id="col2"></div>
+    <aside class="sum" id="sumDesk"><h2>Resumo do pedido</h2><div id="sumDeskBody"></div></aside>
+  </main>
+  <footer class="ck-foot">
+    <p style="font-weight:500">HUBBLE | Todos os direitos reservados</p>
+    <p style="margin-top:8px">© <span id="yr"></span> · E-mail: atendimento@hubble.com.br</p>
+    <p style="margin-top:12px;font-size:14px">Formas de pagamento:</p>
+    <div class="pm"><span id="pixFoot"></span></div>
+    <div class="lock"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span><b>PAGAMENTO</b><br>100% SEGURO</span></div>
+  </footer>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+const {D, $, $$, brl, esc, img, sup, cart, user, valid, mask, store, ICON} = HB;
+if(!cart.items().length){ location.replace('carrinho.html'); return; }
+
+const PIX_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="#32bcad" aria-hidden="true"><path d="M12 2.5 7.6 6.9h1.1c.8 0 1.5.3 2 .8L12 9l1.3-1.3c.5-.5 1.2-.8 2-.8h1.1L12 2.5Zm-6.1 6L2.5 12l3.4 3.4h2.2c.4 0 .8-.2 1.1-.5L11 13.1a1.6 1.6 0 0 0-2.2-2.2L7.1 9c-.3-.3-.7-.5-1.1-.5Zm12.2 0h-2.2c-.4 0-.8.2-1.1.5l-1.8 1.8a1.6 1.6 0 0 0 2.2 2.2l1.8 1.8c.3.3.7.5 1.1.5h.1l3.4-3.4-3.5-3.4ZM12 15l-1.3 1.3c-.5.5-1.2.8-2 .8H7.6l4.4 4.4 4.4-4.4h-1.1c-.8 0-1.5-.3-2-.8L12 15Z"/></svg>';
+const CARD_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#464ca7" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6 15h4"/></svg>';
+const BOL_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#2b3235" stroke-width="1.8"><path d="M4 5v14M7 5v14M10 5v14M13 5v14M16 5v14M20 5v14"/></svg>';
+const CHECK = '<svg class="ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>';
+const EDIT = 'Editar <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+$('#ckLogo').innerHTML = ICON.logo; $('#pixFoot').innerHTML = PIX_SVG.replace('width="20" height="20"','width="14" height="14"'); $('#yr').textContent = new Date().getFullYear();
+
+const UFS = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
+const FRETES = [{id:'gratis', name:'Frete Grátis', eta:'5 a 10 dias úteis', price:0}, {id:'expresso', name:'Expresso', eta:'2 a 4 dias úteis', price:29.90}];
+const needRx = cart.hasRx();
+const hasLens = cart.items().some(i => i.kind === 'lente');
+/* Oferta do checkout (order bump) */
+const bumpAcc = HB.find.accessory(hasLens ? 'biotrue-hydration-boost-new' : 'optiplus-anti-fog-microfiber-cloth') || D.accessories[0];
+const BUMP = bumpAcc && !cart.items().some(i => i.id === bumpAcc.id) ? {
+  acc: bumpAcc, price: +(bumpAcc.price * 0.6).toFixed(2), compareAt: bumpAcc.price,
+  q: hasLens ? 'Você vai usar lentes o dia todo. E o conforto dos seus olhos, está garantido?' : 'Seus óculos novos merecem lentes sempre limpas.',
+  x: hasLens ? `O <b>${esc(bumpAcc.name)}</b> hidrata e alivia o ressecamento causado por telas, ar-condicionado e longas horas de uso das lentes.` : `A <b>${esc(bumpAcc.name)}</b> limpa e evita que suas lentes embacem com máscara, frio ou banho quente.`,
+  b: hasLens ? ['Compatível com lentes de contato','Alívio imediato do ressecamento','Ideal para quem passa o dia em telas','Tamanho prático para levar na bolsa'] : ['Limpa sem riscar as lentes','Tratamento antiembaçante','Reutilizável e lavável','Cabe no estojo dos óculos']
+} : null;
+
+/* ---------- Estado ---------- */
+const SKEY = 'hb-br-ck2';
+let S = {step:1, id:{name:'',email:'',cpf:'',phone:''}, addr:{cep:'',rua:'',numero:'',bairro:'',complemento:'',cidade:'',uf:''}, frete:'gratis', rx:{method:'',doctor:{nome:'',crm:'',uf:'',tel:'',clinica:''}, fileName:'', ok:false}, pay:'pix', inst:1, bump:false, terms:true, create:false};
+try{ const s = JSON.parse(sessionStorage.getItem(SKEY)); if(s) S = {...S, ...s, pay:'pix', id:{...S.id,...s.id}, addr:{...S.addr,...s.addr}, rx:{...S.rx,...s.rx, doctor:{...S.rx.doctor,...((s.rx||{}).doctor||{})}}}; }catch(e){}
+let card = {num:'', name:'', exp:'', cvv:''}, rxFile = null, rxPreview = '', pass = '';
+const save = () => { try{ sessionStorage.setItem(SKEY, JSON.stringify(S)); }catch(e){} };
+(function prefill(){
+  const p = user.profile(), pre = store.get('checkout-email','');
+  if(!S.id.email) S.id.email = (p && p.email) || pre || '';
+  if(p){ if(!S.id.name) S.id.name = p.name||''; if(!S.id.cpf && p.cpf) S.id.cpf = mask.cpf(p.cpf); if(!S.id.phone && p.phone) S.id.phone = mask.phone(p.phone);
+    const a = (p.addresses||[])[0]; if(a && !S.addr.cep) S.addr = {...S.addr, ...a}; }
+})();
+const STEPS = needRx ? ['id','addr','rx','pay'] : ['id','addr','pay'];
+const N = STEPS.length, stepNo = k => STEPS.indexOf(k) + 1;
+if(S.step > N) S.step = N;
+
+/* ---------- Validação ---------- */
+const digits = v => String(v||'').replace(/\D/g,'');
+const ok = {
+  name: () => S.id.name.trim().split(/\s+/).length >= 2,
+  email: () => valid.email(S.id.email),
+  cpf: () => valid.cpf(S.id.cpf),
+  phone: () => digits(S.id.phone).length >= 10,
+  cep: () => digits(S.addr.cep).length === 8,
+  rua: () => !!S.addr.rua.trim(), numero: () => !!S.addr.numero.trim(), bairro: () => !!S.addr.bairro.trim(),
+  cidade: () => !!S.addr.cidade.trim(), uf: () => UFS.includes(S.addr.uf)
+};
+const idValid = () => ok.name() && ok.email() && ok.cpf() && ok.phone() && (!S.create || user.current() || pass.length >= 6);
+const addrValid = () => ok.cep() && ok.rua() && ok.numero() && ok.bairro() && ok.cidade() && ok.uf();
+const rxValid = () => S.rx.ok && (S.rx.method === 'depois' || (S.rx.method === 'upload' && !!(rxFile || S.rx.fileName)) || (S.rx.method === 'medico' && !!S.rx.doctor.nome.trim() && digits(S.rx.doctor.crm).length >= 4 && UFS.includes(S.rx.doctor.uf)));
+const cardBrand = n => { const d = digits(n); if(/^(4011|4312|4389|4514|4576|5041|5066|5067|509|6277|6362|6363|650|6516|6550)/.test(d)) return 'Elo'; if(/^(606282|3841)/.test(d)) return 'Hipercard'; if(/^4/.test(d)) return 'Visa'; if(/^(5[1-5]|2(2[2-9]|[3-6]\d|7[01]|720))/.test(d)) return 'Mastercard'; if(/^3[47]/.test(d)) return 'Amex'; return ''; };
+const cardValid = () => valid.card(card.num) && card.name.trim().length > 3 && valid.expiry(card.exp) && /^\d{3,4}$/.test(card.cvv);
+const payValid = () => S.terms && (S.pay !== 'cartao' || cardValid());
+
+/* ---------- Totais ---------- */
+function totals(){
+  const items = cart.items();
+  const sub = items.reduce((s,x)=>s + x.price*x.qty, 0) + (S.bump && BUMP ? BUMP.price : 0);
+  const cp = cart.coupon(); const discount = cp ? +(sub*cp.pct).toFixed(2) : 0;
+  const after = sub - discount;
+  const pix = S.pay === 'pix' ? +(after*HB.PIX_OFF).toFixed(2) : 0;
+  const shipping = (FRETES.find(f=>f.id===S.frete)||FRETES[0]).price;
+  const total = +(after - pix + shipping).toFixed(2);
+  const inst = HB.installments(after + shipping);
+  return {sub, discount, coupon:cp, pix, shipping, total, inst};
+}
+
+/* ---------- Componentes ---------- */
+const field = (k, label, val, o={}) => `<label class="ck-f" style="${o.w?`flex:${o.w}`:''}"><span class="l">${label}</span><span class="ck-in ${o.ok?'is-ok':''}">${o.pre?`<span class="pre">${o.pre}</span>`:''}<input data-k="${k}" value="${esc(val)}" class="${val?'filled':''}" ${o.attrs||''}>${CHECK}</span>${o.hint?`<div class="ck-hint">${o.hint}</div>`:''}</label>`;
+const head = (title, k, sub) => {
+  const n = stepNo(k), done = S.step > n;
+  return `<div class="ck-h"><h2>${title}</h2>${done ? `<button type="button" class="ck-edit" data-go="${n}">${EDIT}</button>` : `<span class="ck-step">${n} de ${N}</span>`}</div>${sub?`<p class="ck-sub">${sub}</p>`:''}`;
+};
+const cardState = k => { const n = stepNo(k); return S.step === n ? 'active' : S.step > n ? 'done' : 'muted'; };
+
+function idCard(){
+  if(cardState('id') === 'done') return `<div class="ck-card done">${head('Identificação','id')}<div class="ck-done"><p class="b">${esc(S.id.name)}</p><p>${esc(S.id.email)}</p><p>${esc(S.id.phone)}</p></div></div>`;
+  const u = user.current();
+  return `<div class="ck-card">${head('Identificação','id','Preencha seus dados para envio do pedido.')}
+    <form class="ck-form" id="fId" novalidate>
+      ${field('id.name','Nome completo',S.id.name,{ok:ok.name(),attrs:'autocomplete="name" required'})}
+      ${field('id.email','E-mail',S.id.email,{ok:ok.email(),attrs:`type="email" autocomplete="email" required ${u?'readonly':''}`})}
+      <div style="max-width:240px">${field('id.cpf','CPF',S.id.cpf,{ok:ok.cpf(),attrs:'inputmode="numeric" data-m="cpf" required',hint:digits(S.id.cpf).length===11&&!ok.cpf()?'CPF inválido.':''})}</div>
+      <div style="max-width:240px">${field('id.phone','Celular/WhatsApp',S.id.phone,{ok:ok.phone(),pre:'+55',attrs:'inputmode="tel" data-m="phone" autocomplete="tel-national" required'})}</div>
+      ${u ? '' : `<label class="ck-terms" style="margin:0;color:var(--ink)"><input type="checkbox" id="ckCreate" ${S.create?'checked':''}><span>Criar uma conta para acompanhar meus pedidos e comprar novamente</span></label>${S.create?`<label class="ck-f"><span class="l">Crie uma senha <small>(mín. 6 caracteres)</small></span><span class="ck-in ${pass.length>=6?'is-ok':''}"><input type="password" id="ckPass" autocomplete="new-password" value="${esc(pass)}">${CHECK}</span></label>`:''}`}
+      <button class="ck-btn" ${idValid()?'':'disabled'}>Ir para Entrega</button>
+      ${u ? `<p class="ck-login">Conectado como <b>${esc(u.name)}</b>.</p>` : `<p class="ck-login">Já tem conta? <button type="button" id="goLogin">Entrar</button></p><div id="loginBox" class="hidden"><div class="ck-form" style="margin-top:0"><label class="ck-f"><span class="l">E-mail</span><span class="ck-in"><input type="email" id="lgEmail" autocomplete="username"></span></label><label class="ck-f"><span class="l">Senha</span><span class="ck-in"><input type="password" id="lgPass" autocomplete="current-password"></span></label><button type="button" class="ck-btn" id="lgBtn" style="height:46px;background:var(--ink)">Entrar</button><div class="ck-hint" id="lgMsg"></div></div></div>`}
+    </form></div>`;
+}
+function addrCard(){
+  const st = cardState('addr');
+  if(st === 'done'){ const f = FRETES.find(x=>x.id===S.frete); return `<div class="ck-card done">${head('Enviar para','addr')}<div class="ck-done"><p>${esc(S.addr.rua)}, ${esc(S.addr.numero)}${S.addr.complemento?' - '+esc(S.addr.complemento):''}</p><p>${esc(S.addr.bairro)}, ${esc(S.addr.cidade)}/${esc(S.addr.uf)} ${esc(S.addr.cep)}</p><p class="b">Frete selecionado</p><p>${f.name} - ${f.price?brl(f.price):'Grátis'}</p></div></div>`; }
+  if(st === 'muted') return `<div class="ck-card muted">${head('Entrega','addr','Preencha os dados pessoais para continuar')}</div>`;
+  return `<div class="ck-card">${head('Entrega','addr','Informe o endereço de entrega')}
+    <form class="ck-form" id="fAddr" novalidate>
+      <div class="ck-row">${field('addr.cep','CEP',S.addr.cep,{w:2,ok:ok.cep(),attrs:'inputmode="numeric" data-m="cep" autocomplete="postal-code" required'})}<span style="flex:1;font-size:12px;padding-bottom:15px" id="cepInfo">${S.addr.uf?esc(S.addr.uf+'/'+S.addr.cidade):'<a href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" rel="noopener" style="text-decoration:underline">Não sei meu CEP</a>'}</span></div>
+      ${field('addr.rua','Endereço',S.addr.rua,{ok:ok.rua(),attrs:'autocomplete="address-line1" required'})}
+      <div class="ck-row">${field('addr.numero','N°',S.addr.numero,{w:1,ok:ok.numero(),attrs:'required'})}${field('addr.bairro','Bairro',S.addr.bairro,{w:3,ok:ok.bairro(),attrs:'required'})}</div>
+      <div class="ck-row">${field('addr.cidade','Cidade',S.addr.cidade,{w:3,ok:ok.cidade(),attrs:'autocomplete="address-level2" required'})}<label class="ck-f" style="flex:1"><span class="l">UF</span><span class="ck-in"><select data-k="addr.uf" required><option value="">--</option>${UFS.map(u=>`<option ${u===S.addr.uf?'selected':''}>${u}</option>`).join('')}</select></span></label></div>
+      ${field('addr.complemento','Complemento <small>(Opcional)</small>',S.addr.complemento,{attrs:'autocomplete="address-line2"'})}
+      <p style="font-size:16px;font-weight:500;padding-top:6px">Escolha o frete:</p>
+      <div class="ship-ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f8a5b" stroke-width="2"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg><span>Parabéns! Você ganhou <b>FRETE GRÁTIS</b></span></div>
+      ${FRETES.map(f=>`<button type="button" class="ck-opt ${S.frete===f.id?'on':''}" data-frete="${f.id}"><span class="radio"></span><span style="flex:1"><span class="t">${f.name}</span><span class="d">${f.eta}</span></span><span class="p">${f.price?brl(f.price):'Grátis'}</span></button>`).join('')}
+      <button class="ck-btn" ${addrValid()?'':'disabled'}>${needRx?'Ir para Receita':'Ir para Pagamento'}</button>
+    </form></div>`;
+}
+function rxCard(){
+  const st = cardState('rx');
+  const lbl = {upload:'Foto da receita enviada', medico:'Dados do oftalmologista', depois:'Enviar depois por e-mail'};
+  if(st === 'done') return `<div class="ck-card done">${head('Receita','rx')}<div class="ck-done"><p class="b">${lbl[S.rx.method]}</p><p>${S.rx.method==='upload'?esc(S.rx.fileName):S.rx.method==='medico'?`${esc(S.rx.doctor.nome)} · CRM ${esc(S.rx.doctor.crm)}/${esc(S.rx.doctor.uf)}`:'receitas@hubble.com.br'}</p></div></div>`;
+  if(st === 'muted') return `<div class="ck-card muted">${head('Receita','rx','Preencha os dados de entrega para continuar')}</div>`;
+  const m = S.rx.method;
+  return `<div class="ck-card">${head('Receita','rx',`Precisamos da sua receita ${hasLens?'de lentes de contato':'de óculos'} para liberar o envio.`)}
+    <form class="ck-form" id="fRx" novalidate>
+      <button type="button" class="ck-opt ${m==='upload'?'on':''}" data-rx="upload"><span class="radio"></span><span style="flex:1"><span class="t">Enviar foto da receita</span><span class="d">JPG, PNG ou PDF (até 10 MB)</span></span></button>
+      ${m==='upload'?`<div><input type="file" id="rxFile" accept="image/*,.pdf"><div class="rx-file">${S.rx.fileName?`Arquivo: <b>${esc(S.rx.fileName)}</b>${rxPreview?`<br><img src="${rxPreview}" alt="Prévia da receita">`:''}`:''}</div></div>`:''}
+      <button type="button" class="ck-opt ${m==='medico'?'on':''}" data-rx="medico"><span class="radio"></span><span style="flex:1"><span class="t">Informar dados do meu oftalmologista</span><span class="d">Nós confirmamos a receita com o consultório</span></span></button>
+      ${m==='medico'?`${field('rx.doctor.nome','Nome do médico',S.rx.doctor.nome,{ok:!!S.rx.doctor.nome.trim()})}<div class="ck-row">${field('rx.doctor.crm','CRM',S.rx.doctor.crm,{w:2,ok:digits(S.rx.doctor.crm).length>=4,attrs:'inputmode="numeric"'})}<label class="ck-f" style="flex:1"><span class="l">UF do CRM</span><span class="ck-in"><select data-k="rx.doctor.uf"><option value="">--</option>${UFS.map(u=>`<option ${u===S.rx.doctor.uf?'selected':''}>${u}</option>`).join('')}</select></span></label></div>${field('rx.doctor.clinica','Clínica/consultório <small>(Opcional)</small>',S.rx.doctor.clinica||'')}${field('rx.doctor.tel','Telefone do consultório <small>(Opcional)</small>',S.rx.doctor.tel,{attrs:'inputmode="tel" data-m="phone"'})}`:''}
+      <button type="button" class="ck-opt ${m==='depois'?'on':''}" data-rx="depois"><span class="radio"></span><span style="flex:1"><span class="t">Enviar depois por e-mail</span><span class="d">Mande para receitas@hubble.com.br com o número do pedido</span></span></button>
+      <label class="ck-terms"><input type="checkbox" id="rxOk" ${S.rx.ok?'checked':''}><span>Confirmo que minha receita é válida${hasLens?', foi emitida há menos de 1 ano':''} e corresponde aos produtos escolhidos.</span></label>
+      <button class="ck-btn" ${rxValid()?'':'disabled'}>Ir para Pagamento</button>
+    </form></div>`;
+}
+function bumpHTML(){
+  if(!BUMP) return '';
+  const off = Math.round((1 - BUMP.price/BUMP.compareAt)*100);
+  return `<div class="bump ${S.bump?'on':''}"><div class="bar">Oferta exclusiva — só aparece nesta tela</div><div class="in">
+    <p class="q">${BUMP.q}</p><p class="x">${BUMP.x}</p>
+    <div class="row"><img src="${BUMP.acc.image}" alt="${esc(BUMP.acc.name)}" loading="lazy"><ul>${BUMP.b.map(b=>`<li>${b}</li>`).join('')}</ul></div>
+    <div class="pr"><s>${brl(BUMP.compareAt)}</s><b>${brl(BUMP.price)}</b><span class="tag">${off}% OFF</span><small>Vai na mesma caixa do seu pedido — sem frete extra.</small></div>
+    <label><input type="checkbox" id="bumpChk" ${S.bump?'checked':''}><span>${S.bump?`Adicionado! ${esc(BUMP.acc.name)} incluído no seu pedido.`:`Sim! Quero aproveitar por + ${brl(BUMP.price)}`}</span></label>
+  </div></div>`;
+}
+function payCard(){
+  const n = stepNo('pay');
+  if(S.step < n) return `<div class="ck-card muted">${head('Pagamento','pay', S.step === n-1 ? 'Todas as transações são seguras e criptografadas.' : `Preencha os dados ${needRx && S.step===stepNo('rx')?'da receita':'de entrega'} para continuar`)}</div>`;
+  const t = totals(), brand = cardBrand(card.num);
+  if(S.inst > t.inst.n) S.inst = 1;
+  const instOpts = Array.from({length:t.inst.n},(_,i)=>i+1).map(k=>`<option value="${k}" ${k===S.inst?'selected':''}>${k}x de ${brl(t.total/k)} sem juros</option>`).join('');
+  return `<div class="ck-card">${head('Pagamento','pay','Todas as transações são seguras e criptografadas.')}
+    <form class="ck-form" id="fPay" novalidate style="gap:0">
+      ${bumpHTML()}
+      <div style="height:20px"></div>
+      <div class="pay on"><button type="button" class="pay-h" data-pay="pix"><span class="radio on"></span><span class="ic">${PIX_SVG}</span><span class="nm">PIX</span><span class="tg">Aprovação imediata</span></button>
+        <div class="pay-b"><p>O código Pix expira em 30 minutos após finalizar a compra.</p><p>Valor no Pix: <b>${brl(t.total)}</b></p></div></div>
+      <label class="ck-terms"><input type="checkbox" id="terms" ${S.terms?'checked':''}><span>Li e concordo com os <a href="legal.html?doc=termos" target="_blank">Termos de Serviço</a> e a <a href="legal.html?doc=privacidade" target="_blank">Política de Privacidade</a>.</span></label>
+      <button class="ck-btn" id="finish" ${payValid()?'':'disabled'}>Finalizar Compra</button>
+      <p class="demo">Ambiente de demonstração — nenhuma cobrança real é feita.</p>
+    </form></div>`;
+}
+function summaryHTML(){
+  const t = totals(), items = cart.items();
+  const its = items.map(it=>`<div class="sum-it"><img src="${img(it.image,160)}" alt=""><div><div>${sup(it.name)}${it.qty>1?` × ${it.qty}`:''}</div><div class="m">${(it.meta||[]).map(esc).join('<br>')}</div></div><span class="v">${brl(it.price*it.qty)}</span></div>`).join('')
+    + (S.bump && BUMP ? `<div class="sum-it"><img src="${BUMP.acc.image}" alt=""><div><div>${sup(BUMP.acc.name)}</div><div class="m">1 unidade · oferta do checkout</div></div><span class="v">${brl(BUMP.price)}</span></div>` : '');
+  return `<div class="sum-l"><span>Produtos</span><span>${brl(t.sub)}</span></div>
+    ${t.discount?`<div class="sum-l"><span>Cupom ${esc(t.coupon.code)}</span><span class="g">-${brl(t.discount)}</span></div>`:''}
+    ${t.pix?`<div class="sum-l"><span>Desconto Pix (5%)</span><span class="g">-${brl(t.pix)}</span></div>`:''}
+    <div class="sum-l"><span>Frete</span><span class="g">${t.shipping?brl(t.shipping):'Grátis'}</span></div>
+    <div class="sum-l t"><span>Total</span><span>${brl(t.total)}</span></div>
+    ${S.pay==='cartao'?`<div class="sum-l" style="color:var(--muted);font-size:12px"><span></span><span>em até ${t.inst.n}x de ${brl(t.total/t.inst.n)} sem juros</span></div>`:''}
+    <div class="sum-items">${its}</div>
+    ${t.coupon?`<div class="sum-msg" style="color:var(--ck-ok);margin-top:14px">Cupom ${esc(t.coupon.code)} aplicado. <button type="button" data-rmcp style="background:none;border:0;text-decoration:underline;cursor:pointer;font-size:12px">Remover</button></div>`:`<form class="sum-cp" data-cp><input placeholder="Cupom de desconto" aria-label="Cupom de desconto"><button>Aplicar</button></form><div class="sum-msg"></div>`}`;
+}
+
+/* ---------- Render ---------- */
+function render(){
+  $('#col1').innerHTML = idCard() + addrCard();
+  $('#col2').innerHTML = (needRx ? rxCard() : '') + payCard();
+  renderSummary(); bind(); save();
+}
+function renderSummary(){
+  const h = summaryHTML(), t = totals();
+  $('#sumDeskBody').innerHTML = h; $('#sumMobBody').innerHTML = h;
+  $('#sumMobTotal').textContent = brl(t.total);
+  $('#sumMobLbl').textContent = `Resumo do pedido (${cart.count() + (S.bump&&BUMP?1:0)})`;
+  $$('[data-cp]').forEach(f => f.onsubmit = e => { e.preventDefault(); const r = cart.applyCoupon(f.querySelector('input').value); if(r.ok) render(); else { const m = f.nextElementSibling; m.textContent = r.msg; m.style.color = 'var(--red)'; } });
+  $$('[data-rmcp]').forEach(b => b.onclick = () => { cart.removeCoupon(); render(); });
+}
+function setPath(path, v){ const ks = path.split('.'); let o = S; while(ks.length > 1) o = o[ks.shift()]; o[ks[0]] = v; }
+function refreshButtons(){
+  const m = {fId:idValid, fAddr:addrValid, fRx:rxValid, fPay:payValid};
+  Object.entries(m).forEach(([id,fn]) => { const f = document.getElementById(id); if(f){ const b = f.querySelector(':scope > .ck-btn'); if(b) b.disabled = !fn(); } });
+}
+const OKMAP = {'id.name':ok.name,'id.email':ok.email,'id.cpf':ok.cpf,'id.phone':ok.phone,'addr.cep':ok.cep,'addr.rua':ok.rua,'addr.numero':ok.numero,'addr.bairro':ok.bairro,'addr.cidade':ok.cidade,'rx.doctor.nome':()=>!!S.rx.doctor.nome.trim(),'rx.doctor.crm':()=>digits(S.rx.doctor.crm).length>=4};
+function markOk(input){
+  const k = input.dataset.k, wrap = input.closest('.ck-in');
+  input.classList.toggle('filled', !!input.value);
+  if(wrap && OKMAP[k]) wrap.classList.toggle('is-ok', OKMAP[k]());
+  if(k === 'id.cpf'){ const lab = wrap.parentElement; const hint = lab.querySelector('.ck-hint'); const bad = digits(S.id.cpf).length===11 && !ok.cpf(); if(bad && !hint) lab.insertAdjacentHTML('beforeend','<div class="ck-hint">CPF inválido.</div>'); if(!bad && hint) hint.remove(); }
+}
+let cepTimer;
+function bind(){
+  $$('[data-k]').forEach(el => {
+    el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => {
+      if(el.dataset.m) el.value = mask[el.dataset.m](el.value);
+      setPath(el.dataset.k, el.value);
+      markOk(el); refreshButtons(); save();
+      if(el.dataset.k === 'addr.cep' && ok.cep()){ clearTimeout(cepTimer); cepTimer = setTimeout(async () => {
+        const info = $('#cepInfo'); if(info) info.textContent = 'Buscando…';
+        const r = await HB.lookupCep(S.addr.cep);
+        if(r){ S.addr.rua = S.addr.rua || r.logradouro || ''; S.addr.bairro = S.addr.bairro || r.bairro || ''; S.addr.cidade = r.localidade || S.addr.cidade; S.addr.uf = r.uf || S.addr.uf; render(); const nEl = $('[data-k="addr.numero"]'); nEl && nEl.focus(); }
+        else if($('#cepInfo')) $('#cepInfo').textContent = 'CEP não encontrado — preencha manualmente.';
+      }, 250); }
+    });
+  });
+  const cc = $('#ckCreate'); if(cc) cc.onchange = () => { S.create = cc.checked; render(); };
+  const cp = $('#ckPass'); if(cp) cp.addEventListener('input', () => { pass = cp.value; cp.closest('.ck-in').classList.toggle('is-ok', pass.length >= 6); refreshButtons(); });
+  const fId = $('#fId'); if(fId) fId.onsubmit = e => { e.preventDefault(); if(!idValid()) return;
+    if(S.create && !user.current()){ const r = user.register({name:S.id.name.trim(), email:S.id.email.trim(), password:pass, phone:digits(S.id.phone), cpf:digits(S.id.cpf)}); if(!r.ok){ HB.toast(r.msg + ' Use "Entrar" para continuar.'); return; } pass = ''; S.create = false; HB.toast('Conta criada! Você já está conectado(a).'); }
+    S.step = addrValid() ? stepNo(needRx?'rx':'pay') : 2; render(); };
+  const fAddr = $('#fAddr'); if(fAddr) fAddr.onsubmit = e => { e.preventDefault(); if(!addrValid()) return; S.step = stepNo(needRx?'rx':'pay'); render(); };
+  const fRx = $('#fRx'); if(fRx) fRx.onsubmit = e => { e.preventDefault(); if(!rxValid()) return; S.step = stepNo('pay'); render(); };
+  $$('[data-go]').forEach(b => b.onclick = () => { S.step = +b.dataset.go; render(); });
+  $$('[data-frete]').forEach(b => b.onclick = () => { S.frete = b.dataset.frete; render(); });
+  $$('[data-rx]').forEach(b => b.onclick = () => { S.rx.method = b.dataset.rx; render(); });
+  const rxOk = $('#rxOk'); if(rxOk) rxOk.onchange = () => { S.rx.ok = rxOk.checked; refreshButtons(); save(); };
+  const rf = $('#rxFile'); if(rf) rf.onchange = () => { const f = rf.files[0]; if(!f) return; if(f.size > 10*1024*1024){ HB.toast('Arquivo muito grande (máx. 10 MB).'); rf.value=''; return; } rxFile = f; S.rx.fileName = f.name; rxPreview = f.type.startsWith('image/') ? URL.createObjectURL(f) : ''; render(); };
+  $$('[data-pay]').forEach(b => b.onclick = () => { S.pay = b.dataset.pay; render(); });
+  const bc = $('#bumpChk'); if(bc) bc.onchange = () => { S.bump = bc.checked; render(); };
+  const tm = $('#terms'); if(tm) tm.onchange = () => { S.terms = tm.checked; refreshButtons(); save(); };
+  const cardIn = (id, key, m) => { const el = $(id); if(!el) return; el.addEventListener('input', () => { if(m) el.value = mask[m](el.value); card[key] = el.value; el.classList.toggle('filled', !!el.value);
+    const w = el.closest('.ck-in'); if(key==='num'){ w.classList.toggle('is-ok', valid.card(card.num)); const br = cardBrand(card.num); el.closest('.ck-f').querySelector('.l').innerHTML = `Número do cartão ${br?`<small>· ${br}</small>`:''}`; } if(key==='exp') w.classList.toggle('is-ok', valid.expiry(card.exp)); refreshButtons(); }); };
+  cardIn('#cNum','num','card'); cardIn('#cName','name'); cardIn('#cExp','exp','expiry');
+  const cv = $('#cCvv'); if(cv) cv.addEventListener('input', () => { cv.value = cv.value.replace(/\D/g,'').slice(0,4); card.cvv = cv.value; cv.classList.toggle('filled', !!cv.value); refreshButtons(); });
+  const ci = $('#cInst'); if(ci) ci.onchange = () => { S.inst = +ci.value; save(); };
+  const gl = $('#goLogin'); if(gl) gl.onclick = () => { $('#loginBox').classList.toggle('hidden'); $('#lgEmail').value = S.id.email; };
+  const lb = $('#lgBtn'); if(lb) lb.onclick = () => { const r = user.login($('#lgEmail').value, $('#lgPass').value); if(!r.ok){ $('#lgMsg').textContent = r.msg; return; } const p = user.profile(); S.id.email = p.email; S.id.name = p.name || S.id.name; if(p.cpf) S.id.cpf = mask.cpf(p.cpf); if(p.phone) S.id.phone = mask.phone(p.phone); const a = (p.addresses||[])[0]; if(a) S.addr = {...S.addr, ...a}; HB.toast('Bem-vindo(a) de volta!'); render(); };
+  const fp = $('#fPay'); if(fp) fp.onsubmit = e => { e.preventDefault(); if(!payValid()){ HB.toast(S.pay==='cartao'?'Confira os dados do cartão.':'Aceite os termos para continuar.'); return; } finish(); };
+}
+$('#sumMob > button').onclick = () => { const m = $('#sumMob'); m.classList.toggle('open'); $('#sumMob > button').setAttribute('aria-expanded', m.classList.contains('open')); };
+
+/* ---------- Finalizar ---------- */
+function orderNumber(){ const d = new Date(); return `HB-${String(d.getFullYear()).slice(2)}${String(d.getMonth()+1).padStart(2,'0')}-${String(Math.floor(Math.random()*1e5)).padStart(5,'0')}`; }
+function finish(){
+  const btn = $('#finish'); btn.disabled = true; btn.textContent = 'Processando…';
+  setTimeout(() => {
+    const now = Date.now(), t = totals(), number = orderNumber();
+    const items = cart.items().map(x => ({...x}));
+    if(S.bump && BUMP) items.push({kind:'acessorio', id:BUMP.acc.id, name:BUMP.acc.name, image:BUMP.acc.image, qty:1, price:BUMP.price, meta:['Oferta do checkout'], details:{}, sub:null});
+    const order = {
+      number, date: now, email: S.id.email.trim().toLowerCase(), name: S.id.name.trim(), phone: S.id.phone, cpf: S.id.cpf,
+      items, totals: {...t, inst: S.pay === 'cartao' ? {n:S.inst, value:t.total/S.inst} : t.inst},
+      shipping: FRETES.find(f=>f.id===S.frete),
+      address: {...S.addr},
+      payment: S.pay === 'cartao' ? {method:'cartao', brand: cardBrand(card.num) || 'Cartão', last4: digits(card.num).slice(-4), inst: S.inst} : {method:S.pay},
+      rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : {method:'nao-precisa'},
+      status: S.pay === 'cartao' ? (needRx ? 'Receita em análise' : 'Em preparação') : 'Pagamento pendente',
+      pixExpires: S.pay === 'pix' ? now + 30*60*1000 : undefined
+    };
+    user.saveOrder(order);
+    const subs = store.get('subs', []);
+    items.filter(i => i.sub).forEach((it,i) => subs.push({id:`S${now.toString(36)}${i}`, order:number, email:order.email, name:it.name, image:it.image, meta:it.meta||[], everyDays:it.sub.everyDays, price:+(it.sub.price*it.qty).toFixed(2), next: now + it.sub.everyDays*864e5, status:'ativa'}));
+    store.set('subs', subs);
+    if(user.current()){ const p = user.profile(); const patch = {addresses:[{...S.addr}]}; if(!p.phone) patch.phone = digits(S.id.phone); if(!p.cpf) patch.cpf = digits(S.id.cpf); user.saveProfile(patch); }
+    cart.clear(); store.set('checkout-email', null);
+    try{ sessionStorage.removeItem(SKEY); }catch(e){}
+    location.href = 'pedido-confirmado.html?n=' + encodeURIComponent(number);
+  }, 700);
+}
+render();
+})();
+</script>
+</body>
+</html>

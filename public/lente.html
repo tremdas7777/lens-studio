@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lente de Contato | Hubble</title>
+<meta name="description" content="Compre lentes de contato SkyHy by Hubble on-line em planos de 1, 2 ou 3 meses, com pagamento via Pix e frete grátis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.pdp-top .pdp{border-radius:0}
+.pdp-gal .main{position:relative}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2}
+.gal-nav.prev{left:0}.gal-nav.next{right:0}
+.pdp-gal .tagpill{z-index:3}
+.pdp-desc{font-size:14px;color:var(--ink);margin-top:18px;max-width:560px}
+.pdp-info h1{margin-bottom:14px}
+.pack-line{font-size:15px;color:var(--ink);margin-bottom:4px}
+.pdp-info .price-line{font-size:15px;margin:0 0 6px}
+.pm-lines{font-size:13px;color:var(--ink);margin-bottom:6px}
+.pm-lines p+p{margin-top:2px}
+.pm-lines .note{color:var(--muted);margin-top:6px}
+.pdp-box h2{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:16px}
+.pack-h{font-size:17px;font-weight:600;color:var(--ink);margin:6px 0 12px}
+.radio-card .p s{color:var(--muted);font-weight:400;margin-right:4px}
+.radio-card .p em{display:block;font-style:normal;color:var(--indigo);font-size:12px;text-align:right}
+.rx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:6px}
+.rx .field{margin-bottom:10px}
+.select.err{border-color:var(--red)}
+.btn.indigo.block{margin-top:12px}
+.free{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--ink);margin-top:18px}
+.free img{width:30px;height:30px;object-fit:contain}
+.pdp-box .fine{margin-top:14px}
+.pdp-box .fine a{text-decoration:underline}
+.perks{justify-content:space-around}
+.about{max-width:900px}
+.about .eyebrow{font-family:Archivo,"Work Sans",sans-serif;font-stretch:125%;font-size:15px;color:var(--indigo);margin-bottom:12px}
+.about h3{font-size:clamp(20px,2.4vw,26px);font-weight:500;color:var(--ink);line-height:1.35;margin-bottom:16px}
+.about p.intro{font-size:15px;color:var(--ink);margin-bottom:18px}
+.diff{background:var(--lav-solid)}
+.diff .split img{border-radius:8px}
+.diff h2{font-size:clamp(28px,3.4vw,42px);color:var(--navy);margin-bottom:26px}
+.diff h4{font-size:17px;color:var(--ink);margin-bottom:6px}
+.diff p{font-size:15px;color:var(--ink);margin-bottom:22px}
+.faq-head{text-align:center;margin-bottom:30px}
+.faq-head .eyebrow{margin-bottom:8px}
+.faq-head h2{font-size:clamp(28px,3.4vw,42px);color:var(--navy)}
+.faq details>div a{color:var(--indigo);text-decoration:underline}
+.faq-more{max-width:860px;margin:22px auto 0;font-size:15px;color:var(--ink)}
+.faq-more a{color:var(--indigo);text-decoration:underline}
+/* Overlay "um passo do checkout" */
+.step-ov{position:fixed;inset:0;z-index:96;background:#ecedff;overflow:auto;display:none}
+.step-ov.on{display:block}
+.step-ov .bar{display:flex;justify-content:space-between;align-items:center;max-width:var(--max);margin:0 auto;padding:18px 24px}
+.step-ov .bar button{border:0;background:none;cursor:pointer;font:500 15px "Work Sans";color:var(--ink)}
+.step-ov .bar .x{font-size:24px;line-height:1}
+.step-ov .in{max-width:520px;margin:6vh auto 60px;padding:0 20px}
+.step-ov h2{font-size:clamp(28px,4vw,40px);color:var(--navy);margin-bottom:10px}
+.step-ov .sub{font-size:15px;color:var(--ink);margin-bottom:30px}
+.step-ov .card{background:#fff;border-radius:12px;padding:24px}
+.step-ov .card h3{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:14px}
+body.ov-open{overflow:hidden}
+.sticky-buy{display:none}
+@media (max-width:900px){
+  .sticky-buy{position:fixed;left:0;right:0;bottom:0;z-index:55;background:#fff;border-top:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -6px 20px rgba(0,0,0,.06);transform:translateY(110%);transition:transform .3s}
+  .sticky-buy.on{transform:none}
+  .sticky-buy .t{font-size:13px;color:var(--ink);line-height:1.3;min-width:0}
+  body.has-sticky .help{bottom:86px}
+  .perks{justify-content:center;gap:14px 22px}
+}
+@media (max-width:560px){
+  .pdp-box{padding:16px}
+  .rx{gap:10px}
+  .rx .select{padding:11px 30px 11px 10px;font-size:14px;background-position:right 10px center}
+  .ship-bar.rounded{border-radius:20px 20px 0 0}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap pdp-top">
+    <div class="ship-bar indigo rounded">Frete grátis em todos os pedidos!</div>
+    <section class="pdp">
+      <div class="pdp-gal">
+        <div id="tagPill" class="tagpill hidden"></div>
+        <div class="main">
+          <button class="arrow indigo gal-nav prev" id="gPrev" aria-label="Imagem anterior"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7.5 2 3.5 6l4 4"/></svg></button>
+          <img id="gMain" src="" alt="">
+          <button class="arrow indigo gal-nav next" id="gNext" aria-label="Próxima imagem"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4.5 2l4 4-4 4"/></svg></button>
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+        <div class="specs" id="specs"></div>
+        <p class="pdp-desc" id="shortDesc"></p>
+      </div>
+
+      <div class="pdp-info">
+        <h1 class="display grad-purple" id="pName"></h1>
+        <div id="priceBlock"></div>
+
+        <form class="pdp-box" id="buyForm" novalidate>
+          <div class="hidden" id="packSec">
+            <h2 class="pack-h">Escolha o tamanho da caixa</h2>
+            <div id="packs"></div>
+          </div>
+          <h2 id="rxTitle"></h2>
+          <p class="fine" style="margin:-4px 0 12px">Para cada olho, escolha <b>Miopia</b> (grau negativo, com sinal –) ou <b>Hipermetropia</b> (grau positivo, com sinal +) e depois o grau que está na sua receita.</p>
+          <div class="rx" id="rxGrid"></div>
+          <p class="err-msg hidden" id="formErr" role="alert"></p>
+          <button class="btn indigo block" type="submit">COMPRAR AGORA</button>
+          <p class="fine" id="finePrint"></p>
+        </form>
+        <div class="free"><img src="https://images.ctfassets.net/h5kzo0k46quc/3SaDofUpEoWjZyDL9hmmNn/d34a28a3d6b3ab4723435fe87b251ca2/ValuePropsSection-free-shipping-purple.png?w=80&q=80&fm=webp" alt="">Frete grátis</div>
+      </div>
+    </section>
+    <div class="perks" id="perks"></div>
+    <nav class="crumbs" aria-label="Navegação estrutural" id="crumbs"></nav>
+  </div>
+
+  <section class="sec tight">
+    <div class="wrap about">
+      <div class="eyebrow" id="aboutH"></div>
+      <h3 id="aboutLead"></h3>
+      <p class="intro hidden" id="aboutIntro"></p>
+      <ul class="bul" id="aboutBul"></ul>
+    </div>
+  </section>
+
+  <section class="sec tight hidden" id="advSec">
+    <div class="wrap"><div class="adv" id="adv"></div></div>
+  </section>
+
+  <section class="works">
+    <div class="wrap">
+      <h2 class="title display">Veja Como Funciona</h2>
+      <p class="intro">Comprar na Hubble é rápido e fácil. Basta escolher o seu plano, informar os dados da sua receita e pagar via Pix. Nós cuidamos do resto.</p>
+      <div class="viewport"><div class="rail" id="wRail"></div></div>
+      <div class="arrows">
+        <button class="arrow" id="wPrev" aria-label="Anterior"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7.5 2 3.5 6l4 4"/></svg></button>
+        <span id="wIdx">1/3</span>
+        <button class="arrow" id="wNext" aria-label="Próximo"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4.5 2l4 4-4 4"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec diff hidden" id="diffSec">
+    <div class="wrap split">
+      <img src="https://images.ctfassets.net/h5kzo0k46quc/59IgbZnwsDYeqC5fTP9eEn/9fa2fd60e39ca826e7f366bd0c722d6c/Hubble-Contacts-PDP-Inset-Image.jpg?w=900&q=80&fm=webp" alt="Mulher sorridente colocando sua lente de contato Hubble" loading="lazy">
+      <div>
+        <h2 class="display">Veja a diferença Hubble</h2>
+        <h4>Não pague caro por lentes de alta qualidade.</h4>
+        <p>Nossas lentes custam até 30% menos que marcas comparáveis. Sem margem de ótica nem custos de varejo – só lentes feitas com materiais de qualidade, enviadas direto para você.</p>
+        <h4>Quanto maior o plano, mais você economiza.</h4>
+        <p>O plano de 1 mês sai por R$ 180,00. No plano de 2 meses, o valor cai para R$ 133,50/mês, e no de 3 meses, para R$ 122,33/mês.</p>
+        <h4>Sem assinatura, sem surpresa.</h4>
+        <p>Você paga uma única vez, via Pix, e recebe todas as caixas do plano com frete grátis. Sem cobranças recorrentes: quando precisar de mais lentes, é só comprar de novo pela sua conta.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="video">
+    <div class="dots"></div>
+    <div class="wrap">
+      <div class="vbox" id="vbox" role="button" tabindex="0" aria-label="Assistir ao vídeo">
+        <img src="https://images.ctfassets.net/h5kzo0k46quc/Pv2yV1VxE97RK3zNMhi05/796dd66d0737397f5c5ef731ea3bbea7/Hubble-Contacts-PDP-Video-Still.jpg?w=1400&q=80&fm=webp" alt="Mulher abrindo uma nova entrega de lentes Hubble" loading="lazy">
+        <div class="vcopy">
+          <div class="play"><svg width="14" height="16" viewBox="0 0 14 16"><path d="M0 0l14 8-14 8z" fill="#fff"/></svg></div>
+          <h2 class="display">Lentes de contato direto na sua casa</h2>
+          <p>Veja por dentro como a Hubble prepara e entrega as suas lentes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="faq-head"><div class="eyebrow">Perguntas frequentes</div><h2 class="display">Tem dúvidas? Nós respondemos.</h2></div>
+      <div class="faq" id="faq"></div>
+      <p class="faq-more hidden" id="faqMore">Quer saber mais? Veja todas as <a href="faq.html#lentes-hubble">perguntas frequentes sobre as lentes Hubble</a>.</p>
+    </div>
+  </section>
+
+  <section class="sec tight" style="padding-bottom:80px">
+    <div class="wrap">
+      <h2 class="title display">Você também pode gostar</h2>
+      <div class="grid4" id="recs"></div>
+    </div>
+  </section>
+
+  <div class="sticky-buy" id="stickyBuy"><div class="t" id="sbName"></div><button class="btn indigo sm" type="button" id="sbBtn">COMPRAR AGORA</button></div>
+</main>
+
+<div class="step-ov" id="stepOv" role="dialog" aria-modal="true" aria-labelledby="ovTitle">
+  <div class="bar"><button type="button" data-ovclose>‹ Voltar</button><button type="button" class="x" data-ovclose aria-label="Fechar">✕</button></div>
+  <div class="in">
+    <h2 class="display" id="ovTitle">Você está a um passo do checkout.</h2>
+    <p class="sub">Só precisamos de mais algumas informações primeiro.</p>
+    <form class="card" id="ovForm" novalidate>
+      <h3>Informações de contato</h3>
+      <div class="field"><label for="ovEmail">E-mail</label><input class="input" type="email" id="ovEmail" autocomplete="email" placeholder="seuemail@exemplo.com"><span class="err-msg hidden" id="ovErr">Informe um e-mail válido.</span></div>
+      <button class="btn indigo block" type="submit">Continuar para o checkout</button>
+    </form>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+const {D, $, $$, brl, esc, img, sup, find} = HB;
+const lens = find.lens(HB.qs('id') || '');
+if(!lens){ location.replace('404.html'); return; }
+
+/* ================= Funções puras (testáveis em node) ================= */
+/* Graus da lista oficial: -0,50…-6,00 (0,25), -6,50…-10,00 (0,50), +0,50…+4,00 (0,25); sem 0,00 */
+function powerList(){
+  const o = [], f = v => (v > 0 ? '+' : '') + v.toFixed(2);
+  for(let c = 50; c <= 600; c += 25) o.push(f(-c / 100));
+  for(let c = 650; c <= 1000; c += 50) o.push(f(-c / 100));
+  for(let c = 50; c <= 400; c += 25) o.push(f(c / 100));
+  return o;
+}
+const fmtRx = v => String(v).replace('.', ',');
+/* Monta o item de carrinho (esquema BUILD-NOTES). od/oe = {sph,cyl?,axis?} ou null. */
+function buildLensItem(l, packIdx, od, oe){
+  const p = l.packs[packIdx], eyes = (od ? 1 : 0) + (oe ? 1 : 0);
+  const r2 = v => Math.round(v * 100) / 100;
+  const weeks = Math.max(1, Math.round(p.days / 7));
+  const KN = {miopia:'Miopia', hipermetropia:'Hipermetropia'};
+  const line = (lbl, e) => `${lbl}: ${e.kind ? KN[e.kind] + ' ' : ''}${fmtRx(e.sph)}` + (l.toric ? ` · CIL ${fmtRx(e.cyl)} · EIXO ${e.axis}` : '');
+  const meta = [];
+  if(od) meta.push(line('OD', od));
+  if(oe) meta.push(line('OE', oe));
+  if(p.total){
+    const bx = eyes > 1 ? p.boxes : p.months;
+    meta.push(`Plano ${p.label} · ${bx} ${bx > 1 ? 'caixas' : 'caixa'} de ${p.qty} lentes`);
+    return {
+      kind: 'lente', id: l.id, name: l.name, image: p.image || l.image, qty: 1,
+      price: p.total, meta,
+      sig: ['lente', l.id, packIdx, JSON.stringify(od), JSON.stringify(oe)].join('|'),
+      details: {pack: packIdx, plan: p.label, months: p.months, eyes, od, oe, boxes: bx},
+      sub: null
+    };
+  }
+  meta.push(`${p.label} · ${eyes} ${eyes > 1 ? 'olhos' : 'olho'}`);
+  meta.push(`Assinatura: a cada ${weeks} semanas (altere quando quiser)`);
+  return {
+    kind: 'lente', id: l.id, name: l.name, image: p.image || l.image, qty: 1,
+    price: r2(p.sale * eyes), meta,
+    sig: ['lente', l.id, packIdx, JSON.stringify(od), JSON.stringify(oe)].join('|'),
+    details: {pack: packIdx, eyes, od, oe, boxesPerEye: 1, freqDays: p.days},
+    sub: {everyDays: p.days, label: `A cada ${weeks} semanas`, price: r2(p.price * eyes)}
+  };
+}
+
+/* ================= Estado ================= */
+const isHubble = lens.kind === 'hubble';
+const packQ = parseInt(HB.qs('pack'), 10);
+const st = {pack: lens.packs[packQ] ? packQ : 0, gi: 0, tried: false,
+  od:{kind:'', sph:'', cyl:'', axis:''}, oe:{kind:'', sph:'', cyl:'', axis:''}};
+const pack = () => lens.packs[st.pack];
+const plainName = lens.name.replace(/®/g, '');
+const num = v => String(v).replace('.', ',');
+
+/* ================= SEO ================= */
+document.title = `${lens.name} | Hubble`;
+const md = document.querySelector('meta[name="description"]');
+if(md) md.setAttribute('content', (lens.tagline || lens.description || '').slice(0, 158));
+
+/* ================= Topo ================= */
+$('#pName').innerHTML = sup(lens.name);
+if(lens.tag){ const t = $('#tagPill'); t.textContent = lens.tag; if(lens.tagColor) t.style.background = lens.tagColor; t.classList.remove('hidden'); }
+$('#specs').innerHTML = [['Curva base (BC)', num(lens.bc)], ['Diâmetro (DIA)', num(lens.dia)], ['Fabricante', esc(lens.manufacturer)], ['Material', esc(lens.material)]]
+  .map(s => `<div><div class="k">${s[0]}</div><div class="v">${s[1]}</div></div>`).join('');
+$('#shortDesc').textContent = lens.description;
+$('#rxTitle').innerHTML = `Informe sua receita para ${sup(lens.name)}`;
+$('#finePrint').innerHTML = `Ao comprar, você confirma que sua receita é para ${sup(lens.name)}. Você também pode enviar sua receita por e-mail após finalizar a compra para <a href="mailto:receitas@hubble.com.br">receitas@hubble.com.br</a>, informando o número do pedido.`;
+$('#crumbs').innerHTML = `<a href="index.html">Início</a><span class="sep">›</span>` + (isHubble
+  ? `<a href="lente.html?id=skyhy">Lentes de Contato Hubble</a>`
+  : `<a href="lente.html?id=skyhy">Lentes de Contato</a>`) + `<span class="sep">›</span><span>${sup(lens.name)}</span>`;
+$('#sbName').innerHTML = sup(lens.name);
+
+/* ================= Galeria ================= */
+const gallery = () => { const p = pack(); const g = (p.gallery && p.gallery.length ? p.gallery : (lens.gallery || [])).filter(Boolean); return g.length ? g : [p.image || lens.image]; };
+function showImg(i){
+  const g = gallery(); st.gi = (i + g.length) % g.length;
+  $('#gMain').src = img(g[st.gi], 900); $('#gMain').alt = `${plainName} — imagem ${st.gi + 1} de ${g.length}`;
+  $$('#thumbs button').forEach((b, k) => b.classList.toggle('on', k === st.gi));
+}
+function renderGallery(){
+  const g = gallery();
+  $('#thumbs').innerHTML = g.length > 1 ? g.map((u, i) => `<button type="button" data-i="${i}" aria-label="Ver imagem ${i + 1}"><img src="${img(u, 140)}" alt=""></button>`).join('') : '';
+  $$('#thumbs button').forEach(b => b.onclick = () => showImg(+b.dataset.i));
+  $('#gPrev').classList.toggle('hidden', g.length < 2); $('#gNext').classList.toggle('hidden', g.length < 2);
+  showImg(0);
+}
+$('#gPrev').onclick = () => showImg(st.gi - 1);
+$('#gNext').onclick = () => showImg(st.gi + 1);
+
+/* ================= Preço (lentes Hubble) / caixas (marcas) ================= */
+const TYPE_PL = {diaria:'diárias', semanal:'quinzenais', mensal:'mensais'};
+function supply(p){ const m = Math.max(1, Math.round(p.days / 28)); return `suprimento para ${m} ${m > 1 ? 'meses' : 'mês'}`; }
+function renderPrice(){
+  if(!isHubble){ $('#priceBlock').innerHTML = ''; return; }
+  const p = pack(), off = p.off ? ` (${esc(p.off.replace('OFF', 'off'))})` : '';
+  if(p.total){
+    $('#priceBlock').innerHTML = `<p class="pack-line"><b>Plano ${esc(p.label)}</b> · ${p.qty} lentes diárias por caixa, 1 caixa por olho por mês</p>
+      <p class="price-line"><b style="font-size:20px">${brl(p.total)}</b>${p.months > 1 ? ` <span style="color:var(--muted)">(${brl(p.perMonth)}/mês)</span>` : ''} · pagamento único no Pix · frete grátis</p>`;
+    return;
+  }
+  let h = `<p class="pack-line"><b>${p.qty} lentes ${TYPE_PL[lens.type]} descartáveis</b> (${supply(p)})</p>`;
+  if(p.note) h += `<p class="price-line"><s>${brl(p.price)}/olho</s> <b>${brl(p.sale)}/olho</b> · ${esc(p.note.toLowerCase())}</p>`;
+  else h += `<p class="price-line"><s>${brl(p.price)}/olho</s> <b>${brl(p.sale)}/olho${off}</b> no seu primeiro pedido</p>`;
+  if(p.perMonth) h += `<div class="pm-lines"><p><b>${brl(p.perMonth[1])}/olho</b> por mês nos primeiros 6 meses</p><p>${brl(p.perMonth[0])}/olho por mês nos 6 meses seguintes</p><p class="note">Nossa assinatura mensal mais econômica entre as lentes Hubble, com todos os benefícios do hidrogel de silicone premium.</p></div>`;
+  $('#priceBlock').innerHTML = h;
+}
+if(!isHubble || lens.packs.length > 1){
+  $('#packSec').classList.remove('hidden');
+  if(lens.packs[0].total) $('#packSec .pack-h').textContent = 'Escolha seu plano';
+  const base = lens.packs[0];
+  $('#packs').innerHTML = lens.packs[0].total ? lens.packs.map((p, i) => `<label class="radio-card${i === st.pack ? ' on' : ''}"><input type="radio" name="pack" value="${i}"${i === st.pack ? ' checked' : ''}><div><div class="t">${esc(p.label)}${p.badge ? ` <span class="pill green" style="margin-left:6px">${esc(p.badge)}</span>` : ''}</div><div class="d">${p.boxes} caixas (${p.months} por olho) · ${brl(p.perMonth)}/mês${p.months > 1 ? ` · economize ${brl(base.total * p.months - p.total)}` : ''}</div></div><div class="p">${brl(p.total)}</div></label>`).join('') : lens.packs.map((p, i) => `<label class="radio-card${i === st.pack ? ' on' : ''}"><input type="radio" name="pack" value="${i}"${i === st.pack ? ' checked' : ''}><div><div class="t">${esc(p.label)}</div><div class="d">${p.qty} lentes por caixa · ${supply(p)}</div></div><div class="p"><s>${brl(p.price)}</s>${brl(p.sale)}/olho${p.off ? `<em>${esc(p.off)}</em>` : ''}</div></label>`).join('');
+  $$('#packs input').forEach(r => r.onchange = () => {
+    st.pack = +r.value;
+    $$('#packs .radio-card').forEach(c => c.classList.toggle('on', c.contains(r)));
+    renderPrice(); renderGallery();
+  });
+}
+
+/* ================= Receita ================= */
+const POWERS = powerList();
+const KINDS = {miopia:'Miopia (grau negativo)', hipermetropia:'Hipermetropia (grau positivo)'};
+const hasKind = eye => st[eye].kind === 'miopia' || st[eye].kind === 'hipermetropia';
+const chosen = eye => hasKind(eye) && st[eye].sph !== '';
+const powersFor = k => POWERS.filter(v => k === 'miopia' ? v.startsWith('-') : v.startsWith('+'));
+function opts(list, ph, sel, none){
+  return `<option value="">${ph}</option>` + (none ? `<option value="none"${sel === 'none' ? ' selected' : ''}>${none}</option>` : '')
+    + list.map(v => `<option value="${v}"${v === sel ? ' selected' : ''}>${fmtRx(v)}</option>`).join('');
+}
+function renderRx(){
+  const noPower = st.tried && !chosen('od') && !chosen('oe');
+  const col = (eye, label, noneTxt) => {
+    const e = st[eye], bad = k => st.tried && chosen(eye) && e[k] === '' ? ' err' : '';
+    const kindOpts = `<option value="">Selecionar</option><option value="none"${e.kind === 'none' ? ' selected' : ''}>${noneTxt}</option>` + Object.entries(KINDS).map(([k, t]) => `<option value="${k}"${e.kind === k ? ' selected' : ''}>${t}</option>`).join('');
+    let h = `<div><div class="field"><label for="${eye}-kind">${label}</label><select class="select${noPower && !hasKind(eye) ? ' err' : ''}" id="${eye}-kind" data-eye="${eye}" data-k="kind">${kindOpts}</select></div>`;
+    if(hasKind(eye)) h += `<div class="field"><label for="${eye}-sph">Grau ${e.kind === 'miopia' ? '(negativo)' : '(positivo)'}</label><select class="select${st.tried && e.sph === '' ? ' err' : ''}" id="${eye}-sph" data-eye="${eye}" data-k="sph">${opts(powersFor(e.kind), 'Selecionar', e.sph)}</select></div>`;
+    if(lens.toric && hasKind(eye)){
+      h += `<div class="field"><label for="${eye}-cyl">Cilíndrico (CIL)</label><select class="select${bad('cyl')}" id="${eye}-cyl" data-eye="${eye}" data-k="cyl">${opts(HB.rx.cyl(), 'Selecionar', e.cyl)}</select></div>`;
+      h += `<div class="field"><label for="${eye}-axis">Eixo</label><select class="select${bad('axis')}" id="${eye}-axis" data-eye="${eye}" data-k="axis">${opts(HB.rx.axis(), 'Selecionar', e.axis)}</select></div>`;
+    }
+    return h + '</div>';
+  };
+  $('#rxGrid').innerHTML = col('od', 'Olho direito (OD)', 'Não preciso de lente no olho direito') + col('oe', 'Olho esquerdo (OE)', 'Não preciso de lente no olho esquerdo');
+  $$('#rxGrid select').forEach(s => s.onchange = () => {
+    st[s.dataset.eye][s.dataset.k] = s.value;
+    if(s.dataset.k === 'kind') st[s.dataset.eye].sph = '';
+    if(st.tried) validate();
+    renderRx();
+    const again = $('#' + s.id); if(again) again.focus();
+  });
+}
+function validate(){
+  const errs = [];
+  if(!hasKind('od') && !hasKind('oe')) errs.push('Selecione miopia ou hipermetropia em pelo menos um olho.');
+  [['od', 'olho direito'], ['oe', 'olho esquerdo']].forEach(([eye, n]) => { if(hasKind(eye) && st[eye].sph === '') errs.push(`Selecione o grau do ${n}.`); });
+  if(lens.toric){
+    [['od', 'olho direito'], ['oe', 'olho esquerdo']].forEach(([eye, n]) => {
+      if(chosen(eye) && (st[eye].cyl === '' || st[eye].axis === '')) errs.push(`Selecione o cilíndrico e o eixo do ${n}.`);
+    });
+  }
+  $('#formErr').innerHTML = errs.map(esc).join('<br>');
+  $('#formErr').classList.toggle('hidden', !errs.length);
+  return !errs.length;
+}
+const eyeData = eye => chosen(eye) ? (lens.toric ? {kind: st[eye].kind, sph: st[eye].sph, cyl: st[eye].cyl, axis: st[eye].axis} : {kind: st[eye].kind, sph: st[eye].sph}) : null;
+
+/* ================= Overlay de e-mail → checkout ================= */
+const ov = $('#stepOv');
+function openOv(){
+  const u = HB.user.current();
+  $('#ovEmail').value = (u && u.email) || HB.store.get('checkout-email', '') || '';
+  $('#ovErr').classList.add('hidden'); $('#ovEmail').classList.remove('err');
+  ov.classList.add('on'); document.body.classList.add('ov-open');
+  setTimeout(() => $('#ovEmail').focus(), 50);
+}
+function closeOv(){ ov.classList.remove('on'); document.body.classList.remove('ov-open'); }
+$$('[data-ovclose]').forEach(b => b.onclick = closeOv);
+addEventListener('keydown', e => { if(e.key === 'Escape' && ov.classList.contains('on')) closeOv(); });
+
+$('#buyForm').onsubmit = e => {
+  e.preventDefault();
+  st.tried = true;
+  const ok = validate(); renderRx();
+  if(!ok){ const b = $('#rxGrid .select.err'); if(b) b.focus(); return; }
+  openOv();
+};
+$('#ovForm').onsubmit = e => {
+  e.preventDefault();
+  const em = $('#ovEmail').value.trim();
+  if(!HB.valid.email(em)){ $('#ovErr').classList.remove('hidden'); $('#ovEmail').classList.add('err'); $('#ovEmail').focus(); return; }
+  HB.store.set('checkout-email', em);
+  HB.cart.add(buildLensItem(lens, st.pack, eyeData('od'), eyeData('oe')));
+  location.href = 'checkout.html';
+};
+
+/* ================= Barra fixa (mobile) ================= */
+$('#sbBtn').onclick = () => $('#buyForm').scrollIntoView({behavior:'smooth', block:'start'});
+if('IntersectionObserver' in window){
+  const sb = $('#stickyBuy');
+  new IntersectionObserver(([en]) => { const on = !en.isIntersecting && en.boundingClientRect.top < 0; sb.classList.toggle('on', on); document.body.classList.toggle('has-sticky', on); }).observe($('#buyForm'));
+}
+
+/* ================= Barra de vantagens ================= */
+const AS = 'https://images.ctfassets.net/h5kzo0k46quc/';
+$('#perks').innerHTML = [
+  ['6vffcFfrhjfn2UfxhgbDAJ/02d3771919b0bc0d60948469c1836e74/ValuePropsSection-contact-purple.png', 'Conforto o dia todo'],
+  ['13z5TOdRhDvLxF2UGS6x2U/a685cbca4f6a155b5dfb006be2b01583/ValuePropsSection-price-purple.png', 'Qualidade por menos'],
+  ['58gaHmXisuRn0dZlyTLSsl/fed39a113f84ceac73ff5d8e2f123bc3/ValuePropsSection-subscription-purple.png', 'Pagamento via Pix'],
+  ['2SEWarFYWCx4Q1WkPhicNR/ba0a5e4eb273ac95854d7684d1eefc00/ValuePropsSection-check-purple.png', 'Aprovadas pelos órgãos reguladores'],
+  ['3SaDofUpEoWjZyDL9hmmNn/d34a28a3d6b3ab4723435fe87b251ca2/ValuePropsSection-free-shipping-purple.png', 'Frete grátis']
+].map(p => `<div><img src="${AS + p[0]}?w=80&q=80&fm=webp" alt="">${p[1]}</div>`).join('');
+
+/* ================= Sobre ================= */
+const ABOUT = {
+  'skyhy': ['Lentes diárias respiráveis de hidrogel de silicone', 'Olhos saudáveis adoram oxigênio. O oxigênio deixa as lentes de contato mais confortáveis. E as lentes SkyHy by Hubble têm maior permeabilidade ao oxigênio, para mais conforto e respirabilidade.']
+};
+const TYPE_H = {diaria:'Lentes de contato diárias descartáveis', semanal:'Lentes de contato quinzenais', mensal:'Lentes de contato mensais'};
+const ab = ABOUT[lens.id] || [TYPE_H[lens.type], lens.tagline || lens.description];
+$('#aboutH').textContent = ab[0];
+$('#aboutLead').innerHTML = sup(ab[1]);
+if(ab[2]){ $('#aboutIntro').textContent = ab[2]; $('#aboutIntro').classList.remove('hidden'); }
+$('#aboutBul').innerHTML = (lens.bullets || []).map(b => `<li>${esc(b)}</li>`).join('');
+
+if(isHubble && lens.advantages && lens.advantages.length){
+  $('#advSec').classList.remove('hidden');
+  const a = $('#adv');
+  if(lens.advantages.length < 4) a.style.gridTemplateColumns = `repeat(${lens.advantages.length}, minmax(0,1fr))`;
+  a.innerHTML = lens.advantages.map(v => `<div><img src="${img(v[0], 600)}" alt="" loading="lazy"><h3>${esc(v[1])}</h3><p>${esc(v[2])}</p></div>`).join('');
+}
+if(isHubble) $('#diffSec').classList.remove('hidden');
+
+/* ================= Como funciona ================= */
+const steps = [
+  {t:'Você escolhe seu plano.', p:'Escolha o plano de 1, 2 ou 3 meses, informe sua receita e pague via Pix.', img:'1qMJA0pAK3bg1Y5lxIxWcX/a927975a0233220492f5b426ad431677/Contacts-PDP-How-Hubble-Works-01.jpg'},
+  {t:'Nós validamos sua receita.', p:'Para deixar tudo nos mínimos detalhes. Avisaremos por e-mail assim que estiver tudo certo.', img:'5aos3mSypX6wOld48Dlr8i/c90715c50afd7c2fa726c2b9c77159bb/Contacts-PDP-How-Hubble-Works-02.jpg'},
+  {t:'Enviamos suas lentes.', p:'Preparamos, embalamos e enviamos suas lentes de contato direto para a sua casa, com entrega em cerca de 5 a 10 dias úteis.', img:'oaKYsDwKevpGSncuPwMiP/e67decf05d8b3662f1239b5774f8b6a5/Contacts-PDP-How-Hubble-Works-03.jpg'},
+  {t:'Tudo de uma vez.', p:'Todas as caixas do seu plano chegam juntas, com frete grátis. Sem mensalidade e sem cobranças recorrentes.', img:'7uVLfkovC5JAFHnFMmlyRw/37ea3ee86fc1cd3bbacecc9687ca8ef4/Contacts-PDP-How-Hubble-Works-04.jpg'},
+  {t:'Recompre quando precisar.', p:'Quando as lentes estiverem acabando, é só acessar sua conta e comprar novamente com a mesma receita.', img:'5GMUQultSz1Bag84JPc1FU/c2504be383e5066e2e144cd49a490d7f/Contacts-PDP-How-Hubble-Works-05.jpg'}
+];
+$('#wRail').innerHTML = steps.map((s, i) => `<div class="step"><img src="${AS + s.img}?w=720&q=80&fm=webp" alt="" loading="lazy"><div class="num">${i + 1}</div><h3>${s.t}</h3><p>${s.p}</p></div>`).join('');
+const wPer = () => innerWidth <= 900 ? 1 : 2;
+HB.carousel({prev:'#wPrev', next:'#wNext', idx:'#wIdx', pages:() => Math.ceil(steps.length / wPer()), rail:i => $('#wRail').style.transform = `translateX(-${Math.min(i * wPer(), steps.length - wPer()) * (100 / wPer())}%)`});
+
+/* ================= Vídeo ================= */
+const vbox = $('#vbox');
+const play = () => { if(vbox.querySelector('iframe')) return; vbox.insertAdjacentHTML('beforeend', '<iframe src="https://www.youtube.com/embed/w4YCLxsUxyI?autoplay=1&rel=0&hl=pt-BR&cc_lang_pref=pt&cc_load_policy=1" title="Lentes de contato Hubble" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'); };
+vbox.onclick = play; vbox.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); play(); } };
+
+/* ================= FAQ ================= */
+const Q = {
+  fda: ['As lentes Hubble são aprovadas pelos órgãos reguladores?', 'Sim. Todas as nossas lentes têm aprovação de longa data da FDA, a agência reguladora dos Estados Unidos, e já vendemos mais de 600 milhões de lentes com receita!'],
+  teen: ['Adolescentes podem usar lentes Hubble?', 'Nossas lentes são aprovadas para uso por maiores de 18 anos que tenham uma receita válida.'],
+  plans: ['Como funcionam os planos?', 'A SkyHy by Hubble® Diária é vendida em três planos de compra única, com frete grátis: <b>1 mês</b> – 2 caixas (1 por olho) por R$ 180,00; <b>2 meses</b> – 4 caixas por R$ 267,00 (R$ 133,50/mês); <b>3 meses</b> – 6 caixas por R$ 367,00 (R$ 122,33/mês). Cada caixa tem 30 lentes diárias.</p><p>Não é uma assinatura: não há cobranças recorrentes. Quando as lentes estiverem acabando, é só comprar novamente pela <a href="conta.html#recomprar">sua conta</a>.'],
+  pay: ['Quais formas de pagamento vocês aceitam?', 'Aceitamos somente Pix. Depois de finalizar a compra, você recebe o QR Code e o código Pix Copia e Cola, com aprovação imediata. O valor do plano é o valor final, com frete grátis.'],
+  rx: ['Para quais graus a SkyHy está disponível?', 'A SkyHy by Hubble® Diária corrige miopia (de -0,50 a -10,00) e hipermetropia (de +0,50 a +4,00). No momento, não vendemos lentes para astigmatismo (tóricas): se a sua receita tiver cilíndrico (CIL) e eixo, converse com o seu oftalmologista sobre a melhor opção para você.'],
+  water: ['Posso usar água ou solução para limpar ou guardar minhas lentes Hubble?', 'As lentes SkyHy by Hubble Diária são descartáveis diárias, feitas para uso único. Não tente limpá-las, guardá-las ou usá-las por mais de um dia. Nunca use água da torneira, água mineral ou saliva nas lentes.'],
+  material: ['De que são feitas as lentes SkyHy by Hubble?', 'As lentes SkyHy by Hubble Diária são feitas de Olifilcon B, um hidrogel de silicone com alta permeabilidade ao oxigênio, para lentes muito respiráveis. O material é macio e flexível, mantém a umidade e ajuda a deixar seus olhos naturalmente hidratados ao longo do dia.']
+};
+const BRAND_FAQ = [Q.plans, Q.pay, Q.rx, Q.fda, Q.teen];
+const HUBBLE_FAQ = {
+  'skyhy': [Q.plans, Q.pay, Q.rx, Q.material, Q.fda, Q.teen, Q.water]
+};
+const faq = HUBBLE_FAQ[lens.id] || BRAND_FAQ;
+$('#faq').innerHTML = faq.map(f => `<details><summary>${f[0]}</summary><div><p>${f[1]}</p></div></details>`).join('');
+$('#faqMore').classList.remove('hidden');
+
+/* ================= Você também pode gostar (acessórios) ================= */
+$('#recs').innerHTML = ['avenova-eye-compress', 'biotrue-hydration-boost-new', 'alaway', 'ocuvite-eye-health']
+  .map(find.accessory).filter(Boolean).map(HB.card.accessory).join('');
+
+/* ================= Início ================= */
+renderPrice(); renderGallery(); renderRx();
+})();
+</script>
+</body>
+</html>

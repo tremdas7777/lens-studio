@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fale conosco | Hubble</title>
+<meta name="description" content="Fale com o atendimento da Hubble por e-mail ou chat. Atendemos de segunda a sexta, das 9h às 18h, e aos sábados, das 9h às 13h.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .ct-top{position:relative;border-radius:28px 28px 0 0;overflow:hidden;background:var(--lav-solid)}
+  .ct-top>picture img{width:100%;aspect-ratio:1600/700;object-fit:cover;object-position:center 25%}
+  .ct-copy{position:relative;margin-top:-90px;padding-bottom:70px}
+  .ct-card{background:#fff;border-radius:20px;box-shadow:0 14px 40px rgba(34,84,125,.12);padding:44px 40px;text-align:center}
+  .ct-card h1{font-size:clamp(38px,5vw,64px);color:var(--navy);margin-bottom:6px}
+  .ct-card>p{font-size:17px;color:var(--ink);margin-bottom:34px}
+  .actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+  .action{padding:0 10px}
+  .action+.action{border-left:1px solid var(--line)}
+  .action h2{font-size:22px;color:var(--ink);margin-bottom:10px}
+  .action .cta a,.action .cta button{font:700 18px "Work Sans";color:var(--indigo);text-decoration:underline;background:none;border:0;cursor:pointer;padding:0}
+  .action .cta{margin-bottom:10px;word-break:break-word}
+  .action .subtext{font-size:14.5px;color:var(--text)}
+  .shop{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);align-items:center;gap:30px;background:#eceefe;border-radius:20px;overflow:hidden}
+  .shop .txt{padding:40px 0 40px 40px}
+  .shop .small-bold{font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:var(--indigo);margin-bottom:10px}
+  .shop .cta{font-family:Archivo,sans-serif;font-stretch:125%;font-weight:800;font-size:clamp(24px,2.6vw,34px);line-height:1.15;color:var(--navy);margin-bottom:22px}
+  .shop picture img{width:100%;height:100%;object-fit:cover}
+  @media (max-width:900px){
+    .actions{grid-template-columns:minmax(0,1fr);gap:0}
+    .action{padding:22px 0}
+    .action+.action{border-left:0;border-top:1px solid var(--line)}
+    .shop{grid-template-columns:minmax(0,1fr);gap:0}
+    .shop .txt{padding:32px 24px 8px;text-align:center}
+  }
+  @media (max-width:560px){
+    .ct-top{border-radius:20px 20px 0 0}
+    .ct-top>picture img{aspect-ratio:4/5}
+    .ct-copy{margin-top:-60px}
+    .ct-card{padding:30px 18px}
+  }
+</style>
+</head>
+<body>
+<main>
+<section class="ct-top">
+  <picture>
+    <source media="(max-width:560px)" srcset="https://images.ctfassets.net/h5kzo0k46quc/3wm114Zvb1e2EvihdClRcP/d3ef018e91563587f792cf2ccc925fdd/Contact-Us-Hero-Module-Mobile.jpg?w=900&q=80&fm=webp">
+    <img src="https://images.ctfassets.net/h5kzo0k46quc/6C1bZQLffe7jf9VJf8reQB/66e9667d1ddf9a8d23c127f06cdfce09/Contact-Us-Hero-Module-Desktop.jpg?w=2000&q=80&fm=webp" alt="">
+  </picture>
+</section>
+<section class="ct-copy">
+  <div class="wrap">
+    <div class="ct-card">
+      <h1 class="display">Fale conosco</h1>
+      <p>Estamos aqui para ajudar</p>
+      <div class="actions">
+        <div class="action">
+          <h2>E-mail</h2>
+          <p class="cta"><a href="mailto:atendimento@hubble.com.br">atendimento@hubble.com.br</a></p>
+          <p class="subtext"><i>Escreva para a gente.</i> Estamos prontos para ajudar.<br>Segunda a sexta, das 9h às 18h<br>Sábado, das 9h às 13h</p>
+        </div>
+        <div class="action">
+          <h2>Chat</h2>
+          <p class="cta"><button type="button" id="openChat">Abrir o chat</button></p>
+          <p class="subtext"><i>Envie uma mensagem</i>. Comece uma conversa com a nossa equipe on-line.</p>
+        </div>
+        <div class="action">
+          <h2>Dúvidas?</h2>
+          <p class="cta"><a href="faq.html">Veja as perguntas frequentes</a></p>
+          <p class="subtext"><i>Encontre respostas.</i> Reunimos as perguntas mais comuns e as respostas que sabemos que vão ajudar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="shop">
+      <div class="txt">
+        <p class="small-bold">SkyHy by Hubble® Diária a partir de <span id="minSale">R$ 122,33</span>/mês</p>
+        <p class="cta">Entregues na sua porta! Viu? Fácil.</p>
+        <a href="lente.html?id=skyhy" class="btn">Comprar Lentes de Contato</a>
+      </div>
+      <picture>
+        <source media="(max-width:900px)" srcset="https://images.ctfassets.net/h5kzo0k46quc/dFXdETKKcfG427Fb5GlFK/02fddc96382c3e753c015187c2c571ae/Contact-Us-Shop-Module-Mobile.jpg?w=900&q=80&fm=webp">
+        <img src="https://images.ctfassets.net/h5kzo0k46quc/2QezwCIWLbTfsIMnbsLWgD/9581ff1de0b0415f53318925c3403a56/Contact-Us-Shop-Module-Desktop.jpg?w=1400&q=80&fm=webp" alt="Caixas de lentes de contato Hubble" loading="lazy">
+      </picture>
+    </div>
+  </div>
+</section>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const l = HB.find.lens('skyhy');
+  if(l && l.packs && l.packs.length){ HB.$('#minSale').textContent = HB.brl(Math.min(...l.packs.map(p => p.perMonth || p.total))); }
+  // Abre o painel de ajuda (o botão #helpBtn é injetado pelo app.js)
+  HB.$('#openChat').onclick = () => {
+    const panel = document.getElementById('helpPanel'), btn = document.getElementById('helpBtn');
+    if(panel && btn && !panel.classList.contains('on')) btn.click();
+    if(panel){ const a = panel.querySelector('a'); if(a) a.focus(); }
+  };
+})();
+</script>
+</body>
+</html>

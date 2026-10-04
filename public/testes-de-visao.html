@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teste de visão online gratuito | Hubble</title>
+<meta name="description" content="Teste de visão online gratuito da Hubble para renovar sua receita de lentes de contato: pelo celular, tablet ou computador, em menos de 10 minutos, com avaliação de um oftalmologista.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  :root{--vt:#2f6b3a}
+  .vt-hero{position:relative;border-radius:28px 28px 0 0;overflow:hidden;min-height:clamp(420px,40vw,560px);display:flex;align-items:center;background:#dfe9e0}
+  .vt-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right center}
+  .vt-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.42),rgba(0,0,0,.08) 60%,transparent)}
+  .vt-hero .copy{position:relative;z-index:2;color:#fff;max-width:540px}
+  .vt-hero h1{font-size:clamp(36px,4.6vw,60px);margin-bottom:16px}
+  .vt-hero p{font-size:16px;margin-bottom:26px}
+  .btn.green{background:var(--vt)}
+  .g-title{color:var(--vt)}
+  .intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
+  .intro h2{font-size:clamp(28px,3.4vw,44px);margin-bottom:18px}
+  .intro p{font-size:16px;color:var(--ink);margin-bottom:24px}
+  .intro img{width:100%;border-radius:16px}
+  .works.green-bg{background:#eef6ea;border-radius:28px 28px 0 0}
+  .works .num{background:var(--vt)}
+  .works .step h3{color:var(--vt)}
+  .works .arrow{background:var(--vt)}
+  .works .center{text-align:center;margin-top:30px}
+  .banner{position:relative;overflow:hidden;border-radius:20px;text-align:center;padding:80px 24px}
+  .banner picture img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .banner .in{position:relative;z-index:2}
+  .banner h2{color:var(--vt);font-size:clamp(30px,4.2vw,54px);margin-bottom:18px}
+  .banner p{font-size:17px;color:var(--ink);font-weight:500}
+  .need{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;text-align:center;max-width:960px;margin:0 auto}
+  .need img{width:96px;height:96px;object-fit:contain;margin:0 auto 16px}
+  .need h4{font-size:18px;color:var(--ink);margin-bottom:8px}
+  .need p{font-size:15px;color:var(--text)}
+  .doc{max-width:760px;margin:0 auto;text-align:center}
+  .doc h3{font-size:clamp(26px,3vw,36px);margin-bottom:14px}
+  .doc p{font-size:16px;color:var(--ink);margin-bottom:24px}
+  .cmp{max-width:960px;margin:0 auto;overflow-x:auto}
+  .cmp table{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+  .cmp th,.cmp td{padding:16px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;color:var(--ink)}
+  .cmp thead th{font-size:18px}
+  .cmp thead th:nth-child(2){color:var(--vt)}
+  .cmp td:first-child{font-weight:700;width:22%}
+  .cmp td:nth-child(2){background:#f3f9f0;font-weight:500}
+  .foot-note{max-width:960px;margin:22px auto 0;font-size:12.5px;color:var(--muted)}
+  .vfaq h3{text-align:center;letter-spacing:.08em;font-size:15px;color:var(--vt);margin-bottom:8px}
+  .vfaq .lead{text-align:center;margin-bottom:28px}
+  .faq a{color:var(--vt);text-decoration:underline}
+  /* Teste */
+  .modal .box.wide{max-width:820px}
+  .t-step h3{font-size:22px;color:var(--ink);margin-bottom:8px}
+  .t-step p{font-size:15px;color:var(--text);margin-bottom:12px}
+  .t-step .check{margin-bottom:10px}
+  .opts{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 18px}
+  .opts .radio-card{margin:0;flex:1 1 220px}
+  .stage{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:24px;align-items:center}
+  .chart{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 8px 14px;overflow:hidden}
+  .ln{display:flex;align-items:center;justify-content:center;position:relative;font-family:Arial,Helvetica,sans-serif;font-weight:700;color:#111;line-height:1;padding:.18em 0}
+  .ln .l{display:inline-block;width:1em;text-align:center;margin:0 .25em}
+  .ln.dim{opacity:.15}
+  .ln.cur::before{content:"▶";position:absolute;left:4px;font-size:13px;color:var(--vt)}
+  .ctrl{display:flex;flex-direction:column;gap:12px}
+  .ctrl .eye{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--vt)}
+  .ctrl .q{font-size:17px;color:var(--ink);font-weight:600}
+  .ctrl .btn{width:100%}
+  .res{border-radius:12px;padding:18px;margin:6px 0 16px}
+  .res.good{background:#e9f7ef;border:1px solid #a9dcc0;color:#145c3b}
+  .res.warn{background:#fff7e6;border:1px solid #f3d38a;color:#6b4b00}
+  .res table{border-collapse:collapse;margin:8px 0;font-size:15px}
+  .res td{padding:3px 18px 3px 0}
+  @media (max-width:900px){
+    .intro,.stage{grid-template-columns:minmax(0,1fr)}
+    .need{grid-template-columns:minmax(0,1fr)}
+  }
+  @media (max-width:560px){
+    .vt-hero{border-radius:20px 20px 0 0;align-items:flex-end;padding-bottom:36px}
+    .vt-hero img{object-position:70% center}
+    .vt-hero::after{background:linear-gradient(0deg,rgba(0,0,0,.6),rgba(0,0,0,.1) 70%)}
+    .banner{padding:56px 18px}
+    .modal .box{padding:24px 16px}
+  }
+</style>
+</head>
+<body>
+<main>
+<section class="vt-hero">
+  <img src="https://images.ctfassets.net/h5kzo0k46quc/1uudwcIfeF69leSRRzVusZ/f40ef8084eb8c28b0cc48c506fe5704a/Hubble-Free-Online-Eye-Exams-Hero-Module-Desktop.jpg?w=2000&q=80&fm=webp" alt="">
+  <div class="wrap" style="width:100%">
+    <div class="copy">
+      <h1 class="display">Testes de visão online gratuitos</h1>
+      <p>Mais um jeito de a Hubble facilitar suas lentes de contato. Já é cliente? Renove a receita das suas lentes Hubble pelo celular, em poucos minutos, no conforto da sua casa.</p>
+      <button class="btn green" data-test>Fazer o teste de visão online agora</button>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap intro">
+    <div>
+      <h2 class="display g-title">Você sabe como é<br>com exames de vista...</h2>
+      <p>Você vai comprar mais lentes e descobre que precisa marcar uma consulta para renovar a receita (isso acontece todo ano, viu?). A Hubble simplifica esse processo oferecendo aos clientes testes de visão online gratuitos para a renovação da receita de lentes de contato. Sem precisar ir ao consultório só para renovar: online, de casa, de graça, em 10 minutos ou menos. Fácil assim!</p>
+      <button class="btn green" data-test>Fazer o teste de visão online agora</button>
+    </div>
+    <img src="https://images.ctfassets.net/h5kzo0k46quc/28hbB08ABfnk1GFtEPIns4/c7de92b15bffdf6161bbe68509ad703c/Hubble-Free-Online-Eye-Exams.jpg?w=1100&q=80&fm=webp" alt="Caixas coloridas de lentes Hubble" loading="lazy">
+  </div>
+</section>
+
+<section class="works green-bg">
+  <div class="wrap">
+    <h2 class="title display g-title">Veja como funciona</h2>
+    <div class="viewport"><div class="rail" id="wRail"></div></div>
+    <div class="arrows">
+      <button class="arrow" id="wPrev" aria-label="Anterior"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7.5 2 3.5 6l4 4"/></svg></button>
+      <span id="wIdx">1/3</span>
+      <button class="arrow" id="wNext" aria-label="Próximo"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4.5 2l4 4-4 4"/></svg></button>
+    </div>
+    <div class="center"><button class="btn green" data-test>Fazer o teste de visão online agora</button></div>
+  </div>
+</section>
+
+<section class="sec tight">
+  <div class="wrap">
+    <div class="banner">
+      <picture>
+        <source media="(max-width:560px)" srcset="https://images.ctfassets.net/h5kzo0k46quc/41CQUi1RUc4yUUEot4r61u/775396e4bc248d33395c261cf0468f80/Hubble-Free-Online-Eye-Exams-Banner-Mobile.jpg?w=900&q=80&fm=webp">
+        <img src="https://images.ctfassets.net/h5kzo0k46quc/5uOUuITgacZ59kZ8UbJ514/679ff0162dd75580f929b17b4a5d3c67/Hubble-Free-Online-Eye-Exams-Banner-Desktop.jpg?w=2000&q=80&fm=webp" alt="" loading="lazy">
+      </picture>
+      <div class="in">
+        <h2 class="display">Um teste de visão online<br>gratuito para lentes de contato.</h2>
+        <p>Em menos de 10 minutos. No seu dispositivo.<br>Com resposta por e-mail, em geral em até 24 horas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <h3 class="title display g-title" style="font-size:clamp(28px,3.4vw,44px)">Veja o que você vai precisar</h3>
+    <div class="need">
+      <div><img src="https://images.ctfassets.net/h5kzo0k46quc/1llODNbvNKY9rqIPDqXy67/108c23bdbfd44168e4fdc4ea3c2e24e1/Free-Eye-Exams-Smartphone.png?w=200&q=80&fm=webp" alt="" loading="lazy"><h4>Seu celular, tablet ou computador</h4><p>Não precisa de aplicativo! Você faz o teste direto no seu dispositivo.</p></div>
+      <div><img src="https://images.ctfassets.net/h5kzo0k46quc/17FnkMhavF36cmUJ576wZj/720221730e6de77fc8947963c936a550/Free-Eye-Exams-10-feet.png?w=200&q=80&fm=webp" alt="" loading="lazy"><h4>3 metros de espaço</h4><p>Afaste-se! Fique a cerca de 3 metros da tela para medirmos sua visão com precisão.</p></div>
+      <div><img src="https://images.ctfassets.net/h5kzo0k46quc/6C3znRlc8vjjZKu7IMOvaL/32bdc13834e0a0336c3f322cc06ddd20/Free-Eye-Exams-Prescription.png?w=200&q=80&fm=webp" alt="" loading="lazy"><h4>Sua receita mais recente</h4><p>Venha preparado! É necessário ter a sua receita anterior cadastrada na Hubble.</p></div>
+    </div>
+    <div style="text-align:center;margin-top:36px"><button class="btn green" data-test>Fazer o teste de visão online agora</button></div>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <div class="wrap doc">
+    <h3 class="display g-title">Precisa ir ao oftalmologista?</h3>
+    <p>Nosso teste de visão online gratuito não substitui um exame oftalmológico completo nem serve para obter a sua primeira receita. Mas não se preocupe: podemos ajudar você a encontrar um oftalmologista na sua região.</p>
+    <a class="btn green" href="faq.html#encontrar-medico">Encontrar um médico</a>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <h3 class="title display g-title" style="font-size:clamp(28px,3.4vw,44px)">Testes de visão: Hubble x consultório</h3>
+    <div class="cmp">
+      <table>
+        <thead><tr><th></th><th>Hubble</th><th>Consultório</th></tr></thead>
+        <tbody>
+          <tr><td>Tempo gasto</td><td>10 minutos</td><td>1 hora + deslocamento</td></tr>
+          <tr><td>Custo</td><td>Grátis! Esse é por nossa conta</td><td>Valor da consulta particular ou coparticipação do convênio</td></tr>
+          <tr><td>Avaliado por médico</td><td>Avaliado por oftalmologista</td><td>Avaliado por oftalmologista</td></tr>
+          <tr><td>Quando você pode fazer?</td><td>A qualquer hora</td><td>No horário do consultório</td></tr>
+          <tr><td>Onde?</td><td>No conforto da sua casa</td><td>Em um consultório</td></tr>
+          <tr><td>Acesso</td><td>Acesse sua receita em qualquer lugar, a qualquer hora.</td><td>Só a via em papel</td></tr>
+          <tr><td>Simplicidade</td><td>Tudo o que você precisa é do celular e de um computador para começar.</td><td>Encontrar um horário. Marcar a consulta. Ir até lá. Esperar. Ser atendido. Voltar para casa.</td></tr>
+          <tr><td>Praticidade</td><td>Sua receita é vinculada automaticamente ao seu pedido Hubble.</td><td>Você precisa digitar a receita manualmente.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="foot-note">*O teste de visão pode ser feito de qualquer lugar com conexão à internet, inclusive do conforto da sua casa. A renovação da receita é sempre uma decisão do oftalmologista que avalia os seus resultados, por telemedicina, conforme as normas do Conselho Federal de Medicina.</p>
+  </div>
+</section>
+
+<section class="sec vfaq" style="padding-top:0">
+  <div class="wrap">
+    <h3>PERGUNTAS FREQUENTES</h3>
+    <p class="lead">Dúvidas sobre o nosso teste de visão online? Nós temos as respostas.</p>
+    <div class="faq">
+      <details><summary>O que eu preciso para fazer o teste de visão online?</summary><div><p>Boa notícia! Você provavelmente já tem tudo o que precisa em casa:</p><ul class="bul" style="margin:10px 0"><li>3 metros de espaço</li><li>Um celular, tablet ou computador</li><li>A receita da sua correção atual</li></ul><p>E lembre-se: você precisa usar suas lentes atuais durante todo o teste.</p></div></details>
+      <details><summary>Como sei se posso fazer o teste gratuitamente?</summary><div><p>Há apenas alguns requisitos para fazer o teste de visão online gratuito para lentes de contato. Para ser elegível, você precisa:</p><ul class="bul" style="margin:10px 0"><li>Morar no Brasil</li><li>Ter entre 18 e 55 anos</li><li>Não ter problemas de saúde nem tomar medicamentos que possam afetar a sua visão</li><li>Ser cliente Hubble com uma receita de lentes Hubble perto do vencimento</li></ul></div></details>
+      <details><summary>Quando posso fazer o teste de visão online?</summary><div><p>Se você precisa renovar sua receita de lentes Hubble, este teste é para você. A melhor parte? Você pode fazer agora mesmo, de casa, sem precisar marcar consulta.</p><p>O teste avalia a acuidade visual com a sua correção atual e envia os resultados para a avaliação de um oftalmologista, que emite a nova receita.</p></div></details>
+      <details><summary>Para quem é o teste de visão?</summary><div><p>Este teste é para pessoas cuja visão não mudou, que fizeram um exame oftalmológico completo recentemente e que querem renovar uma receita Hubble perto do vencimento.</p><p>Se o teste detectar que a sua visão mudou, a receita não será renovada, e recomendamos que você procure um oftalmologista presencialmente.</p><p>Se esta for a sua primeira receita, você precisará consultar um oftalmologista para fazer o exame.</p><p>Este teste não substitui o exame oftalmológico inicial. Ele não realiza nem substitui um exame completo e não avalia a saúde dos olhos. Consulte um oftalmologista para um exame completo todos os anos ou sempre que sentir dor ou desconforto. Este teste não se destina a diagnosticar, tratar, atenuar ou curar doenças.</p></div></details>
+      <details><summary>Como funciona o teste de visão online?</summary><div><p>Se você for elegível, enviaremos um e-mail avisando que é hora de renovar sua receita de lentes online. O e-mail leva você ao nosso site, onde você faz o teste de casa, só com o celular, tablet ou computador. Em seguida, um oftalmologista avalia os resultados e emite a nova receita. Depois que a nova receita é confirmada, enviamos para você por e-mail e a salvamos na sua conta, pronta para a próxima compra. Simples assim.</p></div></details>
+      <details><summary>Quanto tempo leva para fazer o teste?</summary><div><p>A maioria das pessoas conclui nosso teste online em 10 minutos ou menos! Em geral, a resposta do oftalmologista chega por e-mail em até 24 horas.</p></div></details>
+      <details><summary>Com que frequência devo fazer um teste de visão online?</summary><div><p>A maioria das receitas de lentes de contato vence entre um e dois anos após o último exame ou teste de visão, então reserve um tempo para fazer o teste antes da data de vencimento! Você precisa ter uma receita válida para comprar lentes Hubble.</p><p>Lembre-se de que este teste é para pessoas cuja visão não mudou, que fizeram um exame completo recentemente e que querem renovar uma receita Hubble perto do vencimento. Se esse não for o seu caso, use o link “Encontrar um médico” acima para procurar um oftalmologista perto de você.</p></div></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- Teste de visão (acuidade) -->
+<div class="modal" id="tModal" role="dialog" aria-modal="true" aria-labelledby="tTitle">
+  <div class="bg" data-tclose></div>
+  <div class="box wide">
+    <button class="close" data-tclose aria-label="Fechar">×</button>
+    <div class="t-step" id="t1">
+      <h3 id="tTitle">Antes de começar</h3>
+      <p>Confirme os requisitos para fazer o teste de visão online:</p>
+      <label class="check"><input type="checkbox" class="req"><span>Tenho entre 18 e 55 anos e moro no Brasil.</span></label>
+      <label class="check"><input type="checkbox" class="req"><span>Não tenho problemas de saúde nem tomo medicamentos que afetem minha visão.</span></label>
+      <label class="check"><input type="checkbox" class="req"><span>Já tenho uma receita de lentes de contato e vou usar minhas lentes atuais durante o teste.</span></label>
+      <div class="lbl" style="margin:16px 0 8px">Onde você vai fazer o teste?</div>
+      <div class="opts" id="tDev">
+        <label class="radio-card on"><input type="radio" name="dev" value="3" checked><span><span class="t">Computador ou notebook</span><br><span class="d">Fique a 3 metros da tela</span></span></label>
+        <label class="radio-card"><input type="radio" name="dev" value="1.5"><span><span class="t">Celular ou tablet</span><br><span class="d">Fique a 1,5 metro da tela</span></span></label>
+      </div>
+      <p class="fine">Use um ambiente bem iluminado, com o brilho da tela no máximo. Você vai cobrir um olho de cada vez com a palma da mão, sem apertar.</p>
+      <span class="err-msg hidden" id="tErr">Confirme todos os requisitos para continuar.</span>
+      <button class="btn green" id="tStart" style="margin-top:14px">Começar pelo olho direito</button>
+    </div>
+    <div class="t-step hidden" id="t2">
+      <div class="stage">
+        <div class="chart" id="chart" aria-hidden="true"></div>
+        <div class="ctrl">
+          <div class="eye" id="tEye">Olho direito · cubra o olho esquerdo</div>
+          <div class="q">Você consegue ler todas as letras da linha marcada?</div>
+          <p class="fine" id="tInfo"></p>
+          <button class="btn green" id="tYes">Consigo ler</button>
+          <button class="btn ghost" id="tNo">Não consigo</button>
+        </div>
+      </div>
+    </div>
+    <div class="t-step hidden" id="t3"></div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const {$, $$, esc} = HB;
+  const IMG = 'https://images.ctfassets.net/h5kzo0k46quc/';
+  const steps = [
+    {t:'Hora de renovar sua receita', p:'Avisamos você por e-mail.', img:'6ZfgXRlqm2LCePVJrAe1yj/c1a359400d1a459fc97a3c3030b7b991/Hubble-Free-Online-Eye-Exams-How-It-Works-01.jpg', alt:'Mulher feliz usando óculos Hubble'},
+    {t:'Faça o teste de visão online gratuito', p:'Pelo celular, tablet ou computador.', img:'6ZGIxfv998LwPmZ0BIxVMG/9a186223f82e734929fe5a1b3d5bc72c/Hubble-Free-Online-Eye-Exams-How-It-Works-02.jpg', alt:'Homem usando óculos Hubble trabalhando no notebook em casa'},
+    {t:'Um oftalmologista avalia seus resultados', p:'Um médico oftalmologista emite a renovação da sua receita.', img:'4IjkxLoQbXOrymMvmwkEdF/51d52ba96d9e89e97784608384300de9/Hubble-Free-Online-Eye-Exams-How-It-Works-03.jpg', alt:'Médico anotando resultados de exame'},
+    {t:'Confirmamos sua receita', p:'Confira seu e-mail: sua receita está pronta.', img:'27EX3UhJhRciz2qPUklTev/4db57da8744e2a2092e641d17c680323/Hubble-Free-Online-Eye-Exams-How-It-Works-04.jpg', alt:'Pessoa navegando no site da Hubble pelo celular'},
+    {t:'Sua conta é atualizada', p:'Sua nova receita fica salva na sua conta Hubble, pronta para a próxima compra.', img:'6vzKZjKtz8Y0RPUABbQcKf/08e7f8a05ee8b5faf032ddb966388c88/Hubble-Free-Online-Eye-Exams-How-It-Works-05.jpg', alt:'Homem abrindo uma entrega de lentes Hubble'}
+  ];
+  $('#wRail').innerHTML = steps.map((s,i) => `<div class="step"><img src="${IMG+s.img}?w=720&q=80&fm=webp" alt="${esc(s.alt)}" loading="lazy"><div class="num">${i+1}</div><h3>${esc(s.t)}</h3><p>${esc(s.p)}</p></div>`).join('');
+  const per = () => innerWidth <= 900 ? 1 : 2;
+  HB.carousel({rail:i => $('#wRail').style.transform = `translateX(-${i*100}%)`, prev:'#wPrev', next:'#wNext', idx:'#wIdx', pages:() => Math.ceil(steps.length / per())});
+
+  /* ---------- Teste de acuidade (tabela estilo Snellen) ---------- */
+  const modal = $('#tModal');
+  const LINES = [200,100,70,50,40,30,25,20], COUNTS = [1,2,3,4,5,6,7,8], LETTERS = 'CDHKNORSVZ';
+  let st = {dist:3, eye:0, line:0, rows:[], res:[null,null]};
+  // A linha 20/20 subtende 5 minutos de arco na distância escolhida (aprox. 96 px por polegada)
+  const px = d => st.dist * 1000 * Math.tan((5/60) * Math.PI/180) * (d/20) / 25.4 * 96;
+  const rand = n => { let s = '', last = ''; while(s.length < n){ const c = LETTERS[Math.floor(Math.random()*LETTERS.length)]; if(c !== last){ s += c; last = c; } } return s; };
+  const show = id => ['t1','t2','t3'].forEach(x => $('#'+x).classList.toggle('hidden', x !== id));
+
+  function open(){ show('t1'); $('#tErr').classList.add('hidden'); modal.classList.add('on'); setTimeout(() => { const f = modal.querySelector('.req'); if(f) f.focus(); }, 50); }
+  function close(){ modal.classList.remove('on'); }
+  $$('[data-test]').forEach(b => b.onclick = open);
+  $$('[data-tclose]', modal).forEach(b => b.onclick = close);
+  $('#tDev').addEventListener('change', e => $$('#tDev .radio-card').forEach(r => r.classList.toggle('on', r.contains(e.target))));
+
+  function draw(){
+    const box = $('#chart');
+    box.innerHTML = st.rows.map((r,i) => `<div class="ln${i===st.line?' cur':''}${i>st.line?' dim':''}" style="font-size:${px(LINES[i]).toFixed(1)}px">${[...r].map(c=>`<span class="l">${c}</span>`).join('')}</div>`).join('');
+    const avail = box.clientWidth - 24;
+    $$('.ln', box).forEach(el => { const w = el.scrollWidth; if(w > avail) el.style.fontSize = (parseFloat(el.style.fontSize) * avail / w).toFixed(1) + 'px'; });
+    $('#tInfo').textContent = `Linha ${st.line+1} de ${LINES.length}`;
+  }
+  function startEye(eye){
+    st.eye = eye; st.line = 0; st.rows = LINES.map((_,i) => rand(COUNTS[i]));
+    $('#tEye').textContent = eye === 0 ? 'Olho direito · cubra o olho esquerdo' : 'Olho esquerdo · cubra o olho direito';
+    draw();
+  }
+  $('#tStart').onclick = () => {
+    if(!$$('.req', modal).every(c => c.checked)){ $('#tErr').classList.remove('hidden'); return; }
+    $('#tErr').classList.add('hidden');
+    st.dist = +modal.querySelector('input[name="dev"]:checked').value; st.res = [null,null];
+    show('t2'); startEye(0);
+  };
+  function finishEye(best){
+    st.res[st.eye] = best;
+    if(st.eye === 0){ HB.toast('Agora cubra o olho direito e teste o olho esquerdo.'); startEye(1); }
+    else result();
+  }
+  $('#tYes').onclick = () => { if(st.line >= LINES.length - 1) return finishEye(LINES[st.line]); st.line++; draw(); };
+  $('#tNo').onclick = () => finishEye(st.line === 0 ? null : LINES[st.line - 1]);
+  addEventListener('resize', () => { if(modal.classList.contains('on') && !$('#t2').classList.contains('hidden')) draw(); });
+
+  function result(){
+    const lbl = v => v ? `20/${v}` : 'abaixo de 20/200';
+    const ok = st.res.every(v => v && v <= 25);
+    const list = HB.store.get('visionTests', []);
+    const u = HB.user.current();
+    list.push({date:Date.now(), email:u ? u.email : null, od:st.res[0], oe:st.res[1], distance:st.dist, status: ok ? 'Triagem concluída' : 'Consulta presencial recomendada'});
+    HB.store.set('visionTests', list);
+    $('#t3').innerHTML = `<h3>${ok ? 'Teste concluído!' : 'Sua visão pode ter mudado'}</h3>
+      <div class="res ${ok ? 'good' : 'warn'}">
+        <table><tr><td>Olho direito</td><td><b>${lbl(st.res[0])}</b></td></tr><tr><td>Olho esquerdo</td><td><b>${lbl(st.res[1])}</b></td></tr></table>
+        <p>${ok
+          ? 'Seus resultados foram registrados. Este teste é uma triagem e não renova a receita automaticamente: a nova receita só pode ser emitida por um oftalmologista. Leve este resultado à sua consulta ou fale com nosso atendimento.'
+          : 'Pelo resultado, a sua visão com as lentes atuais pode ter mudado, e por isso a receita não pode ser renovada online. Recomendamos que você procure um oftalmologista para um exame presencial.'}</p>
+      </div>
+      <p class="fine">Este teste não substitui um exame oftalmológico completo e não avalia a saúde dos olhos.</p>
+      <div class="btn-row" style="margin-top:14px">${ok ? (u ? '<a class="btn green" href="conta.html#receitas">Ver minhas receitas</a>' : '<a class="btn green" href="conta.html">Entrar na minha conta</a>') : '<a class="btn green" href="faq.html#encontrar-medico">Encontrar um médico</a>'}<button class="btn ghost" id="tAgain">Refazer o teste</button></div>`;
+    show('t3');
+    $('#tAgain').onclick = () => show('t1');
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perguntas frequentes | Hubble</title>
+<meta name="description" content="Perguntas frequentes sobre lentes de contato e óculos Hubble: planos, entrega, pagamento via Pix, receitas, lentes, armações e devoluções.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .fq-head{padding:56px 0 36px;text-align:center}
+  .fq-head h1{font-size:clamp(44px,6vw,80px);margin-bottom:10px}
+  .fq-head p{font-size:17px;color:var(--ink)}
+  .fq-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:56px;align-items:start}
+  .side{position:sticky;top:88px;list-style:none}
+  .side h5,.m-list h5{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin:0 0 10px}
+  .side li a{display:block;padding:8px 12px;border-left:3px solid transparent;font-size:15px;color:var(--ink);border-radius:0 6px 6px 0}
+  .side li a:hover{background:var(--lav-solid)}
+  .side li.active a{border-left-color:var(--indigo);color:var(--indigo);font-weight:600;background:var(--lav-solid)}
+  .side .gap{height:26px}
+  .cat-title{font-size:clamp(24px,2.6vw,32px);color:var(--navy);margin-bottom:6px}
+  .faq{max-width:none}
+  .faq a{color:var(--indigo);text-decoration:underline}
+  .faq ul{margin:10px 0 10px 20px}
+  .faq li{margin-bottom:4px}
+  .m-list{display:none;list-style:none}
+  .m-list h5{margin-top:26px}
+  .m-cat{border-bottom:1px solid var(--line)}
+  .m-cat>button{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:0;padding:16px 0;font:600 17px "Work Sans";color:var(--ink);cursor:pointer;text-align:left}
+  .m-cat>button::after{content:"";width:9px;height:9px;border-right:2px solid var(--indigo);border-bottom:2px solid var(--indigo);transform:rotate(45deg);transition:transform .2s;margin-right:4px}
+  .m-cat.active>button{color:var(--indigo)}
+  .m-cat.active>button::after{transform:rotate(-135deg)}
+  .m-cat .qs{display:none;padding-bottom:10px}
+  .m-cat.active .qs{display:block}
+  .m-cat .faq details{padding:16px 0}
+  .m-cat .faq summary{font-size:16px}
+  @media (max-width:900px){
+    .fq-grid{display:none}
+    .m-list{display:block}
+    .fq-head{padding:40px 0 10px}
+  }
+</style>
+</head>
+<body>
+<main>
+<section class="fq-head">
+  <div class="wrap">
+    <h1 class="display grad-purple">Perguntas frequentes</h1>
+    <p>Tem dúvidas? Estamos aqui para ajudar.</p>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:30px">
+  <div class="wrap">
+    <div class="fq-grid">
+      <ul class="side" id="side"></ul>
+      <div id="desk"></div>
+    </div>
+    <ul class="m-list" id="mList"></ul>
+  </div>
+</section>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const {$, $$, esc} = HB;
+  const CHAT = '<a href="#" data-chat>chat</a>';
+  const MAIL = '<a href="mailto:atendimento@hubble.com.br">atendimento@hubble.com.br</a>';
+  const RXMAIL = '<a href="mailto:receitas@hubble.com.br">receitas@hubble.com.br</a>';
+  const HORARIO = 'Atendemos de segunda a sexta, das 9h às 18h, e aos sábados, das 9h às 13h.';
+
+  const GROUPS = [
+    {t:'Para lentes de contato', cats:[
+      {id:'geral', t:'Geral', q:[
+        ['Como acesso o Portal do Membro da Hubble?', `<p>Você pode acessar o nosso portal do cliente <a href="conta.html">AQUI</a>. Use seu login da Hubble para acompanhar seus pedidos, consultar sua receita, comprar novamente, alterar o endereço de entrega e muito mais. Também é possível ativar sua conta ou redefinir sua senha na página de login do portal.</p>`],
+        ['Onde encontro avaliações sobre a Hubble?', `<p>Não precisa procurar mais! Confira nossa <a href="index.html#avaliacoes">página de avaliações</a> para ver o que os clientes dizem sobre a Hubble.</p>`],
+        ['Ainda preciso de ajuda. Como falo com alguém sobre o meu pedido?', `<p>Nossa equipe de atendimento está pronta para ajudar com qualquer assunto sobre o seu pedido na Hubble, por e-mail ou chat. Escreva para ${MAIL}. ${HORARIO}</p><p>Você também pode falar com a gente agora pelo chat (procure o ícone azul no canto inferior direito da tela).</p>`],
+        ['A Hubble já recebeu algum reconhecimento pelo atendimento?', `<p>Sim! No ranking America’s Best Customer Service 2026 da Newsweek, realizado em parceria com a Statista, nos Estados Unidos, a Hubble ficou em 3º lugar entre as lojas on-line de lentes de contato. Temos orgulho de sermos reconhecidos ao lado de outras marcas líderes, e mais orgulho ainda de isso refletir nosso compromisso contínuo em tornar o cuidado com a visão simples, acessível e focado no cliente.</p>`]
+      ]},
+      {id:'planos', t:'Planos e recompra', q:[
+        ['Como funcionam os planos da SkyHy by Hubble?', `<p>A SkyHy by Hubble® Diária é vendida em três planos de compra única, com frete grátis:</p><ul><li><b>1 mês</b>: 2 caixas (1 por olho), por R$ 180,00</li><li><b>2 meses</b>: 4 caixas, por R$ 267,00 (R$ 133,50/mês)</li><li><b>3 meses</b>: 6 caixas, por R$ 367,00 (R$ 122,33/mês)</li></ul><p>Cada caixa tem 30 lentes diárias. Você paga uma única vez, via Pix, e recebe todas as caixas do plano no mesmo envio. <a href="lente.html?id=skyhy">Escolha seu plano</a>.</p>`],
+        ['É uma assinatura? Vou ser cobrado todo mês?', `<p>Não. Não trabalhamos com assinatura nem cobranças recorrentes. Cada pedido é pago uma única vez, via Pix. Quando as lentes estiverem acabando, é só fazer um novo pedido.</p>`],
+        ['Como faço para comprar de novo?', `<p>Entre no seu <a href="conta.html#recomprar">Portal do Membro</a>: lá você vê a receita do seu último pedido e pode comprar novamente em poucos cliques. Se preferir, escolha um novo plano direto na <a href="lente.html?id=skyhy">página da SkyHy</a>.</p>`],
+        ['Qual é a política de devolução?', `<p>Amou ou devolvemos: é a Hubble cuidando de você! Você pode devolver caixas de lentes de contato lacradas ou armações sem uso, por qualquer motivo, em até 14 dias após o recebimento, com reembolso integral. Nos primeiros 7 dias, vale também o seu direito de arrependimento previsto no Código de Defesa do Consumidor.</p><p>Além disso, você pode trocar suas lentes ou óculos sem custo em até 14 dias após o recebimento se tiver aberto a caixa e percebido que são diferentes do que pediu ou que têm defeito. O frete fica por nossa conta!</p><p>A devolução deve incluir todas as caixas de lentes recebidas no envio. Por exemplo, se você comprou o plano de 3 meses, a devolução deve incluir as seis caixas.</p><p>O jeito mais rápido de iniciar a devolução ou troca é falar com a gente pelo ${CHAT} ou por e-mail para receber um código de postagem pré-pago. Você tem 14 dias para postar a devolução antes que o código expire. Veja a <a href="legal.html?doc=trocas">política completa</a>.</p>`],
+        ['O que acontece se a minha receita mudar?', `<p>Se a sua receita mudar, avise a gente antes de o pedido ser enviado! Falaremos com o seu médico para confirmar os novos dados. Nas próximas compras, é só informar a receita atualizada na <a href="lente.html?id=skyhy">página da SkyHy</a>.</p>`]
+      ]},
+      {id:'envio', t:'Envio', q:[
+        ['Para onde vocês enviam?', `<p>Atualmente enviamos para todo o Brasil.</p>`],
+        ['Quanto tempo meu pedido leva para chegar?', `<p>Usamos os Correios e transportadoras parceiras, e os envios costumam levar de 5 a 10 dias úteis, conforme a região.</p><p>O pedido pode demorar um pouco mais, porque nossa equipe fala com o seu médico para conferir cada detalhe da receita. Manteremos você informado por e-mail.</p><p>A qualquer momento, você pode ver o status e o rastreio de qualquer pedido no seu <a href="conta.html">Portal do Membro</a>.</p>`],
+        ['Quanto custa o frete?', `<p>O frete é grátis em todos os pedidos! Se tiver alguma dúvida, fale com o nosso atendimento.</p>`],
+        ['Posso mudar a forma de envio depois que o pedido foi enviado?', `<p>Não. A forma de envio não pode ser alterada. Observação: não oferecemos opções de envio expresso.</p>`]
+      ]},
+      {id:'pagamento', t:'Pagamento', q:[
+        ['Quais formas de pagamento vocês aceitam?', `<p>Aceitamos somente Pix. Depois de finalizar a compra, você recebe o QR Code e o código Pix Copia e Cola, que expira em 30 minutos. A aprovação é imediata.</p>`],
+        ['Vocês aceitam convênio ou plano de saúde como pagamento?', `<p>Infelizmente, não trabalhamos diretamente com convênios, mas você pode baixar suas notas fiscais no <a href="conta.html">Portal do Membro</a> para solicitar reembolso ao seu plano, se ele oferecer essa cobertura.</p>`],
+        ['Como consigo um comprovante para pedir reembolso ao meu plano?', `<p>Você pode baixar as notas fiscais no seu <a href="conta.html">Portal do Membro</a> e enviá-las ao seu plano, ou falar com a gente pelo ${CHAT} que enviamos para você.</p>`],
+        ['Vou pagar impostos à parte?', `<p>Não. Os preços exibidos no site já incluem os impostos aplicáveis. A nota fiscal eletrônica é emitida em cada pedido e enviada para o seu e-mail; por isso, o CPF é obrigatório no checkout.</p>`]
+      ]},
+      {id:'encontrar-medico', t:'Encontrar um médico', q:[
+        ['A Hubble pode me ajudar a encontrar um oftalmologista para fazer a adaptação de lentes?', `<p>Sim, nossa equipe pode indicar oftalmologistas na sua região. Fale com a gente pelo ${CHAT} ou pelo e-mail ${MAIL}.</p><p>Para sua informação: os médicos indicados pela Hubble não recebem nenhum tipo de remuneração da Hubble e só vão prescrever lentes Hubble se elas forem adequadas para você.</p>`],
+        ['Se eu for a um dos médicos indicados, preciso pagar pela consulta?', `<p>Sim. Como em qualquer consulta médica, o custo é seu. Mas muitos desses médicos atendem por convênio, se você tiver cobertura.</p>`]
+      ]},
+      {id:'receitas', t:'Receitas', q:[
+        ['Preciso de receita de lentes de contato para fazer um pedido?', `<p>Sim, todos os pedidos exigem uma receita válida de um oftalmologista, com o seu nome, a data de validade da receita, o nome do médico e, para as lentes, o grau, a curvatura base, o fabricante, o diâmetro e o material. Todos os dados da receita precisam corresponder às lentes pedidas.</p>`],
+        ['Posso fazer o pedido sem ter a receita em mãos?', `<p>Sim, você pode fazer o pedido mesmo sem uma cópia da receita. Se souber os dados da sua receita (confira na lateral da caixa das suas lentes atuais), informe-os no checkout, junto com o nome do seu médico ou da clínica. Nós entraremos em contato com o seu médico.</p><p>Se você não nos enviar uma cópia da receita, poderá pedir e receber lentes diferentes das prescritas, já que dependemos das informações fornecidas por você e pelo seu médico para concluir o pedido.</p>`],
+        ['Posso usar uma receita de um médico de fora do Brasil?', `<p>No momento, não aceitamos receitas emitidas por médicos de fora do Brasil.</p>`],
+        ['O que acontece se a minha receita mudar?', `<p>Se a sua receita mudar (ou mesmo se você a digitou errado), fale com a gente. Também entraremos em contato com o seu médico para confirmar os dados.</p><p>Lembre-se de atualizar a receita antes do envio do pedido! Depois que o pacote for enviado, será preciso fazer um novo pedido caso você descubra que precisa de uma nova receita. Envie a receita atualizada em <a href="conta.html#receitas">Minha conta › Receitas</a> ou para ${RXMAIL}.</p>`]
+      ]},
+      {id:'lentes-hubble', t:'Lentes Hubble', q:[
+        ['Quais lentes de contato vocês vendem?', `<p>No momento, vendemos uma única lente de contato: a <a href="lente.html?id=skyhy">SkyHy by Hubble® Diária</a>, descartável diária de hidrogel de silicone, para miopia (grau negativo) e hipermetropia (grau positivo).</p>`],
+        ['Onde as lentes são fabricadas?', `<p>As lentes SkyHy by Hubble Diária são produzidas pela Visco Technologies, na Malásia. Saiba mais na <a href="lente.html?id=skyhy">página da SkyHy</a>.</p>`],
+        ['De que material são feitas as lentes?', `<p>As lentes SkyHy by Hubble Diária são feitas de olifilcon B, material com alta permeabilidade ao oxigênio, que torna as lentes muito respiráveis. Esse hidrogel de silicone tem ajuste macio e flexível, para um uso confortável.</p>`],
+        ['As lentes Hubble são registradas na ANVISA?', `<p>Sim, todas as lentes que vendemos no Brasil são regularizadas na ANVISA. As informações de registro constam na embalagem de cada produto.</p>`],
+        ['Quais faixas de grau vocês oferecem?', `<p>A SkyHy by Hubble Diária está disponível para miopia, de -0,50 a -10,00, e para hipermetropia, de +0,50 a +4,00. Os graus disponíveis aparecem na página do produto.</p>`],
+        ['Vocês vendem lentes para astigmatismo (lentes tóricas)?', `<p>No momento, não. A SkyHy by Hubble Diária corrige apenas miopia e hipermetropia. Se a sua receita tiver valores de cilíndrico (CIL) e eixo, converse com o seu oftalmologista sobre a melhor opção para você.</p>`],
+        ['Vocês vendem lentes multifocais ou bifocais?', `<p>Não vendemos lentes multifocais ou bifocais.</p>`],
+        ['Vocês vendem lentes quinzenais ou mensais?', `<p>Não. No momento, vendemos apenas a SkyHy by Hubble Diária, de descarte diário.</p>`],
+        ['Vocês vendem lentes de contato coloridas?', `<p>Infelizmente, não vendemos lentes coloridas.</p>`],
+        ['Adolescentes podem usar lentes Hubble?', `<p>Nossas lentes são indicadas para maiores de 18 anos com receita válida.</p>`],
+        ['Posso usar água ou solução para limpar e guardar minhas lentes Hubble?', `<p>As lentes SkyHy by Hubble Diária são descartáveis diárias, de uso individual. Não tente limpá-las, guardá-las ou usá-las por mais de um dia. Nunca use água da torneira, água mineral ou saliva nas lentes.</p>`],
+        ['Onde encontro mais informações para quem usa lentes Hubble?', `<p>Cada caixa de lentes Hubble vem com o folheto de instruções de uso, com as orientações de colocação, remoção, cuidados e descarte. Em caso de dúvida, fale com o seu oftalmologista ou com o nosso atendimento.</p>`]
+      ]},
+      {id:'para-medicos', t:'Para médicos', q:[
+        ['Que informações de adaptação vocês têm para oftalmologistas?', `<p>Os parâmetros de cada lente (curvatura base, diâmetro, material e faixas de grau) estão na página de cada produto. Para receber o guia de adaptação das lentes Hubble, escreva para ${MAIL}.</p>`],
+        ['Sou médico e tenho interesse em uma caixa de provas Hubble. Posso receber uma?', `<p>Claro! Fale com a gente pelo e-mail ${MAIL} para mais informações.</p>`]
+      ]}
+    ]},
+    {t:'Para óculos', cats:[
+      {id:'oculos-pedidos', t:'Pedido / Geral', q:[
+        ['Como faço um pedido de óculos?', `<p>Depois de escolher a armação, você informa sua receita (se estiver pedindo óculos de grau) e escolhe o tipo de lente. Nós cuidamos do resto: personalizamos seus óculos e enviamos direto para você. São mais de 20 modelos para escolher, então pode ser difícil ficar com um só!</p>`],
+        ['Como os óculos de vocês são tão acessíveis?', `<p>A Hubble elimina os intermediários: desenhamos muitos dos nossos óculos internamente e vendemos direto para o consumidor (ou seja, você). Também temos parcerias sólidas com fabricantes excelentes, que nos ajudam a manter preços baixos e qualidade alta.</p>`],
+        ['Posso pedir vários óculos com receitas diferentes?', `<p>Sim, com certeza! Você pode adicionar quantos óculos de grau (e de sol) quiser ao carrinho antes de finalizar a compra.</p>`],
+        ['Quanto tempo meus óculos levam para chegar? Posso acompanhar o pedido?', `<p>Quase todos os pedidos são entregues em 7 a 14 dias úteis, dependendo da complexidade da receita. Quando o pedido for enviado, você receberá um e-mail de confirmação com o link de rastreio. Você também pode ver o status no seu <a href="conta.html">Portal do Membro</a>.</p>`],
+        ['Como altero ou cancelo meu pedido?', `<p>A melhor forma de alterar ou cancelar um pedido antes que ele seja processado é falar com a gente pelo ${CHAT} ou pelo e-mail ${MAIL}. ${HORARIO}</p>`],
+        ['Qual é a melhor forma de falar com o atendimento?', `<p>Estamos sempre aqui para ajudar! Você pode falar com a gente pelo ${CHAT} ou pelo e-mail ${MAIL}. ${HORARIO} Mais detalhes na página <a href="contato.html">Fale conosco</a>.</p>`],
+        ['Por que o site está pedindo para eu entrar na minha conta?', `<p>Depois do seu primeiro pedido, você recebe automaticamente um convite por e-mail para ativar sua conta. Com a conta ativada, você acessa o Portal do Membro, onde pode acompanhar o status do pedido, consultar suas receitas, atualizar os dados de entrega e muito mais!</p>`]
+      ]},
+      {id:'oculos-armacoes', t:'Armações / Lentes', q:[
+        ['O que vem no meu pedido de óculos?', `<p>Todos os nossos óculos vêm com os itens abaixo, sem custo adicional:</p><ul><li>Lentes de alta qualidade com tratamento antirreflexo, antirrisco, hidrofóbico e oleofóbico</li><li>Estojo dobrável Hubble e flanela de microfibra</li><li>Dobradiças duplas resistentes e duráveis</li><li>Frete grátis</li></ul>`],
+        ['Onde os óculos Hubble são feitos?', `<p>Nossas armações Hubble são desenhadas pela nossa equipe em Nova York e montadas à mão nos Estados Unidos. Cortamos, polimos e montamos as lentes nas armações sob medida antes de enviá-las direto para você.</p>`],
+        ['Que tipos de lente vocês oferecem?', `<p>Para óculos de grau, oferecemos lentes de policarbonato, de alto índice 1.67 e com filtro de luz azul. Para óculos de sol, oferecemos lentes de policarbonato polarizadas.</p>`],
+        ['Vocês oferecem tratamento antirreflexo?', `<p>Todas as nossas lentes vêm com tratamento antirreflexo, antiofuscamento e antirrisco, sem custo adicional.</p>`],
+        ['Vocês têm óculos com filtro de luz azul?', `<p>Sim! Você pode adicionar filtro de luz azul a todos os nossos óculos, com ou sem grau. O que é luz azul? É uma parte da luz emitida pelas telas de computadores e celulares que pode contribuir para o cansaço visual e dores de cabeça. Acredita-se que o filtro de luz azul possa ajudar a reduzir esses efeitos.</p>`],
+        ['Vocês têm óculos sem grau ou de leitura?', `<p>Sim, temos! Depois de escolher a armação, você pode selecionar a opção sem grau ou de leitura na finalização do pedido.</p>`],
+        ['Preciso de lentes finas para o meu grau. Vocês oferecem?', `<p>Sim, oferecemos lentes de alto índice 1.67, recomendadas para quem tem grau alto (maior ou igual a +4,00 ou -4,00). Depois de escolher a armação, você pode selecionar a lente de alto índice 1.67 na finalização do pedido.</p>`],
+        ['Que tipo de lente vocês usam nos óculos de sol?', `<p>Usamos lentes de policarbonato polarizadas. As lentes polarizadas são diferentes das lentes apenas escurecidas porque bloqueiam muito melhor o ofuscamento e os raios UV, protegendo contra os raios UVA e UVB.</p>`],
+        ['Vocês oferecem lentes progressivas, multifocais ou bifocais?', `<p>No momento, não oferecemos lentes progressivas, multifocais ou bifocais. Mas, se o seu médico prescreveu esse tipo de lente (uma receita com adição), podemos fazer óculos com a correção para perto ou para longe indicada.</p><p>Fale com a gente pelo ${CHAT} ou pelo e-mail ${MAIL} para receber ajuda.</p>`],
+        ['Vocês fazem correção prismática?', `<p>Desculpe! No momento, não oferecemos correção prismática.</p>`],
+        ['Amei minha armação Hubble, mas ela não ficou bem ajustada. O que faço?', `<p>A maioria dos problemas se resolve com um ajuste rápido em uma ótica perto de você:</p><ul><li>A armação está apertada ou folgada atrás das orelhas</li><li>As hastes estão compridas ou curtas demais</li><li>As hastes estão apertadas ou folgadas na lateral do rosto</li><li>A armação está torta ou escorrega no rosto</li></ul><p>Se o problema continuar, fale com a gente pelo ${CHAT} ou pelo e-mail ${MAIL}.</p>`],
+        ['Qual é a melhor forma de limpar minhas lentes?', `<p>Você pode limpar as lentes com água morna e uma gotinha de detergente neutro. Depois, seque com um pano de algodão limpo e macio, como a flanela de microfibra que acompanha todos os óculos de grau e de sol. Para tirar marcas leves no dia a dia, confira também os itens de limpeza em <a href="acessorios.html">Acessórios</a>.</p>`]
+      ]},
+      {id:'oculos-envio', t:'Envio / Devoluções', q:[
+        ['Quanto custa o frete?', `<p>O frete é totalmente grátis! (De nada.)</p>`],
+        ['Para onde vocês enviam?', `<p>Atualmente enviamos para todo o Brasil.</p>`],
+        ['Quanto tempo meus óculos levam para chegar?', `<p>Quase todos os pedidos são entregues em 7 a 14 dias úteis, dependendo da complexidade da receita. Quando o pedido for enviado, você receberá um e-mail de confirmação com o link de rastreio.</p>`],
+        ['Como acompanho meu pedido?', `<p>Quando o pedido for enviado, você receberá um e-mail de confirmação com o link de rastreio. Você também pode entrar no <a href="conta.html">Portal do Membro</a> para ver o status do pedido, ou falar com a gente pelo ${CHAT} ou pelo e-mail ${MAIL}.</p>`],
+        ['Vocês enviam para fora do Brasil?', `<p>Desculpe! No momento, enviamos apenas dentro do Brasil.</p>`],
+        ['Quais formas de envio estão disponíveis?', `<p>Usamos os Correios e transportadoras parceiras, sempre com frete grátis.</p>`],
+        ['O que faço se estiver com problemas com meus óculos?', `<p>No caso de óculos de grau, pode levar alguns dias para você se adaptar à nova receita. Mas, se continuar tendo problemas com seus óculos Hubble, fale com a gente pelo ${CHAT} ou pelo e-mail ${MAIL}, e vamos cuidar de você com o maior prazer. Veja também a nossa <a href="legal.html?doc=trocas">política de trocas e devoluções</a>.</p>`]
+      ]},
+      {id:'oculos-receitas', t:'Receitas', q:[
+        ['Vocês conseguem fazer óculos com a minha receita?', `<p>O tamanho da armação e as faixas de grau disponíveis estão na página de cada produto. Algumas armações só comportam determinados graus; se não encontrar o seu, confira outros modelos.</p>`],
+        ['Como leio a minha receita?', `<p>Veja o guia abaixo ou fale com a gente pelo ${CHAT} ou pelo e-mail ${MAIL} se precisar de ajuda com a sua receita.</p><p><b>OD x OE:</b></p><ul><li>OD: significa “olho direito”.</li><li>OE: significa “olho esquerdo”.</li></ul><p><b>Esférico, cilíndrico e eixo:</b></p><ul><li><b>Esférico (ESF):</b> indica a força das lentes. Vem acompanhado de (+) ou (-), indicando se você tem hipermetropia ou miopia.</li><li><b>Cilíndrico (CIL):</b> indica o grau necessário para corrigir o astigmatismo. Se este campo estiver em branco, você não tem astigmatismo.</li><li><b>Eixo:</b> o número do eixo corrige o astigmatismo. Se este campo estiver em branco, você não tem astigmatismo.</li></ul><p><b>Adição:</b></p><ul><li><b>ADIÇÃO:</b> é usada quando você precisa de correção para longe e para perto nos mesmos óculos ou lentes. Pode aparecer como um valor positivo (+) ou, em algumas marcas de lentes de contato, como “alta” ou “baixa”. Uma adição indica que você pode precisar de lentes progressivas ou multifocais.</li></ul>`],
+        ['O que é “DP” (distância pupilar)?', `<p>A DP é a distância entre as suas pupilas, normalmente medida em milímetros. Para que seus óculos fiquem corretos, precisamos de um número de DP específico. Essa informação garante que o centro óptico das lentes fique na posição certa.</p>`],
+        ['Como descubro a minha DP?', `<p>Há algumas formas de descobrir a sua DP:</p><ul><li>Confira na sua receita de óculos ou ligue para o seu oftalmologista para saber a DP, caso ela não esteja na receita</li><li>Se você já comprou óculos antes, confira a DP do pedido anterior</li></ul><p>Você também pode medir a DP sozinho com um espelho e uma régua. Veja como: posicione a régua logo abaixo do centro da pupila esquerda. Depois, olhando reto para a frente, meça a distância do centro da pupila esquerda até o centro da pupila direita. Repita para ter certeza (a DP média fica entre 57 e 65 mm).</p><p>Se ainda tiver dúvidas sobre a sua DP, fale com a gente pelo ${CHAT} ou pelo e-mail ${MAIL}, que ajudamos você.</p>`],
+        ['E se eu não tiver a minha receita?', `<p>Você pode conseguir uma receita de óculos com o seu oftalmologista ou escrever para ${MAIL}, que ajudamos você a encontrar um médico que possa fazer a sua receita.</p>`],
+        ['Posso usar minha receita de lentes de contato para pedir óculos?', `<p>Infelizmente, não é possível usar a receita de lentes de contato para pedir óculos: elas não são equivalentes.</p>`]
+      ]}
+    ]}
+  ];
+
+  const ALL = GROUPS.flatMap(g => g.cats);
+  const ids = ALL.map(c => c.id);
+  const faqHTML = c => `<div class="faq">${c.q.map(([q,a]) => `<details><summary>${esc(q)}</summary><div>${a}</div></details>`).join('')}</div>`;
+
+  // Desktop: navegação lateral + perguntas da categoria ativa
+  $('#side').innerHTML = GROUPS.map((g,gi) => `${gi ? '<li class="gap" aria-hidden="true"></li>' : ''}<li><h5>${g.t}</h5></li>` + g.cats.map(c => `<li data-cat="${c.id}"><a href="#${c.id}">${c.t}</a></li>`).join('')).join('');
+  // Mobile: lista de categorias em sanfona
+  $('#mList').innerHTML = GROUPS.map(g => `<li><h5>${g.t}</h5></li>` + g.cats.map(c => `<li class="m-cat" data-cat="${c.id}"><button type="button" aria-expanded="false">${c.t}</button><div class="qs">${faqHTML(c)}</div></li>`).join('')).join('');
+
+  const ALIAS = {receita:'receitas', lentes:'lentes-hubble', entrega:'envio', 'pedidos-e-entrega':'envio', assinatura:'planos', trocas:'planos', devolucoes:'planos', recompra:'planos', oculos:'oculos-pedidos', medico:'encontrar-medico'};
+  function show(id){
+    id = ALIAS[id] || id;
+    if(!ids.includes(id)) id = ids[0];
+    const c = ALL.find(x => x.id === id), g = GROUPS.find(x => x.cats.includes(c));
+    $$('#side li[data-cat]').forEach(li => li.classList.toggle('active', li.dataset.cat === id));
+    $('#desk').innerHTML = `<div class="eyebrow">${g.t}</div><h2 class="display cat-title">${c.t}</h2>${faqHTML(c)}`;
+    $$('#mList .m-cat').forEach(li => { const on = li.dataset.cat === id; li.classList.toggle('active', on); li.querySelector('button').setAttribute('aria-expanded', on); });
+  }
+  $('#side').addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]'); if(!a) return;
+    e.preventDefault(); const id = a.getAttribute('href').slice(1);
+    history.replaceState(null, '', '#' + id); show(id);
+    const top = $('.fq-grid').getBoundingClientRect().top + scrollY - 90; if(scrollY > top) scrollTo({top, behavior:'smooth'});
+  });
+  $('#mList').addEventListener('click', e => {
+    const b = e.target.closest('.m-cat>button'); if(!b) return;
+    const li = b.parentElement, open = !li.classList.contains('active');
+    li.classList.toggle('active', open); b.setAttribute('aria-expanded', open);
+    if(open) history.replaceState(null, '', '#' + li.dataset.cat);
+  });
+  // Links "chat" abrem o painel de ajuda
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-chat]'); if(!a) return;
+    e.preventDefault();
+    const p = document.getElementById('helpPanel'), b = document.getElementById('helpBtn');
+    if(p && b && !p.classList.contains('on')) b.click();
+  });
+  addEventListener('hashchange', () => show(location.hash.slice(1)));
+  const h = ALIAS[location.hash.slice(1)] || location.hash.slice(1);
+  show(h);
+  if(ids.includes(h)) setTimeout(() => { const el = innerWidth <= 900 ? $(`#mList [data-cat="${h}"]`) : $('.fq-grid'); if(el) scrollTo({top: el.getBoundingClientRect().top + scrollY - 80}); }, 80);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Óculos de Grau Online: Armações e Óculos com Lentes de Grau | Hubble</title>
+<meta name="description" content="Compre óculos de grau online na Hubble a partir de R$ 274,90. Encontre a armação perfeita entre vários estilos, cores e formatos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+:root{--accent:var(--rust);--accent2:#1c573a}
+body.sun{--accent:#1c573a}
+/* Herói */
+.pcp-hero{position:relative;overflow:hidden;background:var(--peach) url("https://images.ctfassets.net/h5kzo0k46quc/2ara1MpOdYm7kFa9S7Yqig/a3ef2368bb1436bdf66044cbce98034c/Hubble-Glasses-PCP-Hero-Desktop.jpg?w=1800&q=80&fm=webp") no-repeat right center/cover;padding:70px 0 64px}
+body.sun .pcp-hero{background-color:#e8f3ea;background-image:url("https://images.ctfassets.net/h5kzo0k46quc/3mLRoNmxZ5lbc2YEz0im7v/a3b37258047e503ee2cd175c7ade1901/Hubble-Sunlasses_PCP_Hero_Desktop.jpg?w=1800&q=80&fm=webp")}
+.pcp-hero>.wrap{position:relative;z-index:1}
+.pcp-hero .inner{max-width:540px;position:relative}
+.pcp-hero .eyebrow{color:var(--accent);margin-bottom:12px}
+.pcp-hero h1{color:var(--ink)}
+body.sun .pcp-hero h1{background:linear-gradient(90deg,#3f9a6b,#2c7fa6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.circle-label{position:absolute;right:-110px;top:-10px;width:92px;height:92px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;text-align:center;font-size:13px;font-weight:600;line-height:1.2;padding:10px}
+/* Filtros (mesmo comportamento do site oficial) */
+.glasses-filter{margin:0 0 40px}
+.filter-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.filter-button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:120px;background:#fff;border:1px solid var(--accent);border-radius:5px;padding:10px 20px;color:var(--accent);font:600 14px "Work Sans";cursor:pointer;transition:background .3s,color .3s}
+.filter-button:hover,.filter-button.active{background:var(--accent);color:#fff}
+.filter-button .sw{font-size:18px;line-height:1}
+.showing-items{font-size:14px;color:var(--accent)}
+.filter-menu{border-bottom:1px solid rgba(0,0,0,.1);padding:36px 0 50px;display:flex;flex-direction:column;gap:40px}
+.filter-nav{display:flex;gap:40px;justify-content:center;overflow-x:auto}
+.filter-nav button{background:none;border:0;border-bottom:1px solid transparent;padding:4px 0;font:500 14px "Work Sans";letter-spacing:.03em;color:#636161;opacity:.8;cursor:pointer;white-space:nowrap}
+.filter-nav button.active{color:var(--ink);border-color:var(--ink);opacity:1;font-weight:700}
+.tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:25px}
+.tile{position:relative;width:min(17%,190px);min-width:140px;height:130px;border:1px solid rgba(0,0,0,.1);border-radius:5px;background:#fff;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding:14px;font:500 14px "Work Sans";color:#636161}
+.tile img{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:110px;transition:width .3s}
+.tile:hover img{width:60%}
+.tile.active{border:1.5px solid var(--ink);color:var(--ink);font-weight:700}
+.colors{display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
+.colors button{display:flex;align-items:center;gap:10px;border:1px solid rgba(0,0,0,.1);border-radius:5px;background:#fff;padding:12px 24px;font:500 14px "Work Sans";color:#636161;cursor:pointer}
+.colors button img{width:19px;height:19px;border-radius:50%}
+.colors button.active,.colors button:hover{border:1.5px solid var(--ink);color:var(--ink)}
+.applied{border-top:1px solid rgba(0,0,0,.1);padding-top:22px;margin-top:22px}
+.applied .h{font-size:12px;color:var(--ink)}
+.applied .list{display:flex;flex-wrap:wrap;gap:15px;margin-top:12px}
+.applied .af{display:inline-flex;align-items:center;gap:10px;background:var(--ink);border:1px solid var(--ink);border-radius:5px;color:#fff;padding:8px 10px;font:500 12px "Work Sans";cursor:pointer}
+.applied .af.main{background:#fff;color:var(--ink)}
+.applied .af i{font-style:normal;width:14px;height:14px;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center;font-size:11px;line-height:1}
+/* Grade + promoções */
+.grid-frames{gap:40px 25px}
+.grid-frames .frame{min-width:0}
+.promo{grid-column:span 2;display:flex;height:360px;overflow:hidden}
+.promo .tb{width:55%;padding:30px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:30px;color:#fff}
+.promo .tb.rust{background:var(--rust)} .promo .tb.green{background:#1c573a}
+.promo h2{font-size:25px;line-height:1.3;font-weight:600;margin-bottom:6px}
+.promo p{font-size:15px;line-height:1.4}
+.promo .wbtn{background:#fff;color:var(--ink);padding:12px 18px;border-radius:4px;font-weight:600;font-size:14px;transition:background .5s,color .5s}
+.promo .wbtn:hover{background:var(--ink);color:#fff}
+.promo .ib{width:45%;background:#464ca7 center/cover no-repeat}
+/* Banner inferior */
+.product-banner{margin-top:80px}
+.product-banner .opt-img{width:100%;aspect-ratio:2304/1120;object-fit:cover;border-radius:4px}
+.optional-text{display:flex;justify-content:space-between;gap:40px;margin-top:60px}
+.optional-text .t{width:40%}
+.optional-text .t h2{font-size:clamp(28px,3vw,38px);color:var(--ink);line-height:1.2}
+.optional-text .d{width:45%}
+.optional-text .d .sub{font-size:19px;line-height:1.4;color:var(--ink);margin-bottom:40px}
+.features{list-style:none}
+.features li{display:flex;gap:15px;margin-bottom:28px}
+.features .n{flex:none;width:25px;height:25px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+.features p{font-size:15px;line-height:1.45;color:var(--ink)}
+/* FAQ (óculos de sol) */
+.faq-wrap{display:flex;gap:40px 54px;padding:80px 0 20px}
+.faq-wrap .hb{min-width:300px;max-width:350px}
+.faq-wrap .hb h4{font-size:12px;letter-spacing:.08em;color:var(--accent)}
+.faq-wrap .hb h3{font-size:clamp(26px,3vw,38px);line-height:1.3;margin-top:15px;color:var(--accent)}
+.faq-wrap .faq{flex:1;max-width:none;margin:0}
+.faq-wrap .faq details:first-child{padding-top:0}
+.faq-wrap .faq details{border-bottom:0;border-top:1px solid var(--ink)}
+.faq-wrap .faq details:first-child{border-top:0}
+@media (max-width:1100px){.circle-label{right:0;top:auto;bottom:-100px}.pcp-hero{padding-bottom:120px}}
+@media (max-width:900px){
+  .pcp-hero{background-size:auto 100%;background-position:right -200px center}
+  .pcp-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--peach) 45%,rgba(253,241,231,.55))}
+  body.sun .pcp-hero::before{background:linear-gradient(90deg,#e8f3ea 45%,rgba(232,243,234,.55))}
+  .tile{width:calc(33% - 17px);min-width:0}
+  .optional-text,.faq-wrap{flex-direction:column}
+  .optional-text .t,.optional-text .d{width:100%}
+  .faq-wrap .hb{max-width:none;min-width:0}
+}
+@media (max-width:700px){
+  .promo{flex-direction:column;height:auto;grid-column:1/-1}
+  .promo .tb,.promo .ib{width:100%}
+  .promo .ib{aspect-ratio:5/3;order:-1}
+  .promo .tb{padding:22px 20px 24px;gap:18px}
+  .promo h2{font-size:20px}
+}
+@media (max-width:560px){
+  .pcp-hero{padding:44px 0 116px}
+  .tile{width:calc(50% - 13px);height:110px}
+  .tile img{width:90px}
+  .tiles{gap:14px}
+  .colors{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .filter-nav{justify-content:flex-start;gap:28px}
+  .grid-frames{gap:28px 12px}
+  .product-banner{margin-top:56px}
+  .optional-text{margin-top:34px}
+}
+</style>
+</head>
+<body>
+<main>
+<section class="wrap" style="padding-top:18px">
+  <div class="pcp-hero page-hero">
+    <div class="wrap"><div class="inner">
+      <p class="eyebrow" id="heroEyebrow"></p>
+      <h1 class="display" id="heroTitle"></h1>
+      <p id="heroIntro"></p>
+      <div class="circle-label">Novo preço reduzido</div>
+    </div></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <nav class="crumbs" aria-label="Navegação estrutural"><a href="index.html">Início</a><span class="sep">/</span><span id="crumbCur"></span></nav>
+
+  <div class="glasses-filter">
+    <div class="filter-heading">
+      <button type="button" class="filter-button" id="fBtn" aria-expanded="false" aria-controls="fMenu"><span id="fLabel">Filtros</span><span class="sw" id="fSw" aria-hidden="true">+</span></button>
+      <span class="showing-items" id="count" aria-live="polite"></span>
+    </div>
+    <div class="filter-menu hidden" id="fMenu">
+      <div class="filter-nav" id="fNav" role="tablist"></div>
+      <div id="fPanel"></div>
+    </div>
+    <div class="applied hidden" id="applied"></div>
+  </div>
+
+  <div class="grid4 grid-frames" id="grid"></div>
+
+  <div class="product-banner">
+    <img class="opt-img" id="optImg" src="" alt="" loading="lazy">
+    <div class="optional-text">
+      <div class="t"><h2 class="display" id="optTitle"></h2></div>
+      <div class="d"><p class="sub" id="optSub"></p><ol class="features" id="features"></ol></div>
+    </div>
+  </div>
+
+  <div class="faq-wrap hidden" id="faqWrap">
+    <div class="hb"><h4>PERGUNTAS FREQUENTES</h4><h3 class="display">Óculos de sol com grau online: perguntas frequentes</h3></div>
+    <div class="faq" id="faq"></div>
+  </div>
+</div>
+<div style="height:60px"></div>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+const {D, $, $$, esc, brl, qs, card, bindFrameCards} = HB;
+const SUN = qs('tipo') === 'sol';
+if(SUN) document.body.classList.add('sun');
+const CF = 'https://images.ctfassets.net/h5kzo0k46quc/';
+const ST = 'https://www.hubblecontacts.com/static/';
+
+/* ---------- Textos ---------- */
+const price = SUN ? D.prices.sunglasses : D.prices.glasses;
+document.title = (SUN ? 'Óculos de Sol com Grau e Polarizados Online' : 'Óculos de Grau Online: Armações e Óculos com Lentes de Grau') + ' | Hubble';
+$('meta[name=description]').content = SUN
+  ? `Óculos de sol com grau e polarizados a partir de ${brl(price)}. Armações clássicas e modernas, todas com lentes polarizadas.`
+  : `Compre óculos de grau online na Hubble a partir de ${brl(price)}. Encontre a armação perfeita entre vários estilos, cores e formatos.`;
+$('#heroEyebrow').textContent = `A partir de ${brl(price)}`;
+$('#heroTitle').innerHTML = SUN ? 'Óculos de Sol com Grau' : '<span class="grad-peach">Óculos de Grau</span>';
+$('#heroIntro').textContent = SUN
+  ? 'Encare o sol com estilo com a nossa seleção de armações clássicas e formatos marcantes e atuais, para combinar com qualquer visual. Mas sabe o que faz eles brilharem de verdade? Você pode adicionar o seu grau a cada um deles.'
+  : 'Fique bem, enxergue melhor. Compre online nossos óculos de grau estilosos e feitos à mão, com lentes de grau de alta qualidade que resistem ao desgaste do dia a dia. Prepare-se para transformar a sua visão com o par perfeito de óculos de grau da Hubble. Todos os óculos de grau têm sempre frete GRÁTIS até a sua casa!';
+$('#crumbCur').textContent = SUN ? 'Óculos de Sol' : 'Óculos de Grau';
+
+/* ---------- Filtros ---------- */
+const all = D.glasses.filter(g => !SUN || g.sun);
+const T = SUN ? 'sunglasses' : 'glasses';
+const FACE_IMG = SUN
+  ? {redondo:'5f1jFqJN67QddRS5LSJbvK/f0c59b873c732147dbfc2c7e8753eba4/sunglasses-Round.png', oval:'7cFXPTfnLBOqn3LuVUig10/043773b89f33354d7e3220959df8904d/sunglasses-Oval.png', quadrado:'5K1wHTWFY8ESBf7pvdNlJX/12327462866be9a157b494e4f70821b5/sunglasses-Square.png', coracao:'rwA8yzYI6SBB7ca6WWJXN/ac65ec6deb9fee086f64f704bd9e95b6/sunglasses-Heart.png', diamante:'RmlPSOSiDee3NVtXnapKS/01f40258dcc6ad8938dc292aeb06082c/sunglasses-Diamond.png'}
+  : {redondo:'4emXoMBKKr3TZgd32xvMLF/de3a04c16c10cd989c69e4c2bf481150/glasses-Round.png', oval:'2M0afdMxHQegPnIDdQaZjg/8348ddea2b90a44c589fad93a28ac315/glasses-Oval.png', quadrado:'5VDb2m8SzjHvRHHeFlBbXW/bcb34ce428f6607bb0d30580b8c7a58d/glasses-Square.png', coracao:'1jQ1aZEubj4hhe8baThjNO/6e8a2652457c4d352b456e948031b2fe/glasses-Heart.png', diamante:'OFDcbIizxtmHhqP3c0lEk/d1b115731c2ac2e87f1e667a9b24abba/glasses-Diamond.png'};
+const SHAPE_IMG = SUN
+  ? {Quadrado:'4QcGeinpPfRyYNgP6dLFvd/f09c9c7a1ba09f0fb6f97f6ca5fa13cd/sunglasses-square.png', Redondo:'4wH0afHnoHYMROf2ri1CD9/97648644c662434ad569d443be6c3814/sunglasses-round.png', Retangular:'4uTJIYKUgbHlcl1bW7H8oe/18853eba85e6c0fae7c9de5f089bebcf/sunglasses-rectangle.png', Gatinho:'7IGsnS7E0zAKBvb9H4jA4b/96c11a3e3a9794f447884db8b0364121/sunglasses-cateye.png'}
+  : {Quadrado:'BFGZFsqgYDGzvG5fRtE1O/1ec6142b435b62fd5a2dc260a9d41932/glasses-square.png', Redondo:'6TiZkUYoLbmWomjTCTJpda/4c9ab456af2f7ad76158677ce8cdb8ce/glasses-round.png', Retangular:'1MC8JydptAX3YaoQg6Ot7T/a72d58583b115f35ec378d2a81a5f570/glasses-rectangle.png', Gatinho:'4nlvfcLRGPFBuomXhjWkFy/100976068f3f30a9565325ce7dc1b7e5/glasses-cateye.png'};
+/* Formato do rosto → formatos de armação que valorizam esse rosto */
+const FACE = [
+  ['redondo','Redondo',['Quadrado','Retangular','Gatinho']],
+  ['oval','Oval',['Quadrado','Redondo','Retangular','Gatinho']],
+  ['quadrado','Quadrado',['Redondo','Gatinho']],
+  ['coracao','Coração',['Redondo','Retangular']],
+  ['diamante','Diamante',['Gatinho','Redondo']]
+];
+const COLOR = [
+  ['preto','Preto','2rKDrVG1sDtpLshDsgP924/c5c4285f00df8a6c977044a012ec730c/black.png', c => /eclipse/i.test(c.name)],
+  ['azul','Azul','5k750lC0q0Vu9kmBSBtRw8/49a26b274d8f953e8dbc8d1f3438daf1/blue.png', c => /blue|cerulean/i.test(c.name)],
+  ['cinza','Cinza','KWvb9K6SYeu6CfzH0UzGZ/60dabc5221af361d5e43a66cd276dd58/gray.png', c => /slate/i.test(c.name)],
+  ['dourado','Dourado','3Tl4gQT25w7F6lKCMi8OJY/f0778d11d9cce8383b6d16a5d105d645/gold.png', c => /butterscotch|champagne/i.test(c.name)],
+  ['verde','Verde','5rXvlWIbMs2GiHFModCJSi/a7ab72ca241379612a63ae9a91c5e471/green.png', c => /emerald/i.test(c.name)],
+  ['cristal','Cristal','EeCcB9eKYTDJkPO5FiHm1/e51735a3822b5ecd24017fe035312d57/crystal.png', c => /crystal/i.test(c.name)],
+  ['multicolorido','Multicolorido','1cIlzaNdWejwkxse4MI1Yb/19ed329256a38ad22b53747de51d3034/multi-color.png', c => /aurora|galactic/i.test(c.name)],
+  ['rosa','Rosa','4fllmt5D3pIdUxhEfMyCQ1/5941d9866598c795bda933e76a48bb2c/pink.png', c => /blush/i.test(c.name)],
+  ['vermelho','Vermelho','1rxN3TpqGsHiTIwX7Rqrwa/7ab6294c27132372574071ba7b180131/red.png', c => /mars/i.test(c.name)],
+  ['tartaruga','Tartaruga','3goRIY1Oo5oA890m7KjGHv/e0f6b28f31d32c272ac7bb4c9cdddc59/tortoise.png', c => /tortoise/i.test(c.name)]
+].filter(([,, , fn]) => all.some(g => g.colors.some(fn)));
+const SHAPES = ['Quadrado','Redondo','Retangular','Gatinho'].filter(s => all.some(g => g.shape === s));
+const TABS = [['rosto','Formato do Rosto'],['formato','Formato da Armação'],['cor','Cor']];
+const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const param = (k, valid) => (qs(k)||'').split(',').map(v => valid.find(x => norm(x) === norm(v))).filter(Boolean);
+const filter = {
+  rosto: param('rosto', FACE.map(f => f[0])),
+  formato: param('formato', SHAPES),
+  cor: param('cor', COLOR.map(c => c[0]))
+};
+const LABEL = v => (FACE.find(f => f[0] === v) || COLOR.find(c => c[0] === v) || [v, v])[1];
+let open = false, tab = 'rosto';
+
+function toggle(k, v){ const a = filter[k]; const i = a.indexOf(v); if(i >= 0) a.splice(i,1); else a.push(v); render(); }
+function drawMenu(){
+  $('#fMenu').classList.toggle('hidden', !open);
+  $('#fBtn').classList.toggle('active', open);
+  $('#fBtn').setAttribute('aria-expanded', open);
+  $('#fSw').textContent = open ? '—' : '+';
+  if(!open) return;
+  $('#fNav').innerHTML = TABS.map(([k,l]) => `<button type="button" role="tab" aria-selected="${k === tab}" class="${k === tab ? 'active' : ''}" data-tab="${k}">${l}</button>`).join('');
+  $$('#fNav button').forEach(b => b.onclick = () => { tab = b.dataset.tab; drawMenu(); });
+  const on = (k, v) => filter[k].includes(v);
+  if(tab === 'rosto') $('#fPanel').innerHTML = `<div class="tiles">${FACE.map(([v,l]) => `<button type="button" class="tile${on('rosto',v) ? ' active' : ''}" data-k="rosto" data-v="${v}" aria-pressed="${on('rosto',v)}"><img src="${CF + FACE_IMG[v]}?w=240&q=80&fm=webp" alt="">${l}</button>`).join('')}</div>`;
+  if(tab === 'formato') $('#fPanel').innerHTML = `<div class="tiles">${SHAPES.map(v => `<button type="button" class="tile${on('formato',v) ? ' active' : ''}" data-k="formato" data-v="${v}" aria-pressed="${on('formato',v)}"><img src="${CF + SHAPE_IMG[v]}?w=240&q=80&fm=webp" alt="">${v}</button>`).join('')}</div>`;
+  if(tab === 'cor') $('#fPanel').innerHTML = `<div class="colors">${COLOR.map(([v,l,u]) => `<button type="button" class="${on('cor',v) ? 'active' : ''}" data-k="cor" data-v="${v}" aria-pressed="${on('cor',v)}"><img src="${CF + u}?w=40&q=80&fm=webp" alt="">${l}</button>`).join('')}</div>`;
+  $$('#fPanel [data-k]').forEach(b => b.onclick = () => toggle(b.dataset.k, b.dataset.v));
+}
+$('#fBtn').onclick = () => { open = !open; render(); };
+
+/* ---------- Promoções da grade (posições 6 e 12, como no site oficial) ---------- */
+function promo(odd){
+  if(odd) return `<div class="promo"><div class="tb ${SUN ? 'green' : 'rust'}"><div><h2>Lentes de contato. Direto na sua porta. Com frete grátis.</h2><p>Alterne entre óculos e lentes com facilidade: SkyHy by Hubble® Diária em planos de 1, 2 ou 3 meses, pagamento via Pix e entrega em casa.</p></div><a class="wbtn" href="lente.html?id=skyhy">Comprar agora</a></div><div class="ib" style="background-image:url('${ST}${SUN ? 'Hubble-Sunglasses-PCP-Contacts-Promo-Desktop-231b55b6f909b0f9dc14a89ead2e31e5.jpg' : 'Hubble-Glasses-PCP-Contacts-Promo-Desktop-310ca23b4fa8113cc87f198ef7ccafbb.jpg'}')" role="img" aria-label="Pessoas usando lentes de contato Hubble"></div></div>`;
+  if(SUN) return `<div class="promo"><div class="tb rust"><div><h2>Fique bem, enxergue melhor</h2><p>Lentes de alta qualidade. Armações estilosas e atuais. O visual que você quer por menos. A partir de apenas ${brl(D.prices.glasses)}.</p></div><a class="wbtn" href="oculos.html">Comprar agora</a></div><div class="ib" style="background-image:url('${ST}Hubble-Glasses-PCP-Promo-02-Desktop-02216a4c58d5dc42670d9cdad5a5da3d.jpg')" role="img" aria-label="Pessoa usando óculos de grau Hubble"></div></div>`;
+  return `<div class="promo"><div class="tb green"><div><h2>Óculos de Sol com Grau a partir de ${brl(D.prices.sunglasses)}</h2><p>As armações Hubble que você adora, com lentes polarizadas que bloqueiam 99% dos raios UVA/UVB.</p></div><a class="wbtn" href="oculos.html?tipo=sol">Comprar agora</a></div><div class="ib" style="background-image:url('${ST}Hubble-Sunglasses-PCP-Promo-01-Desktop-a7fd8a330fd6a2412af214a9910bc539.jpg')" role="img" aria-label="Pessoa usando óculos de sol Hubble"></div></div>`;
+}
+
+function list(){
+  return all.filter(g =>
+    (!filter.rosto.length || filter.rosto.some(f => FACE.find(x => x[0] === f)[2].includes(g.shape))) &&
+    (!filter.formato.length || filter.formato.includes(g.shape)) &&
+    (!filter.cor.length || g.colors.some(c => filter.cor.some(f => COLOR.find(x => x[0] === f)[3](c)))));
+}
+function render(){
+  const items = list(), n = items.length;
+  const total = filter.rosto.length + filter.formato.length + filter.cor.length;
+  $('#fLabel').textContent = 'Filtros' + (total ? ` (${total})` : '');
+  $('#count').textContent = `Mostrando ${n} ${n === 1 ? 'item' : 'itens'}`;
+  drawMenu();
+  // filtros aplicados (visível com o menu fechado)
+  const ap = $('#applied');
+  ap.classList.toggle('hidden', open || !total);
+  if(!open && total){
+    const chips = TABS.flatMap(([k]) => filter[k].map(v => `<button type="button" class="af" data-k="${k}" data-v="${esc(v)}" aria-label="Remover filtro ${esc(LABEL(v))}">${esc(LABEL(v))}<i aria-hidden="true">×</i></button>`));
+    ap.innerHTML = `<p class="h">Filtros aplicados:</p><div class="list"><button type="button" class="af main" id="clearAll">Limpar tudo</button>${chips.join('')}</div>`;
+    $('#clearAll').onclick = () => { filter.rosto = []; filter.formato = []; filter.cor = []; render(); };
+    $$('.af[data-k]', ap).forEach(b => b.onclick = () => toggle(b.dataset.k, b.dataset.v));
+  }
+  // grade
+  const grid = $('#grid');
+  if(!n) grid.innerHTML = '<div class="empty" style="grid-column:1/-1">Nenhuma armação encontrada com esses filtros.</div>';
+  else {
+    grid.innerHTML = items.map((g,i) => card.frame(g, SUN) + (i === 5 ? promo(true) : i === 11 ? promo(false) : '')).join('');
+    bindFrameCards(grid);
+    if(filter.cor.length) $$('.frame', grid).forEach(el => {
+      const g = HB.find.glasses(el.dataset.id);
+      const i = g.colors.findIndex(c => filter.cor.some(f => COLOR.find(x => x[0] === f)[3](c)));
+      if(i > 0){ const b = $(`.swatches button[data-i="${i}"]`, el); if(b) b.click(); }
+    });
+  }
+  // URL
+  const p = new URLSearchParams();
+  if(SUN) p.set('tipo','sol');
+  TABS.forEach(([k]) => { if(filter[k].length) p.set(k, filter[k].join(',')); });
+  const s = p.toString().replace(/%2C/g, ',');
+  history.replaceState(null, '', location.pathname + (s ? '?' + s : ''));
+}
+
+/* ---------- Banner inferior / FAQ ---------- */
+$('#optImg').src = SUN
+  ? CF + '7K2cZAeihQF42Qn82APvvX/068e32e8244ca5a94940b61ff40de487/Hubble-Sunglasses-PCP-Inset-Lifestyle-Image.jpg?w=1800&q=80&fm=webp'
+  : CF + '7kxGgcLabq0oRVPDwW0kBA/60fcd4b70f84cd5eedbef2001177d526/Hubble-Glasses-PCP-Inset-Lifestyle-Image.jpg?w=1800&q=80&fm=webp';
+$('#optImg').alt = SUN ? 'Pessoa usando óculos de sol Hubble ao ar livre' : 'Mulher usando óculos de grau Hubble enquanto aproveita o tempo em casa';
+$('#optTitle').textContent = SUN ? `Óculos de sol com grau online a partir de ${brl(price)}.` : `Compre óculos de grau online a partir de apenas ${brl(price)}.`;
+$('#optSub').textContent = SUN
+  ? 'Todos os óculos de sol polarizados têm lentes resistentes a impactos, dobradiças reforçadas e ponteiras acolchoadas para mais conforto.'
+  : 'Todos os óculos acessíveis da Hubble têm lentes resistentes a impactos, dobradiças reforçadas e ponteiras acolchoadas para mais conforto. Fique bem, enxergue melhor e sinta-se ótimo com os nossos óculos de grau. É só escolher o par que combina com o seu estilo, informar os dados da sua receita e escolher os tratamentos de lente adicionais. Nós enviamos seus óculos de grau novos direto para a sua casa.';
+const FEAT = SUN ? [
+  'Armações de acetato premium, polidas à mão e feitas a partir de fibras naturais. Todos os nossos óculos de sol de alta qualidade têm lentes resistentes a impactos para máxima durabilidade e foram pensados para oferecer o máximo de conforto.',
+  'Opção de adicionar o seu grau a todos os óculos de sol e ter visão nítida e conforto em uma única peça.',
+  'Todos os nossos óculos de sol têm lentes polarizadas que bloqueiam 99% dos raios UVA/UVB e eliminam o ofuscamento durante o dia.',
+  'Lentes polarizadas a preços acessíveis.',
+  'Montados à mão na nossa própria oficina e feitos sob encomenda.'
+] : [
+  'Nossos óculos são feitos à mão com materiais premium para entregar armações de alta qualidade, tão funcionais quanto estilosas.',
+  'Tratamentos antirreflexo, antiofuscamento, antirrisco, hidrofóbico e oleofóbico, com a opção de adicionar ampliação para leitura e filtro de luz azul a qualquer par de óculos.',
+  'Montados à mão e feitos sob encomenda por um integrante da equipe Hubble.',
+  'Uma experiência com óculos como você nunca viu, com uma grande seleção de armações em todos os tamanhos, formatos e cores que você puder imaginar.'
+];
+$('#features').innerHTML = FEAT.map((t,i) => `<li><span class="n">${i+1}</span><p>${esc(t)}</p></li>`).join('');
+if(SUN){
+  $('#faqWrap').classList.remove('hidden');
+  $('#faq').innerHTML = [
+    ['Óculos de sol masculinos e femininos: dá para comprar óculos de sol com grau online?','Todas as armações Hubble podem ser pedidas como óculos de sol! Além disso, cada par feito sob encomenda vem com lentes polarizadas que bloqueiam 99% dos raios UVA/UVB nocivos. É só informar os dados da sua receita válida, escolher o tipo de lente e, antes que você perceba, seu par feito à mão chega na sua casa. Comprar óculos de sol online é um jeito prático de ter o cuidado com a visão que você precisa e encontrar o par perfeito para o seu conforto, sua personalidade e seu estilo.'],
+    ['Posso usar meu plano de saúde para comprar óculos de sol com grau online?','A Hubble não trabalha diretamente com planos de saúde ou convênios. Ainda assim, você pode usar o comprovante que enviamos por e-mail depois da compra para pedir reembolso ao seu plano. Se não recebeu o comprovante ou precisa de outra via, fale com a gente pela página Fale conosco e enviamos o documento para você.'],
+    ['Quanto custam os óculos de sol com grau online?',`Os óculos de sol com grau Hubble custam a partir de apenas ${brl(D.prices.sunglasses)}! Dedicamos aos nossos óculos de sol o mesmo cuidado e a mesma qualidade dos nossos óculos de grau e das nossas lentes de contato. Isso quer dizer que eliminamos intermediários para oferecer o melhor preço: muitas das nossas armações são desenhadas pela própria Hubble e vendidas diretamente para você. Também contamos com parceiros de fabricação excepcionais, que nos ajudam a manter os preços baixos e a qualidade alta.`],
+    ['Como encontrar o melhor estilo de óculos de sol para mim?','As armações Hubble vêm em vários formatos, do redondo clássico ao gatinho moderno, e em cores e estampas que vão do tartaruga marcante ao rosa elegante. Ao comprar óculos de sol online, pense no seu estilo pessoal e não tenha medo de experimentar algo novo! Filtre por formato da armação ou formato do rosto para achar o par que valoriza o seu rosto. E lembre-se: qualquer armação Hubble pode ser pedida como óculos de sol. Na Hubble, queremos que você ame o que vê: você pode devolver caixas fechadas ou armações em até 14 dias para receber o reembolso total.']
+  ].map(([q,a]) => `<details><summary>${esc(q)}</summary><div><p>${esc(a)}</p></div></details>`).join('');
+}
+
+render();
+})();
+</script>
+</body>
+</html>

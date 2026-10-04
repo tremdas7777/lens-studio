@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrinho | Hubble</title>
+<meta name="description" content="Revise os itens do seu carrinho Hubble: lentes de contato, óculos e acessórios com frete grátis e pagamento via Pix.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.cart-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:4px 0 18px}
+.cart-head h1{font-size:clamp(32px,4.4vw,52px);color:var(--ink)}
+.cart-head .count{margin-bottom:6px}
+.cart-row .nm a:hover{color:var(--indigo)}
+.cart-row .subline{font-size:13px;color:var(--indigo);font-weight:600;margin-top:6px}
+.cart-row .rm{background:none;border:0;padding:0;font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.cart-row .rm:hover{color:var(--red)}
+.summary .pay-lines{font-size:13.5px;color:var(--ink);margin:12px 0 18px;line-height:1.6}
+.summary .pay-lines b{color:var(--indigo)}
+.coupon-msg{font-size:13px;min-height:18px}
+.coupon-msg.ok{color:var(--green)} .coupon-msg.bad{color:var(--red)}
+.coupon-on{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:1px dashed var(--indigo);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--ink);margin:14px 0 6px}
+.rx-note{margin-top:14px}
+.cont{display:block;text-align:center;margin-top:14px}
+.empty-cart{text-align:center;padding:40px 0 20px}
+.empty-cart h2{font-size:clamp(26px,3.4vw,38px);color:var(--ink);margin-bottom:12px}
+.empty-cart p{color:var(--muted);margin-bottom:26px}
+.empty-cart .btn-row{justify-content:center}
+.trust-row{padding-top:34px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Navegação estrutural"><a href="index.html">Início</a><span class="sep">/</span><span>Carrinho</span></nav>
+    <div id="cartRoot"></div>
+    <div class="trust-row" aria-label="Vantagens">
+      <div><img src="https://images.ctfassets.net/h5kzo0k46quc/6XGpREIM7YydnP9K3eKcwm/a7439ec2f2f7f7f1e5904137a78ec335/CCfreeshipping.png?w=120&q=80&fm=webp" alt="" loading="lazy">Frete grátis para todo o Brasil</div>
+      <div><img src="https://images.ctfassets.net/h5kzo0k46quc/2aXertQ12evbD051uOUIiI/b081ffd0936eacbae4d2159b8f53ce86/discount.png?w=120&q=80&fm=webp" alt="" loading="lazy">Pagamento via Pix, com aprovação na hora</div>
+      <div><img src="https://images.ctfassets.net/h5kzo0k46quc/6t7Z1FATqswTy5tTwmU0SI/1f261d7750a60de2e2c752ba76a4056f/options.png?w=120&q=80&fm=webp" alt="" loading="lazy">Pagamento único, sem cobranças recorrentes</div>
+      <div><img src="https://images.ctfassets.net/h5kzo0k46quc/2NBPcyNRdTRK4NJ2bgYbFF/4acb0f8cc95d092140e491014569df84/support.png?w=120&q=80&fm=webp" alt="" loading="lazy">Compra segura e atendimento dedicado</div>
+    </div>
+  </div>
+  <div style="height:70px"></div>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const {$, $$, brl, esc, sup, img, cart} = HB;
+  const root = $('#cartRoot');
+  let couponMsg = null; // {ok, msg}
+
+  const prodUrl = it => it.kind === 'lente' ? `lente.html?id=${encodeURIComponent(it.id)}`
+    : it.kind === 'oculos' ? `oculos-produto.html?id=${encodeURIComponent(it.id)}${it.details && it.details.tipo === 'sol' ? '&tipo=sol' : ''}${it.details && it.details.color ? '&cor=' + encodeURIComponent(it.details.color) : ''}`
+    : `acessorio.html?id=${encodeURIComponent(it.id)}`;
+
+  function rowHTML(it){
+    return `<div class="cart-row" data-key="${esc(it.key)}">
+      <a href="${prodUrl(it)}"><img src="${img(it.image, 260)}" alt="${esc(it.name)}"></a>
+      <div>
+        <div class="nm"><a href="${prodUrl(it)}">${sup(it.name)}</a></div>
+        ${(it.meta || []).length ? `<div class="meta">${it.meta.map(esc).join('<br>')}</div>` : ''}
+        <div class="acts">
+          <div class="qty" role="group" aria-label="Quantidade">
+            <button type="button" data-dec aria-label="Diminuir quantidade">−</button>
+            <span aria-live="polite">${it.qty}</span>
+            <button type="button" data-inc aria-label="Aumentar quantidade">+</button>
+          </div>
+          <button type="button" class="rm" data-rm>Remover</button>
+        </div>
+      </div>
+      <div class="pr">${brl(it.price * it.qty)}${it.qty > 1 ? `<small>${brl(it.price)} cada</small>` : ''}</div>
+    </div>`;
+  }
+
+  function render(){
+    const list = cart.items();
+    if(!list.length){
+      root.innerHTML = `<div class="empty-cart">
+        <h2 class="display">Seu carrinho está vazio</h2>
+        <p>Que tal começar pelas nossas lentes de contato ou escolher uma armação nova?</p>
+        <div class="btn-row"><a href="lente.html?id=skyhy" class="btn">Comprar lentes de contato</a><a href="oculos.html" class="btn ghost">Ver óculos</a></div>
+      </div>`;
+      return;
+    }
+    // Revalida cupom com valor mínimo
+    const cp = cart.coupon();
+    if(cp && cp.min && cart.subtotal() < cp.min){
+      cart.removeCoupon();
+      couponMsg = {ok:false, msg:`O cupom ${cp.code} foi removido: válido para compras acima de ${brl(cp.min)}.`};
+    }
+    const t = cart.totals(), tp = cart.totals('pix');
+    const coupon = cart.coupon();
+    const n = cart.count();
+    root.innerHTML = `
+      <div class="cart-head"><h1 class="display">Seu carrinho</h1><span class="count">${n} ${n === 1 ? 'item' : 'itens'}</span></div>
+      <div class="two-col">
+        <div id="rows">${list.map(rowHTML).join('')}</div>
+        <aside>
+          <div class="summary" aria-label="Resumo do pedido">
+            <h3>Resumo do pedido</h3>
+            <div class="sum-line"><span>Subtotal</span><span>${brl(t.sub)}</span></div>
+            ${t.discount ? `<div class="sum-line"><span>Desconto (cupom ${esc(coupon.code)})</span><span class="green">− ${brl(t.discount)}</span></div>` : ''}
+            <div class="sum-line"><span>Frete</span><span class="green">Grátis</span></div>
+            <div class="sum-line total"><span>Total</span><span>${brl(t.total)}</span></div>
+            ${coupon ? `<div class="coupon-on"><span>Cupom <b>${esc(coupon.code)}</b> · ${esc(coupon.label)}</span><button type="button" class="link-u" id="cpRm" style="font-size:13px">Remover</button></div>`
+              : `<form class="coupon" id="cpForm" novalidate><label class="sr" for="cpIn">Cupom de desconto</label><input class="input" id="cpIn" placeholder="Cupom de desconto" autocomplete="off"><button class="btn sm dark" type="submit">Aplicar</button></form>`}
+            <div class="coupon-msg ${couponMsg ? (couponMsg.ok ? 'ok' : 'bad') : ''}" role="status">${couponMsg ? esc(couponMsg.msg) : ''}</div>
+            <div class="pay-lines">
+              <div>Pagamento via Pix: <b>${brl(tp.total)}</b></div>
+            </div>
+            <a href="checkout.html" class="btn block">Finalizar compra</a>
+            <a href="lente.html?id=skyhy" class="link-u cont">Continuar comprando</a>
+          </div>
+          ${cart.hasRx() ? `<div class="notice rx-note">Seu carrinho tem itens com grau. Você vai informar sua receita na próxima etapa.</div>` : ''}
+        </aside>
+      </div>`;
+    bind();
+  }
+
+  function bind(){
+    $$('.cart-row', root).forEach(row => {
+      const key = row.dataset.key;
+      const it = () => cart.items().find(x => x.key === key);
+      $('[data-inc]', row).onclick = () => { const i = it(); if(i){ cart.update(key, {qty: i.qty + 1}); render(); } };
+      $('[data-dec]', row).onclick = () => {
+        const i = it(); if(!i) return;
+        if(i.qty <= 1){ cart.remove(key); HB.toast('Item removido do carrinho'); } else cart.update(key, {qty: i.qty - 1});
+        render();
+      };
+      $('[data-rm]', row).onclick = () => { cart.remove(key); HB.toast('Item removido do carrinho'); render(); };
+    });
+    const f = $('#cpForm', root);
+    if(f) f.onsubmit = e => {
+      e.preventDefault();
+      const v = $('#cpIn', f).value.trim();
+      couponMsg = v ? cart.applyCoupon(v) : {ok:false, msg:'Digite um cupom.'};
+      render();
+      if(!couponMsg.ok){ const i = $('#cpIn'); if(i){ i.value = v; i.focus(); } }
+    };
+    const r = $('#cpRm', root);
+    if(r) r.onclick = () => { cart.removeCoupon(); couponMsg = {ok:true, msg:'Cupom removido.'}; render(); };
+  }
+
+  render();
+  // Mudanças em outras abas
+  addEventListener('storage', e => { if(e.key === 'hubble-br-cart' || e.key === 'hubble-br-coupon') render(); });
+  // Mudanças feitas pelo carrinho lateral (mesma aba)
+  const watchMini = () => {
+    const mini = $('#miniCart'); if(!mini) return;
+    let last = JSON.stringify(cart.items()) + JSON.stringify(cart.coupon());
+    new MutationObserver(() => {
+      const now = JSON.stringify(cart.items()) + JSON.stringify(cart.coupon());
+      if(now !== last){ last = now; render(); }
+    }).observe(mini, {childList:true});
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchMini); else watchMini();
+})();
+</script>
+</body>
+</html>
