@@ -143,7 +143,7 @@ window.HB_DATA = {
    "dia": 14.1,
    "manufacturer": "Visco",
    "material": "Olifilcon B",
-   "description": "Feitas de hidrogel de silicone, o mesmo material de muitas das principais lentes diárias do mercado. Ele deixa o oxigênio chegar com facilidade aos seus olhos, para você usar o dia inteiro com conforto e sensação de frescor. No fim do dia, é só descartar: um par novo a cada manhã, sem estojo nem solução de limpeza.",
+   "description": "Um par novo a cada dia: você coloca de manhã e descarta à noite. Sem estojo, sem solução de limpeza e sem precisar guardar a lente. Como cada par é usado uma única vez, não há acúmulo de resíduos de um dia para o outro, o que reduz o risco de infecções. Feitas de hidrogel de silicone, que deixa o oxigênio chegar com facilidade aos seus olhos para você usar o dia inteiro com conforto.",
    "bullets": [
     "Lentes de contato diárias descartáveis de hidrogel de silicone",
     "Alta permeabilidade ao oxigênio para olhos com aparência mais saudável",
