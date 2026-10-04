@@ -432,7 +432,7 @@ async function finish(){
     shipping: FRETES.find(f=>f.id===S.frete),
     address: {...S.addr},
     payment: {method:'pix'},
-    rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : (rxLater ? {method:'depois'} : {method:'nao-precisa'}),
+    rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : {method:'nao-precisa'},
     status: 'Pagamento pendente',
     qrcode: d.qrcode,
     pixExpires: Date.parse(d.expiresAt) || now + 30*60*1000

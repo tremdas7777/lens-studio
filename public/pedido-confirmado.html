@@ -100,7 +100,7 @@
     try{ const ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; }catch(e){ return false; }
   }
   const fmtDate = ts => new Date(ts).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
-  const needsRx = o => !!(o.rx && o.rx.method && o.rx.method !== 'nao-precisa');
+  const needsRx = () => false; /* a finalização da compra não fala de receita */
 
   /* ---------- Linha do tempo ---------- */
   function timelineHTML(o){
@@ -127,7 +127,7 @@
     ]).map((t,i)=>`<li><i>${i+1}</i><span>${t}</span></li>`).join('')}</ol></div>`;
 
   function detailsHTML(o){
-    const t = o.totals || {}, a = o.address || {}, rxm = o.rx && o.rx.method;
+    const t = o.totals || {}, a = o.address || {}, rxm = null;
     const subs = HB.store.get('subs', []).filter(s => s.order === o.number && s.status !== 'cancelada');
     const next = [];
     if(rxm === 'depois') next.push(`Envie a foto ou o PDF da sua receita para <b>receitas@hubble.com.br</b> informando o número <b>${esc(o.number)}</b>.`);
