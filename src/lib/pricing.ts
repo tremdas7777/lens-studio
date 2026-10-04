@@ -142,7 +142,7 @@ function priceLens(it: Extract<CartItemInput, { kind: "lente" }>): PricedLine {
   const meta: string[] = [];
   if (od) meta.push(`OD: ${label[od.kind]} ${fmtSph(od.sph)}`);
   if (oe) meta.push(`OE: ${label[oe.kind]} ${fmtSph(oe.sph)}`);
-  meta.push(`Plano ${plan.label} · ${plan.boxes} caixas de 15 lentes (${plan.months} para cada olho)`);
+  meta.push(`Plano ${plan.label} · ${plan.boxes} caixas de 30 lentes (${plan.months} para cada olho)`);
   return {
     kind: "lente",
     id: LENS.id,
