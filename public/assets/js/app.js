@@ -327,6 +327,7 @@ const rx = {
 function init(){
   if(!document.body.dataset.noChrome){
     document.body.insertAdjacentHTML('afterbegin', headerHTML());
+    document.body.insertAdjacentHTML('afterbegin', '<div class="ship-bar top-ship">Frete grátis acima de R$ 100!</div>'); // faixa acima do cabeçalho
     document.body.insertAdjacentHTML('beforeend', footerHTML());
   }
   document.addEventListener('click', e => {
