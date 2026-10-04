@@ -18,6 +18,16 @@
 .sky-one .radio-card .p,.sky-one .radio-card .t{color:var(--ink)}
 @media (max-width:800px){.sky-one{grid-template-columns:minmax(0,1fr);padding:20px;gap:20px}.sky-one .pic img{max-height:240px}}
 </style>
+<style>
+/* legibilidade do texto sobre as fotos do banner */
+.slide::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(236,244,252,.92) 0%,rgba(236,244,252,.75) 34%,rgba(236,244,252,0) 62%);pointer-events:none}
+.slide.glasses::before{background:linear-gradient(90deg,rgba(253,241,231,.92) 0%,rgba(253,241,231,.7) 34%,rgba(253,241,231,0) 62%)}
+@media (max-width:560px){
+  .slide::before{background:linear-gradient(180deg,rgba(236,244,252,0) 30%,rgba(236,244,252,.88) 55%,rgba(236,244,252,.97) 100%)}
+  .slide.glasses::before{background:linear-gradient(180deg,rgba(253,241,231,0) 30%,rgba(253,241,231,.9) 55%,rgba(253,241,231,.97) 100%)}
+  .slide.glasses .copy{background:none}
+}
+</style>
 </head>
 <body>
 <main>
@@ -37,7 +47,7 @@
     </div>
 
     <div class="slide">
-      <picture><source media="(max-width:560px)" srcset="https://images.ctfassets.net/h5kzo0k46quc/1Y3FV3z3n37b86MbR861cb/8268b4b675188530d11d6e4c474c642d/Hubble-HP-Contacts-Mobile.png?w=900&q=80&fm=webp"><img src="https://images.ctfassets.net/h5kzo0k46quc/4zaSi100Pg5JNusXVWbtpq/1e4d691a40f1f7fa1a14b23c17318b0e/Hubble-HP-Contacts-Desktop.png?w=2000&q=80&fm=webp" alt="Lentes de contato Hubble"></picture>
+      <picture><source media="(max-width:560px)" srcset="https://images.ctfassets.net/h5kzo0k46quc/4rWbhtJzl6Q353nmWIgYLU/d1e7c052caaf73cccc66cb32b2295a18/SkyHy-by-Hubble-contact-lenses-mobile.jpg?w=900&q=80&fm=webp"><img src="https://images.ctfassets.net/h5kzo0k46quc/2UCMuzpMge1XJ2RQTBbNil/df8854e0c4fd8e34f55f08e51db4dd17/SkyHy-by-Hubble-contact-lenses-desktop.jpg?w=2000&q=80&fm=webp" alt="Lentes SkyHy by Hubble"></picture>
       <div class="copy">
         <div class="kicker">Enxergar ficou fácil.</div>
         <h1 class="display">Planos a partir de R$&nbsp;122,33/mês.</h1>
@@ -77,7 +87,7 @@
 <section class="works" id="como-funciona">
   <div class="wrap">
     <h2 class="title display">Veja Como Funciona</h2>
-    <p class="intro">Assinar a Hubble é rápido e fácil. Basta escolher as lentes de contato ideais para você, informar os dados da sua receita e finalizar a compra. Nós cuidamos do resto.</p>
+    <p class="intro">Comprar na Hubble é rápido e fácil. Basta informar o grau da sua receita, escolher o plano e pagar com Pix. Nós cuidamos do resto.</p>
     <div class="viewport"><div class="rail" id="wRail"></div></div>
     <div class="arrows">
       <button class="arrow" id="wPrev" aria-label="Anterior"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7.5 2 3.5 6l4 4"/></svg></button>
