@@ -157,6 +157,7 @@ body.ov-open{overflow:hidden}
           <p class="fine" style="margin:8px 0 0">Miopia = grau negativo (−) · Hipermetropia = grau positivo (+)</p>
           <div class="hidden" id="packSec">
             <h2 class="pack-h">Escolha seu plano</h2>
+            <p class="fine" style="margin:-4px 0 10px">Cada caixa tem 15 lentes e é para um olho: em cada mês do plano você recebe 2 caixas, uma para o olho direito e outra para o esquerdo.</p>
             <div id="packs"></div>
           </div>
           <div class="rx-total"><span>Total</span><b id="rxTotal"></b></div>
@@ -289,7 +290,7 @@ function buildLensItem(l, packIdx, od, oe){
   if(oe) meta.push(line('OE', oe));
   if(p.total){
     const bx = eyes > 1 ? p.boxes : p.months;
-    meta.push(`Plano ${p.label} · ${bx} ${bx > 1 ? 'caixas' : 'caixa'} de ${p.qty} lentes`);
+    meta.push(`Plano ${p.label} · ${bx} ${bx > 1 ? 'caixas' : 'caixa'} de ${p.qty} lentes (${eyes > 1 ? `${p.months} para cada olho` : 'para 1 olho'})`);
     return {
       kind: 'lente', id: l.id, name: l.name, image: p.image || l.image, qty: 1,
       price: p.total, meta,
@@ -360,7 +361,7 @@ function renderPrice(){
   if(!isHubble){ $('#priceBlock').innerHTML = ''; return; }
   const p = pack(), off = p.off ? ` (${esc(p.off.replace('OFF', 'off'))})` : '';
   if(p.total){
-    $('#priceBlock').innerHTML = `<p class="pack-line"><b>Plano ${esc(p.label)}</b> · ${p.qty} lentes diárias por caixa, 1 caixa por olho por mês</p>
+    $('#priceBlock').innerHTML = `<p class="pack-line"><b>Plano ${esc(p.label)}</b> · ${p.boxes} caixas de ${p.qty} lentes — ${p.months} para cada olho</p>
       <p class="price-line"><b style="font-size:20px">${brl(p.total)}</b>${p.months > 1 ? ` <span style="color:var(--muted)">(${brl(p.perMonth)}/mês)</span>` : ''} · pagamento único no Pix · frete grátis</p>`;
     return;
   }
@@ -374,7 +375,7 @@ if(!isHubble || lens.packs.length > 1){
   $('#packSec').classList.remove('hidden');
   if(lens.packs[0].total) $('#packSec .pack-h').textContent = 'Escolha seu plano';
   const base = lens.packs[0];
-  $('#packs').innerHTML = lens.packs[0].total ? lens.packs.map((p, i) => `<label class="radio-card${i === st.pack ? ' on' : ''}"><input type="radio" name="pack" value="${i}"${i === st.pack ? ' checked' : ''}><div><div class="t">${esc(p.label)}${p.badge ? ` <span class="pill green" style="margin-left:6px">${esc(p.badge)}</span>` : ''}</div><div class="d">${p.boxes} caixas (${p.months} por olho) · ${brl(p.perMonth)}/mês${p.months > 1 ? ` · economize ${brl(base.total * p.months - p.total)}` : ''}</div></div><div class="p">${brl(p.total)}</div></label>`).join('') : lens.packs.map((p, i) => `<label class="radio-card${i === st.pack ? ' on' : ''}"><input type="radio" name="pack" value="${i}"${i === st.pack ? ' checked' : ''}><div><div class="t">${esc(p.label)}</div><div class="d">${p.qty} lentes por caixa · ${supply(p)}</div></div><div class="p"><s>${brl(p.price)}</s>${brl(p.sale)}/olho${p.off ? `<em>${esc(p.off)}</em>` : ''}</div></label>`).join('');
+  $('#packs').innerHTML = lens.packs[0].total ? lens.packs.map((p, i) => `<label class="radio-card${i === st.pack ? ' on' : ''}"><input type="radio" name="pack" value="${i}"${i === st.pack ? ' checked' : ''}><div><div class="t">${esc(p.label)}${p.badge ? ` <span class="pill green" style="margin-left:6px">${esc(p.badge)}</span>` : ''}</div><div class="d">${p.boxes} caixas — ${p.months} para cada olho · ${brl(p.perMonth)}/mês${p.months > 1 ? ` · economize ${brl(base.total * p.months - p.total)}` : ''}</div></div><div class="p">${brl(p.total)}</div></label>`).join('') : lens.packs.map((p, i) => `<label class="radio-card${i === st.pack ? ' on' : ''}"><input type="radio" name="pack" value="${i}"${i === st.pack ? ' checked' : ''}><div><div class="t">${esc(p.label)}</div><div class="d">${p.qty} lentes por caixa · ${supply(p)}</div></div><div class="p"><s>${brl(p.price)}</s>${brl(p.sale)}/olho${p.off ? `<em>${esc(p.off)}</em>` : ''}</div></label>`).join('');
   $$('#packs input').forEach(r => r.onchange = () => {
     st.pack = +r.value;
     $$('#packs .radio-card').forEach(c => c.classList.toggle('on', c.contains(r)));
@@ -533,7 +534,7 @@ vbox.onclick = play; vbox.onkeydown = e => { if(e.key === 'Enter' || e.key === '
 const Q = {
   fda: ['As lentes Hubble são aprovadas pelos órgãos reguladores?', 'Sim. Todas as nossas lentes têm aprovação de longa data da FDA, a agência reguladora dos Estados Unidos, e já vendemos mais de 600 milhões de lentes com receita!'],
   teen: ['Adolescentes podem usar lentes Hubble?', 'Nossas lentes são aprovadas para uso por maiores de 18 anos que tenham uma receita válida.'],
-  plans: ['Como funcionam os planos?', 'A SkyHy by Hubble® Diária é vendida em três planos de compra única, com frete grátis: <b>1 mês</b> – 2 caixas (1 por olho) por R$ 180,00; <b>2 meses</b> – 4 caixas por R$ 267,00 (R$ 133,50/mês); <b>3 meses</b> – 6 caixas por R$ 367,00 (R$ 122,33/mês). Cada caixa tem 30 lentes diárias.</p><p>Não é uma assinatura: não há cobranças recorrentes. Quando as lentes estiverem acabando, é só comprar novamente pela <a href="conta.html#recomprar">sua conta</a>.'],
+  plans: ['Como funcionam os planos?', 'A SkyHy by Hubble® Diária é vendida em três planos de compra única, com frete grátis: <b>1 mês</b> – 2 caixas (1 para cada olho) por R$ 180,00; <b>2 meses</b> – 4 caixas (2 para cada olho) por R$ 267,00 (R$ 133,50/mês); <b>3 meses</b> – 6 caixas (3 para cada olho) por R$ 367,00 (R$ 122,33/mês). Cada caixa tem 15 lentes e é para um olho: em cada mês do plano você recebe 2 caixas, uma para o olho direito e outra para o esquerdo.</p><p>Não é uma assinatura: não há cobranças recorrentes. Quando as lentes estiverem acabando, é só comprar novamente pela <a href="conta.html#recomprar">sua conta</a>.'],
   pay: ['Quais formas de pagamento vocês aceitam?', 'Aceitamos somente Pix. Depois de finalizar a compra, você recebe o QR Code e o código Pix Copia e Cola, com aprovação imediata. O valor do plano é o valor final, com frete grátis.'],
   rx: ['Para quais graus a SkyHy está disponível?', 'A SkyHy by Hubble® Diária corrige miopia (de -0,50 a -10,00) e hipermetropia (de +0,50 a +4,00). No momento, não vendemos lentes para astigmatismo (tóricas): se a sua receita tiver cilíndrico (CIL) e eixo, converse com o seu oftalmologista sobre a melhor opção para você.'],
   water: ['Posso usar água ou solução para limpar ou guardar minhas lentes Hubble?', 'As lentes SkyHy by Hubble Diária são descartáveis diárias, feitas para uso único. Não tente limpá-las, guardá-las ou usá-las por mais de um dia. Nunca use água da torneira, água mineral ou saliva nas lentes.'],

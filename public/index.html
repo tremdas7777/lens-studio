@@ -15,6 +15,7 @@
 .sky-one .pic img{max-height:360px;width:auto}
 .sky-one h3{font-size:clamp(28px,3vw,40px);color:var(--navy);margin:8px 0 12px}
 .sky-one .radio-card .p{font-size:16px}
+.box-note{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink);margin-top:14px;line-height:1.5}
 .sky-one .radio-card .p,.sky-one .radio-card .t{color:var(--ink)}
 @media (max-width:800px){.sky-one{grid-template-columns:minmax(0,1fr);padding:20px;gap:20px}.sky-one .pic img{max-height:240px}}
 </style>
@@ -194,13 +195,14 @@ const IMG = 'https://images.ctfassets.net/h5kzo0k46quc/';
 /* Nossas lentes */
 const sky = find.lens('skyhy');
 let selPlan = 1;
-const planHTML = () => sky.packs.map((p,i)=>`<label class="radio-card${i===selPlan?' on':''}"><input type="radio" name="homePlan" value="${i}"${i===selPlan?' checked':''}><div><div class="t">${esc(p.label)}${p.badge?` <span class="pill green" style="margin-left:6px">${esc(p.badge)}</span>`:''}</div><div class="d">${p.boxes} caixas · ${p.months} por olho${p.months>1?` · ${brl(p.perMonth)}/mês · economize ${brl(sky.packs[0].total*p.months - p.total)}`:''}</div></div><div class="p">${brl(p.total)}</div></label>`).join('');
+const planHTML = () => sky.packs.map((p,i)=>`<label class="radio-card${i===selPlan?' on':''}"><input type="radio" name="homePlan" value="${i}"${i===selPlan?' checked':''}><div><div class="t">${esc(p.label)}${p.badge?` <span class="pill green" style="margin-left:6px">${esc(p.badge)}</span>`:''}</div><div class="d">${p.boxes} caixas — ${p.months} para cada olho${p.months>1?` · ${brl(p.perMonth)}/mês · economize ${brl(sky.packs[0].total*p.months - p.total)}`:''}</div></div><div class="p">${brl(p.total)}</div></label>`).join('');
 $('#lensGrid').outerHTML = `<div class="sky-one">
   <a class="pic" href="lente.html?id=skyhy"><img src="${img(sky.gallery && sky.gallery[0] || sky.image, 900)}" alt="SkyHy by Hubble Diária"></a>
   <div class="info">
     <div class="eyebrow">${esc(sky.tag)}</div>
     <h3 class="display">SkyHy by Hubble<sup>®</sup> Diária</h3>
-    <p class="lead">Lentes diárias de silicone hidrogel, mais respiráveis, para <b>miopia</b> (grau negativo) e <b>hipermetropia</b> (grau positivo). 30 lentes por caixa.</p>
+    <p class="lead">Lentes diárias de silicone hidrogel, mais respiráveis, para <b>miopia</b> (grau negativo) e <b>hipermetropia</b> (grau positivo).</p>
+    <div class="box-note"><b>Como funciona:</b> cada caixa tem <b>15 lentes</b> e é para <b>um olho</b>. Cada mês do plano = <b>2 caixas</b> (1 para o olho direito + 1 para o esquerdo).</div>
     <div class="lbl" style="margin:18px 0 10px">Escolha seu plano</div>
     <div id="homePlans">${planHTML()}</div>
     <a class="btn indigo block" id="homeBuy" href="lente.html?id=skyhy&pack=${selPlan}">COMPRAR AGORA</a>

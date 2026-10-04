@@ -265,7 +265,7 @@
   }
   function panelReorder(p){
     const sky = HB.find.lens('skyhy'), last = lastSkyhy();
-    const plans = sky && sky.packs ? `<ul class="plans-mini">${sky.packs.map(pk => `<li><b>${esc(pk.label)}</b>${pk.boxes} caixas · ${brl(pk.total)}${pk.months > 1 ? `<br><span style="color:var(--muted)">${brl(pk.perMonth)}/mês</span>` : ''}</li>`).join('')}</ul>` : '';
+    const plans = sky && sky.packs ? `<ul class="plans-mini">${sky.packs.map(pk => `<li><b>${esc(pk.label)}</b>${pk.boxes} caixas (${pk.months} para cada olho) · ${brl(pk.total)}${pk.months > 1 ? `<br><span style="color:var(--muted)">${brl(pk.perMonth)}/mês</span>` : ''}</li>`).join('')}</ul>` : '';
     let h = '<h2 class="sec-title">Comprar novamente</h2>';
     if(!last){
       h += `<div class="card-box empty-box"><p>Você ainda não comprou lentes SkyHy by Hubble®. Escolha um plano de 1, 2 ou 3 meses, com pagamento via Pix e frete grátis.</p>${plans}<a href="lente.html?id=skyhy" class="btn">Comprar SkyHy by Hubble®</a></div>`;
