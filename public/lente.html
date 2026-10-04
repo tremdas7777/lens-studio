@@ -163,10 +163,8 @@ body.ov-open{overflow:hidden}
           <div class="rx-total"><span>Total</span><b id="rxTotal"></b></div>
           <p class="err-msg hidden" id="formErr" role="alert"></p>
           <button class="btn indigo block" type="submit">COMPRAR AGORA</button>
-          <p class="fine" id="finePrint"></p>
         </form>
         <div class="gp-bg hidden" id="gradeBg"></div>
-        <div class="free"><img src="https://images.ctfassets.net/h5kzo0k46quc/3SaDofUpEoWjZyDL9hmmNn/d34a28a3d6b3ab4723435fe87b251ca2/ValuePropsSection-free-shipping-purple.png?w=80&q=80&fm=webp" alt="">Frete grátis</div>
       </div>
     </section>
     <div class="perks" id="perks"></div>
@@ -317,7 +315,6 @@ $('#specs').innerHTML = [['Curva base (BC)', num(lens.bc)], ['Diâmetro (DIA)', 
   .map(s => `<div><div class="k">${s[0]}</div><div class="v">${s[1]}</div></div>`).join('');
 $('#shortDesc').textContent = lens.description;
 $('#rxTitle').innerHTML = `Informe sua receita para ${sup(lens.name)}`;
-$('#finePrint').innerHTML = `Ao comprar, você confirma que sua receita é para ${sup(lens.name)}. Você também pode enviar sua receita por e-mail após finalizar a compra para <a href="mailto:receitas@hubble.com.br">receitas@hubble.com.br</a>, informando o número do pedido.`;
 $('#crumbs').innerHTML = `<a href="index.html">Início</a><span class="sep">›</span>` + (isHubble
   ? `<a href="lente.html?id=skyhy">Lentes de Contato Hubble</a>`
   : `<a href="lente.html?id=skyhy">Lentes de Contato</a>`) + `<span class="sep">›</span><span>${sup(lens.name)}</span>`;
