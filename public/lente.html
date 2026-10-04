@@ -76,6 +76,47 @@ body.ov-open{overflow:hidden}
   .rx .select{padding:11px 30px 11px 10px;font-size:14px;background-position:right 10px center}
   .ship-bar.rounded{border-radius:20px 20px 0 0}
 }
+
+  .rx-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .rx-title{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+  .rx-same{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);cursor:pointer}
+  .rx-same input{width:16px;height:16px;accent-color:var(--indigo)}
+  .rx-wrap{position:relative}
+  .rx-table{display:grid;gap:10px}
+  .rx-row{display:grid;grid-template-columns:78px minmax(0,1fr);align-items:center;gap:10px}
+  .rx-h{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.04em}
+  .rx-eye{font-size:14px;font-weight:600;color:var(--ink)}
+  .rx-trig{display:flex;align-items:center;justify-content:space-between;width:100%;height:42px;border:1.5px solid transparent;background:#f3f4f8;border-radius:999px;padding:0 16px;font:500 15px "Work Sans";color:var(--muted);cursor:pointer}
+  .rx-trig.set{color:var(--ink);background:#eef0ff;border-color:rgba(70,76,167,.25)}
+  .rx-trig.open{border-color:var(--indigo);background:#fff}
+  .rx-trig.err{border-color:var(--red)}
+  .rx-trig svg{color:var(--ink)}
+  .rx-kind{font-size:12px;color:var(--indigo);margin:4px 0 0 16px}
+  .gp{position:absolute;left:0;right:0;z-index:30;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);border:1px solid var(--line);padding:14px 14px 10px}
+  .gp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .gp-top h3{font-size:15px;color:var(--ink)}
+  .gp-x{border:0;background:none;font-size:16px;cursor:pointer;color:var(--ink)}
+  .gp-heads,.gp-body{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .gp-heads div{font-size:12px;font-weight:700;color:var(--indigo);text-align:center;padding:6px 0;border-bottom:1px solid var(--line)}
+  .gp-body{max-height:260px;overflow:auto;padding-top:6px}
+  .gp-col{display:flex;flex-direction:column;gap:2px}
+  .gp-item{border:0;background:none;padding:7px 6px;border-radius:6px;font:500 15px "Work Sans";color:var(--ink);cursor:pointer}
+  .gp-item:hover{background:#f3f4f8}
+  .gp-item.on{background:var(--indigo);color:#fff}
+  .gp-foot{border-top:1px solid var(--line);margin-top:8px;padding-top:8px;text-align:center}
+  .gp-clear{border:0;background:none;text-decoration:underline;font:500 13px "Work Sans";color:var(--muted);cursor:pointer}
+  .gp-bg{display:none}
+  .rx-total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin:18px 0 12px;padding-top:14px;font-size:15px;color:var(--ink)}
+  .rx-total b{font-size:22px}
+  #packSec{margin-top:20px}
+  @media (max-width:600px){
+    .gp{position:fixed;left:0;right:0;bottom:0;top:auto!important;border-radius:16px 16px 0 0;z-index:101;padding:18px 16px 16px;max-height:75vh;display:flex;flex-direction:column}
+    .gp.hidden{display:none}
+    .gp-body{max-height:none;flex:1}
+    .gp-bg{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100}
+    .gp-bg.hidden{display:none}
+    body.gp-open{overflow:hidden}
+  }
 </style>
 </head>
 <body>
@@ -100,17 +141,20 @@ body.ov-open{overflow:hidden}
         <div id="priceBlock"></div>
 
         <form class="pdp-box" id="buyForm" novalidate>
+          <h2 id="rxTitle" class="hidden"></h2>
+          <div class="rx-head"><span class="rx-title">Prescrição</span><label class="rx-same"><input type="checkbox" id="sameRx"><span>Mesmo grau nos dois olhos</span></label></div>
+          <div class="rx-wrap"><div class="rx-table" id="rxGrid"></div><div class="gp hidden" id="gradePop" role="dialog" aria-label="Grau esférico"></div></div>
+          <p class="fine" style="margin:8px 0 0">Miopia = grau negativo (−) · Hipermetropia = grau positivo (+)</p>
           <div class="hidden" id="packSec">
-            <h2 class="pack-h">Escolha o tamanho da caixa</h2>
+            <h2 class="pack-h">Escolha seu plano</h2>
             <div id="packs"></div>
           </div>
-          <h2 id="rxTitle"></h2>
-          <p class="fine" style="margin:-4px 0 12px">Escolha o grau de cada olho como está na sua receita: <b>miopia</b> = grau negativo (–), <b>hipermetropia</b> = grau positivo (+).</p>
-          <div class="rx" id="rxGrid"></div>
+          <div class="rx-total"><span>Total</span><b id="rxTotal"></b></div>
           <p class="err-msg hidden" id="formErr" role="alert"></p>
           <button class="btn indigo block" type="submit">COMPRAR AGORA</button>
           <p class="fine" id="finePrint"></p>
         </form>
+        <div class="gp-bg hidden" id="gradeBg"></div>
         <div class="free"><img src="https://images.ctfassets.net/h5kzo0k46quc/3SaDofUpEoWjZyDL9hmmNn/d34a28a3d6b3ab4723435fe87b251ca2/ValuePropsSection-free-shipping-purple.png?w=80&q=80&fm=webp" alt="">Frete grátis</div>
       </div>
     </section>
@@ -323,7 +367,7 @@ if(!isHubble || lens.packs.length > 1){
   $$('#packs input').forEach(r => r.onchange = () => {
     st.pack = +r.value;
     $$('#packs .radio-card').forEach(c => c.classList.toggle('on', c.contains(r)));
-    renderPrice(); renderGallery();
+    renderPrice(); renderGallery(); renderRx();
   });
 }
 
@@ -337,30 +381,45 @@ function opts(list, ph, sel, none){
   return `<option value="">${ph}</option>` + (none ? `<option value="none"${sel === 'none' ? ' selected' : ''}>${none}</option>` : '')
     + list.map(v => `<option value="${v}"${v === sel ? ' selected' : ''}>${fmtRx(v)}</option>`).join('');
 }
+let openEye = null;
+const sameEl = $('#sameRx');
+function eyeLabel(e){ return e.sph ? fmtRx(e.sph) : 'Selecione'; }
 function renderRx(){
-  const noPower = st.tried && !chosen('od') && !chosen('oe');
-  const col = (eye, label, noneTxt) => {
-    const e = st[eye], bad = k => st.tried && chosen(eye) && e[k] === '' ? ' err' : '';
-    const grp = (k, t) => `<optgroup label="${t}">` + powersFor(k).map(v => `<option value="${v}"${v === e.sph ? ' selected' : ''}>${fmtRx(v)}</option>`).join('') + '</optgroup>';
-    const sphOpts = `<option value="">Selecionar grau</option><option value="none"${e.kind === 'none' ? ' selected' : ''}>${noneTxt}</option>` + grp('miopia', 'Miopia (grau negativo)') + grp('hipermetropia', 'Hipermetropia (grau positivo)');
-    let h = `<div><div class="field"><label for="${eye}-sph">${label}</label><select class="select${noPower && !hasKind(eye) ? ' err' : ''}" id="${eye}-sph" data-eye="${eye}" data-k="sph">${sphOpts}</select></div>`;
-    if(hasKind(eye)) h += `<p class="fine" style="margin:-8px 0 10px">${e.kind === 'miopia' ? 'Miopia' : 'Hipermetropia'}</p>`;
-    if(lens.toric && hasKind(eye)){
-      h += `<div class="field"><label for="${eye}-cyl">Cilíndrico (CIL)</label><select class="select${bad('cyl')}" id="${eye}-cyl" data-eye="${eye}" data-k="cyl">${opts(HB.rx.cyl(), 'Selecionar', e.cyl)}</select></div>`;
-      h += `<div class="field"><label for="${eye}-axis">Eixo</label><select class="select${bad('axis')}" id="${eye}-axis" data-eye="${eye}" data-k="axis">${opts(HB.rx.axis(), 'Selecionar', e.axis)}</select></div>`;
-    }
-    return h + '</div>';
-  };
-  $('#rxGrid').innerHTML = col('od', 'Olho direito (OD)', 'Não preciso de lente no olho direito') + col('oe', 'Olho esquerdo (OE)', 'Não preciso de lente no olho esquerdo');
-  $$('#rxGrid select').forEach(s => s.onchange = () => {
-    const E = st[s.dataset.eye];
-    if(s.dataset.k === 'sph'){ const v = s.value; E.kind = v === 'none' ? 'none' : v.startsWith('-') ? 'miopia' : v.startsWith('+') ? 'hipermetropia' : ''; E.sph = (v === 'none') ? '' : v; }
-    else E[s.dataset.k] = s.value;
-    if(st.tried) validate();
-    renderRx();
-    const again = $('#' + s.id); if(again) again.focus();
-  });
+  const noPower = st.tried && !hasKind('od') && !hasKind('oe');
+  const row = (eye, label) => `<div class="rx-row"><div class="rx-eye">${label}</div><div><button type="button" class="rx-trig${st[eye].sph ? ' set' : ''}${noPower ? ' err' : ''}${openEye === eye ? ' open' : ''}" data-eye="${eye}" aria-haspopup="listbox" aria-expanded="${openEye === eye}"><span>${eyeLabel(st[eye])}</span><svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M5 6L9.33 0H.67z" fill="currentColor"/></svg></button>${st[eye].kind === 'miopia' || st[eye].kind === 'hipermetropia' ? `<div class="rx-kind">${st[eye].kind === 'miopia' ? 'Miopia' : 'Hipermetropia'}</div>` : ''}</div></div>`;
+  $('#rxGrid').innerHTML = `<div class="rx-row rx-h"><div>Olho</div><div>Grau esférico</div></div>` +
+    (sameEl.checked ? row('od', 'Ambos') : row('oe', 'Esquerdo') + row('od', 'Direito'));
+  $$('#rxGrid .rx-trig').forEach(b => b.onclick = () => openPop(b.dataset.eye, b));
+  $('#rxTotal').textContent = brl(pack().total || pack().sale);
 }
+function setEye(eye, v){
+  const apply = E => { E.sph = v; E.kind = !v ? '' : v.startsWith('-') ? 'miopia' : 'hipermetropia'; };
+  apply(st[eye]); if(sameEl.checked) apply(st[eye === 'od' ? 'oe' : 'od']);
+}
+function openPop(eye, trig){
+  openEye = eye;
+  const cur = st[eye].sph;
+  const col = k => `<div class="gp-col">${powersFor(k).map(v => `<button type="button" role="option" aria-selected="${v === cur}" class="gp-item${v === cur ? ' on' : ''}" data-v="${v}">${fmtRx(v)}</button>`).join('')}</div>`;
+  const pop = $('#gradePop');
+  pop.innerHTML = `<div class="gp-top"><h3>Grau esférico</h3><button type="button" class="gp-x" aria-label="Fechar">✕</button></div>
+    <div class="gp-heads"><div>Miopia (−)</div><div>Hipermetropia (+)</div></div>
+    <div class="gp-body" role="listbox">${col('miopia')}${col('hipermetropia')}</div>
+    <div class="gp-foot"><button type="button" class="gp-clear">Limpar seleção</button></div>`;
+  const wrap = $('.rx-wrap'), r = trig.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+  pop.style.top = (r.bottom - w.top + 6) + 'px';
+  pop.classList.remove('hidden'); $('#gradeBg').classList.remove('hidden');
+  document.body.classList.add('gp-open');
+  $$('.gp-item', pop).forEach(b => b.onclick = () => { setEye(eye, b.dataset.v); closePop(); if(st.tried) validate(); });
+  $('.gp-clear', pop).onclick = () => { setEye(eye, ''); closePop(); };
+  $('.gp-x', pop).onclick = closePop;
+  const on = $('.gp-item.on', pop); if(on) on.scrollIntoView({block:'center'});
+  renderRx();
+}
+function closePop(){ openEye = null; $('#gradePop').classList.add('hidden'); $('#gradeBg').classList.add('hidden'); document.body.classList.remove('gp-open'); renderRx(); }
+$('#gradeBg').onclick = closePop;
+addEventListener('keydown', e => { if(e.key === 'Escape' && openEye) closePop(); });
+document.addEventListener('click', e => { if(openEye && !e.target.closest('#gradePop') && !e.target.closest('.rx-trig')) closePop(); });
+sameEl.onchange = () => { if(sameEl.checked){ const src = st.od.sph ? st.od : st.oe; st.od = {...st.od, sph:src.sph, kind:src.kind}; st.oe = {...st.oe, sph:src.sph, kind:src.kind}; } renderRx(); };
 function validate(){
   const errs = [];
   if(!hasKind('od') && !hasKind('oe')) errs.push('Selecione o grau de pelo menos um olho.');
