@@ -91,6 +91,8 @@
   .ck-terms input{margin-top:2px;width:16px;height:16px;accent-color:var(--ck-accent);flex:none}
   .ck-terms a{text-decoration:underline;color:var(--ink)}
   .demo{font-size:11.5px;color:var(--muted);text-align:center;margin-top:10px}
+  .ck-err{font-size:13px;color:var(--red,#c0392b);text-align:center;margin-top:12px;line-height:1.45}
+  .ck-err:empty{display:none}
   .rx-file{margin-top:10px;font-size:13px}
   .rx-file img{max-height:110px;border-radius:6px;margin-top:8px;border:1px solid var(--line)}
   .sum{border:1px solid var(--line);border-radius:10px;padding:24px;position:sticky;top:16px}
@@ -153,6 +155,7 @@
 
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/api.js"></script>
 <script>
 (function(){
 const {D, $, $$, brl, esc, img, sup, cart, user, valid, mask, store, ICON} = HB;
@@ -305,7 +308,8 @@ function payCard(){
         <div class="pay-b"><p>O código Pix expira em 30 minutos após finalizar a compra.</p><p>Valor no Pix: <b>${brl(t.total)}</b></p></div></div>
       <label class="ck-terms"><input type="checkbox" id="terms" ${S.terms?'checked':''}><span>Li e concordo com os <a href="legal.html?doc=termos" target="_blank">Termos de Serviço</a> e a <a href="legal.html?doc=privacidade" target="_blank">Política de Privacidade</a>.</span></label>
       <button class="ck-btn" id="finish" ${payValid()?'':'disabled'}>Finalizar Compra</button>
-      <p class="demo">Ambiente de demonstração — nenhuma cobrança real é feita.</p>
+      <p class="ck-err" id="ckErr" role="alert" aria-live="assertive"></p>
+      <p class="demo">O código Pix é gerado na próxima tela e vale por 30 minutos.</p>
     </form></div>`;
 }
 function summaryHTML(){
@@ -326,7 +330,20 @@ function summaryHTML(){
 function render(){
   $('#col1').innerHTML = idCard() + addrCard();
   $('#col2').innerHTML = (needRx ? rxCard() : '') + payCard();
-  renderSummary(); bind(); save();
+  renderSummary(); bind(); save(); trackSteps();
+}
+/* ---------- Rastreio das etapas (checkouts abandonados no /admin) ---------- */
+function stepPayload(){
+  const t = totals(), items = cart.items();
+  return {plano: items.map(i => i.id).join(',').slice(0, 80), planoNome: items.map(i => i.name + (i.qty > 1 ? ' ×' + i.qty : '')).join(' + ').slice(0, 200),
+    value: t.total, items: cart.count(), bump: !!(S.bump && BUMP), frete: S.frete};
+}
+function trackSteps(){
+  if(!window.HBAPI) return;
+  HBAPI.checkoutStep('checkout', stepPayload());
+  if(S.step > stepNo('id')) HBAPI.checkoutStep('dados', Object.assign(stepPayload(), {name: S.id.name.trim(), email: S.id.email.trim().toLowerCase(), phone: digits(S.id.phone)}));
+  if(S.step > stepNo('addr')) HBAPI.checkoutStep('entrega', Object.assign(stepPayload(), {name: S.id.name.trim(), email: S.id.email.trim().toLowerCase(), phone: digits(S.id.phone), cidade: S.addr.cidade, uf: S.addr.uf}));
+  if(S.step === stepNo('pay') && !trackSteps.payInfo){ trackSteps.payInfo = true; HBAPI.metaTrack('AddPaymentInfo', {value: totals().total, contentIds: cart.items().map(i => i.id)}); }
 }
 function renderSummary(){
   const h = summaryHTML(), t = totals();
@@ -390,32 +407,44 @@ function bind(){
 $('#sumMob > button').onclick = () => { const m = $('#sumMob'); m.classList.toggle('open'); $('#sumMob > button').setAttribute('aria-expanded', m.classList.contains('open')); };
 
 /* ---------- Finalizar ---------- */
-function orderNumber(){ const d = new Date(); return `HB-${String(d.getFullYear()).slice(2)}${String(d.getMonth()+1).padStart(2,'0')}-${String(Math.floor(Math.random()*1e5)).padStart(5,'0')}`; }
-function finish(){
-  const btn = $('#finish'); btn.disabled = true; btn.textContent = 'Processando…';
-  setTimeout(() => {
-    const now = Date.now(), t = totals(), number = orderNumber();
-    const items = cart.items().map(x => ({...x}));
-    if(S.bump && BUMP) items.push({kind:'acessorio', id:BUMP.acc.id, name:BUMP.acc.name, image:BUMP.acc.image, qty:1, price:BUMP.price, meta:['Oferta do checkout'], details:{}, sub:null});
-    const order = {
-      number, date: now, email: S.id.email.trim().toLowerCase(), name: S.id.name.trim(), phone: S.id.phone, cpf: S.id.cpf,
-      items, totals: {...t, inst: S.pay === 'cartao' ? {n:S.inst, value:t.total/S.inst} : t.inst},
-      shipping: FRETES.find(f=>f.id===S.frete),
-      address: {...S.addr},
-      payment: S.pay === 'cartao' ? {method:'cartao', brand: cardBrand(card.num) || 'Cartão', last4: digits(card.num).slice(-4), inst: S.inst} : {method:S.pay},
-      rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : {method:'nao-precisa'},
-      status: S.pay === 'cartao' ? (needRx ? 'Receita em análise' : 'Em preparação') : 'Pagamento pendente',
-      pixExpires: S.pay === 'pix' ? now + 30*60*1000 : undefined
-    };
-    user.saveOrder(order);
-    const subs = store.get('subs', []);
-    items.filter(i => i.sub).forEach((it,i) => subs.push({id:`S${now.toString(36)}${i}`, order:number, email:order.email, name:it.name, image:it.image, meta:it.meta||[], everyDays:it.sub.everyDays, price:+(it.sub.price*it.qty).toFixed(2), next: now + it.sub.everyDays*864e5, status:'ativa'}));
-    store.set('subs', subs);
-    if(user.current()){ const p = user.profile(); const patch = {addresses:[{...S.addr}]}; if(!p.phone) patch.phone = digits(S.id.phone); if(!p.cpf) patch.cpf = digits(S.id.cpf); user.saveProfile(patch); }
-    cart.clear(); store.set('checkout-email', null);
-    try{ sessionStorage.removeItem(SKEY); }catch(e){}
-    location.href = 'pedido-confirmado.html?n=' + encodeURIComponent(number);
-  }, 700);
+async function finish(){
+  const btn = $('#finish'), err = $('#ckErr');
+  const fail = msg => { if(err) err.textContent = msg; btn.disabled = false; btn.textContent = 'Finalizar Compra'; };
+  if(!window.HBAPI) return fail('Não foi possível conectar ao pagamento. Atualize a página e tente novamente.');
+  btn.disabled = true; btn.textContent = 'Gerando Pix…'; if(err) err.textContent = '';
+  const t = totals();
+  const cartList = cart.items().map(x => ({...x}));
+  const rx = needRx ? {method:S.rx.method, fileName:S.rx.method==='upload' ? (S.rx.fileName||'').slice(0,200) || undefined : undefined,
+    doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica||'', telefone:S.rx.doctor.tel||''} : undefined} : {method:'nao-precisa'};
+  const r = await HBAPI.checkout({
+    customer: {name:S.id.name.trim(), email:S.id.email.trim().toLowerCase(), cpf:digits(S.id.cpf), phone:digits(S.id.phone)},
+    address: {cep:digits(S.addr.cep), rua:S.addr.rua, numero:S.addr.numero, complemento:S.addr.complemento||'', bairro:S.addr.bairro, cidade:S.addr.cidade, uf:S.addr.uf},
+    frete: S.frete, coupon: (cart.coupon()||{}).code || null, bump: !!(S.bump && BUMP),
+    items: HBAPI.cartItems(cartList), rx, expectedTotal: t.total
+  });
+  if(!r.ok) return fail(r.error);
+  const d = r.data, now = Date.now(), st = d.totals || {};
+  const items = cartList;
+  if(S.bump && BUMP) items.push({kind:'acessorio', id:BUMP.acc.id, name:BUMP.acc.name, image:BUMP.acc.image, qty:1, price:BUMP.price, meta:['Oferta do checkout'], details:{}, sub:null});
+  const order = {
+    number: d.number, orderId: d.orderId, date: now, email: S.id.email.trim().toLowerCase(), name: S.id.name.trim(), phone: S.id.phone, cpf: S.id.cpf,
+    items, totals: {sub: st.sub ?? t.sub, discount: st.discount ?? t.discount, coupon: st.coupon ?? t.coupon, pix: st.pix ?? 0, shipping: st.shipping ?? t.shipping, total: d.amount, inst: t.inst},
+    shipping: FRETES.find(f=>f.id===S.frete),
+    address: {...S.addr},
+    payment: {method:'pix'},
+    rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : {method:'nao-precisa'},
+    status: 'Pagamento pendente',
+    qrcode: d.qrcode,
+    pixExpires: Date.parse(d.expiresAt) || now + 30*60*1000
+  };
+  user.saveOrder(order);
+  const subs = store.get('subs', []);
+  items.filter(i => i.sub).forEach((it,i) => subs.push({id:`S${now.toString(36)}${i}`, order:d.number, email:order.email, name:it.name, image:it.image, meta:it.meta||[], everyDays:it.sub.everyDays, price:+(it.sub.price*it.qty).toFixed(2), next: now + it.sub.everyDays*864e5, status:'ativa'}));
+  store.set('subs', subs);
+  if(user.current()){ const p = user.profile(); const patch = {addresses:[{...S.addr}]}; if(!p.phone) patch.phone = digits(S.id.phone); if(!p.cpf) patch.cpf = digits(S.id.cpf); user.saveProfile(patch); }
+  cart.clear(); store.set('checkout-email', null);
+  try{ sessionStorage.removeItem(SKEY); }catch(e){}
+  location.href = 'pedido-confirmado.html?n=' + encodeURIComponent(d.number) + '&id=' + encodeURIComponent(d.orderId);
 }
 render();
 })();

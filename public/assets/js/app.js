@@ -239,7 +239,7 @@ function footerHTML(){
       ${col('Lentes de Contato',[['SkyHy by Hubble® Diária','lente.html?id=skyhy'],['Lentes para Miopia','lente.html?id=skyhy'],['Lentes para Hipermetropia','lente.html?id=skyhy']])}
       ${col('Comprar por Formato de Armação',[['Ver Todas','oculos.html'],['Armações Quadradas','oculos.html?formato=Quadrado'],['Armações Redondas','oculos.html?formato=Redondo'],['Armações Retangulares','oculos.html?formato=Retangular'],['Armações Gatinho','oculos.html?formato=Gatinho']])}
       ${col('Sobre Nós',[['Sobre a Hubble','sobre.html'],['Política de Privacidade','legal.html?doc=privacidade'],['Termos de Serviço','legal.html?doc=termos'],['Trocas e Devoluções','legal.html?doc=trocas'],['Acessibilidade','legal.html?doc=acessibilidade']])}
-      ${col('Recursos',[['Como Funciona','como-funciona.html'],['Testes de Visão','testes-de-visao.html'],['Perguntas Frequentes','faq.html'],['Minha Conta','conta.html'],['Fale Conosco','contato.html']])}
+      ${col('Recursos',[['Rastrear Pedido','rastreio.html'],['Como Funciona','como-funciona.html'],['Testes de Visão','testes-de-visao.html'],['Perguntas Frequentes','faq.html'],['Minha Conta','conta.html'],['Fale Conosco','contato.html']])}
     </div></div></footer>
   <div class="help-panel" id="helpPanel"><h4>Como podemos ajudar?</h4><p>Nossa equipe responde de segunda a sexta, das 9h às 18h, e aos sábados, das 9h às 13h.</p>
     <a href="como-funciona.html">Como funcionam os planos?</a><a href="conta.html#recomprar">Comprar novamente</a><a href="conta.html#receitas">Atualizar minha receita</a><a href="faq.html">Ver todas as perguntas frequentes</a><a href="contato.html">Falar com a equipe</a></div>

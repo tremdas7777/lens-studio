@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rastrear pedido | Hubble</title>
+<meta name="description" content="Acompanhe a entrega do seu pedido Hubble informando o número do pedido e o CPF do titular.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .rs{max-width:720px;margin:0 auto}
+  .rs-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:14px;align-items:end}
+  .rs-form .field{margin:0}
+  .rs-form .btn{height:49px}
+  .rs-res{margin-top:36px}
+  .rs-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:baseline}
+  .rs-head h2{font-size:24px;color:var(--navy)}
+  .rs-head small{color:var(--muted);font-size:13px}
+  .rs-code{margin-top:14px;background:var(--lav-solid);border-radius:8px;padding:14px 16px;font-size:14px}
+  .rs-code b{font-family:ui-monospace,Menlo,monospace;letter-spacing:.04em}
+  .rs-steps{list-style:none;margin-top:22px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .rs-steps li{background:#fff;display:flex;gap:18px;align-items:center;padding:18px 20px}
+  .rs-steps i{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:14px;background:#eef0f2;color:var(--muted)}
+  .rs-steps li.done i{background:var(--green);color:#fff}
+  .rs-steps li.cur i{background:var(--indigo);color:#fff}
+  .rs-steps .t{font-weight:600;font-size:15px}
+  .rs-steps li:not(.done):not(.cur) .t{color:var(--muted)}
+  .rs-steps .s{font-size:13px;color:var(--muted);margin-top:2px}
+  .rs-items{margin-top:18px;font-size:14px;color:var(--text)}
+  .rs-note{margin-top:16px;font-size:12.5px;color:var(--muted)}
+  .rs-err{margin-top:16px;color:var(--red);font-size:14px}
+  .rs-err:empty{display:none}
+  @media (max-width:700px){ .rs-form{grid-template-columns:minmax(0,1fr)} .rs-form .btn{width:100%} }
+</style>
+</head>
+<body>
+<main>
+<section class="page-hero lav">
+  <div class="wrap">
+    <h1 class="display">Rastrear pedido</h1>
+    <p>Informe o número do pedido (está no e-mail de confirmação e em Minha Conta) e o CPF do titular para acompanhar a entrega.</p>
+  </div>
+</section>
+<section class="sec">
+  <div class="wrap rs">
+    <form class="rs-form" id="rsForm" novalidate>
+      <div class="field"><label for="rsPedido">Número do pedido</label><input class="input" id="rsPedido" name="pedido" placeholder="HB-2610-12345" autocomplete="off" required></div>
+      <div class="field"><label for="rsCpf">CPF do titular</label><input class="input" id="rsCpf" name="cpf" placeholder="000.000.000-00" inputmode="numeric" data-mask="cpf" required></div>
+      <button class="btn" id="rsBtn">Rastrear</button>
+    </form>
+    <p class="rs-err" id="rsErr" role="alert"></p>
+    <div class="rs-res" id="rsRes" aria-live="polite"></div>
+  </div>
+</section>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/api.js"></script>
+<script>
+(function(){
+  const {$, esc, sup, valid, mask} = HB;
+  const form = $('#rsForm'), err = $('#rsErr'), res = $('#rsRes'), btn = $('#rsBtn');
+  const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'}) : '';
+  const pre = HB.qs('pedido');
+  if(pre) $('#rsPedido').value = pre.toUpperCase();
+  const local = pre && HB.user.getOrder(pre.toUpperCase());
+  if(local && local.cpf) $('#rsCpf').value = mask.cpf(String(local.cpf));
+
+  function show(d){
+    const order = d.steps.map(s => s.key);
+    const cur = d.status === 'aguardando_pagamento' ? -1 : order.indexOf(d.status);
+    const head = d.paid
+      ? `<div class="rs-head"><h2>${esc((d.steps[cur] || d.steps[0]).title)}</h2><small>Pedido ${esc(d.number)} · pago em ${esc(fmtDate(d.paidAt))}</small></div>`
+      : `<div class="rs-head"><h2>Aguardando pagamento</h2><small>Pedido ${esc(d.number)} · feito em ${esc(fmtDate(d.createdAt))}</small></div>
+         <div class="notice" style="margin-top:14px">O pagamento deste pedido ainda não foi confirmado. <a class="link-u" href="pedido-confirmado.html?n=${encodeURIComponent(d.number)}">Ver dados do Pix</a></div>`;
+    const code = d.trackingCode ? `<div class="rs-code">Código de rastreio: <b>${esc(d.trackingCode)}</b></div>` : '';
+    const steps = `<ol class="rs-steps">${d.steps.map((s, i) => `<li class="${i < cur ? 'done' : i === cur ? (i === d.steps.length - 1 ? 'done' : 'cur') : ''}"><i>${i < cur || (i === cur && i === d.steps.length - 1) ? '✓' : i + 1}</i><div><div class="t">${esc(s.title)}</div><div class="s">${i <= cur ? esc(s.sub) : 'Aguardando'}</div></div></li>`).join('')}</ol>`;
+    const items = d.items && d.items.length ? `<p class="rs-items"><b>Itens:</b> ${d.items.map(i => sup(i.name) + (i.qty > 1 ? ` × ${i.qty}` : '')).join(' · ')}</p>` : '';
+    res.innerHTML = head + code + steps + items + `<p class="rs-note">As etapas são atualizadas conforme o andamento da entrega${d.eta ? ` (prazo: ${esc(d.eta)} após a confirmação${d.paid ? '' : ' do pagamento'})` : ''}. Dúvidas? <a class="link-u" href="contato.html">Fale com a nossa equipe</a>.</p>`;
+  }
+
+  form.onsubmit = async e => {
+    e.preventDefault();
+    err.textContent = ''; res.innerHTML = '';
+    const pedido = $('#rsPedido').value.trim().toUpperCase(), cpf = $('#rsCpf').value;
+    if(!/^HB-\d{4}-\d{5}$/.test(pedido)){ err.textContent = 'Confira o número do pedido. Ele tem o formato HB-2610-12345.'; return; }
+    if(!valid.cpf(cpf)){ err.textContent = 'CPF inválido.'; return; }
+    btn.disabled = true; btn.textContent = 'Buscando…';
+    const r = await HBAPI.rastreio(pedido, cpf.replace(/\D/g, ''));
+    btn.disabled = false; btn.textContent = 'Rastrear';
+    if(!r.ok){ err.textContent = r.error; return; }
+    show(r.data);
+  };
+  if(pre && $('#rsCpf').value) form.requestSubmit ? form.requestSubmit() : form.onsubmit(new Event('submit'));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Supabase CLI config for Hubble Brasil.
+# project_id is intentionally not set: link your own project with
+#   supabase link --project-ref <your-project-ref>
+# or let Lovable Cloud manage it. Never commit keys here — they go in env vars.
+# project_id = "<your-project-ref>"

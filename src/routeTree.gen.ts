@@ -10,33 +10,154 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ApiPublicCheckoutRouteImport } from './routes/api/public/checkout'
+import { Route as ApiPublicCheckoutStepRouteImport } from './routes/api/public/checkout-step'
+import { Route as ApiPublicEventRouteImport } from './routes/api/public/event'
+import { Route as ApiPublicMetaEventRouteImport } from './routes/api/public/meta-event'
+import { Route as ApiPublicOrderRouteImport } from './routes/api/public/order'
+import { Route as ApiPublicPixWebhookRouteImport } from './routes/api/public/pix-webhook'
+import { Route as ApiPublicRastreioRouteImport } from './routes/api/public/rastreio'
+import { Route as ApiPublicSettingsRouteImport } from './routes/api/public/settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCheckoutRoute = ApiPublicCheckoutRouteImport.update({
+  id: '/api/public/checkout',
+  path: '/api/public/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCheckoutStepRoute = ApiPublicCheckoutStepRouteImport.update({
+  id: '/api/public/checkout-step',
+  path: '/api/public/checkout-step',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicEventRoute = ApiPublicEventRouteImport.update({
+  id: '/api/public/event',
+  path: '/api/public/event',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMetaEventRoute = ApiPublicMetaEventRouteImport.update({
+  id: '/api/public/meta-event',
+  path: '/api/public/meta-event',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicOrderRoute = ApiPublicOrderRouteImport.update({
+  id: '/api/public/order',
+  path: '/api/public/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPixWebhookRoute = ApiPublicPixWebhookRouteImport.update({
+  id: '/api/public/pix-webhook',
+  path: '/api/public/pix-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicRastreioRoute = ApiPublicRastreioRouteImport.update({
+  id: '/api/public/rastreio',
+  path: '/api/public/rastreio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSettingsRoute = ApiPublicSettingsRouteImport.update({
+  id: '/api/public/settings',
+  path: '/api/public/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/api/public/checkout': typeof ApiPublicCheckoutRoute
+  '/api/public/checkout-step': typeof ApiPublicCheckoutStepRoute
+  '/api/public/event': typeof ApiPublicEventRoute
+  '/api/public/meta-event': typeof ApiPublicMetaEventRoute
+  '/api/public/order': typeof ApiPublicOrderRoute
+  '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
+  '/api/public/rastreio': typeof ApiPublicRastreioRoute
+  '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/api/public/checkout': typeof ApiPublicCheckoutRoute
+  '/api/public/checkout-step': typeof ApiPublicCheckoutStepRoute
+  '/api/public/event': typeof ApiPublicEventRoute
+  '/api/public/meta-event': typeof ApiPublicMetaEventRoute
+  '/api/public/order': typeof ApiPublicOrderRoute
+  '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
+  '/api/public/rastreio': typeof ApiPublicRastreioRoute
+  '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/api/public/checkout': typeof ApiPublicCheckoutRoute
+  '/api/public/checkout-step': typeof ApiPublicCheckoutStepRoute
+  '/api/public/event': typeof ApiPublicEventRoute
+  '/api/public/meta-event': typeof ApiPublicMetaEventRoute
+  '/api/public/order': typeof ApiPublicOrderRoute
+  '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
+  '/api/public/rastreio': typeof ApiPublicRastreioRoute
+  '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/api/public/checkout'
+    | '/api/public/checkout-step'
+    | '/api/public/event'
+    | '/api/public/meta-event'
+    | '/api/public/order'
+    | '/api/public/pix-webhook'
+    | '/api/public/rastreio'
+    | '/api/public/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/api/public/checkout'
+    | '/api/public/checkout-step'
+    | '/api/public/event'
+    | '/api/public/meta-event'
+    | '/api/public/order'
+    | '/api/public/pix-webhook'
+    | '/api/public/rastreio'
+    | '/api/public/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/api/public/checkout'
+    | '/api/public/checkout-step'
+    | '/api/public/event'
+    | '/api/public/meta-event'
+    | '/api/public/order'
+    | '/api/public/pix-webhook'
+    | '/api/public/rastreio'
+    | '/api/public/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  ApiPublicCheckoutRoute: typeof ApiPublicCheckoutRoute
+  ApiPublicCheckoutStepRoute: typeof ApiPublicCheckoutStepRoute
+  ApiPublicEventRoute: typeof ApiPublicEventRoute
+  ApiPublicMetaEventRoute: typeof ApiPublicMetaEventRoute
+  ApiPublicOrderRoute: typeof ApiPublicOrderRoute
+  ApiPublicPixWebhookRoute: typeof ApiPublicPixWebhookRoute
+  ApiPublicRastreioRoute: typeof ApiPublicRastreioRoute
+  ApiPublicSettingsRoute: typeof ApiPublicSettingsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +169,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/checkout': {
+      id: '/api/public/checkout'
+      path: '/api/public/checkout'
+      fullPath: '/api/public/checkout'
+      preLoaderRoute: typeof ApiPublicCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/checkout-step': {
+      id: '/api/public/checkout-step'
+      path: '/api/public/checkout-step'
+      fullPath: '/api/public/checkout-step'
+      preLoaderRoute: typeof ApiPublicCheckoutStepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/event': {
+      id: '/api/public/event'
+      path: '/api/public/event'
+      fullPath: '/api/public/event'
+      preLoaderRoute: typeof ApiPublicEventRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/meta-event': {
+      id: '/api/public/meta-event'
+      path: '/api/public/meta-event'
+      fullPath: '/api/public/meta-event'
+      preLoaderRoute: typeof ApiPublicMetaEventRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/order': {
+      id: '/api/public/order'
+      path: '/api/public/order'
+      fullPath: '/api/public/order'
+      preLoaderRoute: typeof ApiPublicOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/pix-webhook': {
+      id: '/api/public/pix-webhook'
+      path: '/api/public/pix-webhook'
+      fullPath: '/api/public/pix-webhook'
+      preLoaderRoute: typeof ApiPublicPixWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/rastreio': {
+      id: '/api/public/rastreio'
+      path: '/api/public/rastreio'
+      fullPath: '/api/public/rastreio'
+      preLoaderRoute: typeof ApiPublicRastreioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/settings': {
+      id: '/api/public/settings'
+      path: '/api/public/settings'
+      fullPath: '/api/public/settings'
+      preLoaderRoute: typeof ApiPublicSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  ApiPublicCheckoutRoute: ApiPublicCheckoutRoute,
+  ApiPublicCheckoutStepRoute: ApiPublicCheckoutStepRoute,
+  ApiPublicEventRoute: ApiPublicEventRoute,
+  ApiPublicMetaEventRoute: ApiPublicMetaEventRoute,
+  ApiPublicOrderRoute: ApiPublicOrderRoute,
+  ApiPublicPixWebhookRoute: ApiPublicPixWebhookRoute,
+  ApiPublicRastreioRoute: ApiPublicRastreioRoute,
+  ApiPublicSettingsRoute: ApiPublicSettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

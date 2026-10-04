@@ -1,0 +1,284 @@
+{
+  "prices": {
+    "glasses": 274.9,
+    "sunglasses": 329.9
+  },
+  "frames": {
+    "lyra": {
+      "name": "Lyra",
+      "sun": true,
+      "colors": [
+        "Mars Crystal",
+        "Blush Tortoise",
+        "Black Tortoise",
+        "Eclipse"
+      ]
+    },
+    "artemis": {
+      "name": "Artemis",
+      "sun": true,
+      "colors": [
+        "Butterscotch",
+        "Soft Slate",
+        "Black Tortoise",
+        "Eclipse"
+      ]
+    },
+    "titania": {
+      "name": "Titania",
+      "sun": true,
+      "colors": [
+        "Eclipse",
+        "Midnight Blue",
+        "Blush Tortoise"
+      ]
+    },
+    "callisto": {
+      "name": "Callisto",
+      "sun": true,
+      "colors": [
+        "Matte Eclipse",
+        "Soft Slate",
+        "Black Tortoise"
+      ]
+    },
+    "kepler": {
+      "name": "Kepler",
+      "sun": true,
+      "colors": [
+        "Emerald Crystal",
+        "Matte Eclipse",
+        "Soft Slate",
+        "Sun Spot Tortoise"
+      ]
+    },
+    "neptune": {
+      "name": "Neptune",
+      "sun": true,
+      "colors": [
+        "Black Tortoise",
+        "Blush Tortoise",
+        "Soft Slate",
+        "Midnight Blue"
+      ]
+    },
+    "nebula": {
+      "name": "Nebula",
+      "sun": true,
+      "colors": [
+        "Black Tortoise",
+        "Butterscotch",
+        "Soft Slate"
+      ]
+    },
+    "cassini": {
+      "name": "Cassini",
+      "sun": true,
+      "colors": [
+        "Black Tortoise",
+        "Sun Spot Tortoise",
+        "Crystal Blush"
+      ]
+    },
+    "astrid": {
+      "name": "Astrid",
+      "sun": true,
+      "colors": [
+        "Black Tortoise",
+        "Blush Tortoise",
+        "Champagne Crystal"
+      ]
+    },
+    "juno": {
+      "name": "Juno",
+      "sun": true,
+      "colors": [
+        "Black Tortoise",
+        "Soft Slate",
+        "Aurora Tortoise"
+      ]
+    },
+    "luna": {
+      "name": "Luna",
+      "sun": true,
+      "colors": [
+        "Black Tortoise",
+        "Butterscotch",
+        "Champagne Crystal"
+      ]
+    },
+    "ophelia": {
+      "name": "Ophelia",
+      "sun": false,
+      "colors": [
+        "Black Tortoise",
+        "Blush Tortoise",
+        "Crystal Blush"
+      ]
+    },
+    "galileo": {
+      "name": "Galileo",
+      "sun": true,
+      "colors": [
+        "Cerulean Crystal",
+        "Sun Spot Tortoise",
+        "Black Tortoise"
+      ]
+    },
+    "titan": {
+      "name": "Titan",
+      "sun": true,
+      "colors": [
+        "Black Tortoise",
+        "Sun Spot Tortoise",
+        "Champagne Crystal"
+      ]
+    },
+    "polaris": {
+      "name": "Polaris",
+      "sun": true,
+      "colors": [
+        "Galactic Tortoise",
+        "Black Tortoise",
+        "Champagne Crystal"
+      ]
+    },
+    "ariel": {
+      "name": "Ariel",
+      "sun": true,
+      "colors": [
+        "Soft Slate",
+        "Black Tortoise",
+        "Burnt Caramel Tortoise",
+        "Eclipse"
+      ]
+    },
+    "andromeda": {
+      "name": "Andromeda",
+      "sun": false,
+      "colors": [
+        "Banana Tortoise",
+        "Black Tortoise",
+        "Crystal Blush"
+      ]
+    },
+    "doppler": {
+      "name": "Doppler",
+      "sun": false,
+      "colors": [
+        "Eclipse",
+        "Midnight Blue",
+        "Black Tortoise",
+        "Soft Slate"
+      ]
+    },
+    "orion": {
+      "name": "Orion",
+      "sun": false,
+      "colors": [
+        "Eclipse",
+        "Midnight Blue",
+        "Black Tortoise"
+      ]
+    },
+    "nova": {
+      "name": "Nova",
+      "sun": false,
+      "colors": [
+        "Black Tortoise",
+        "Champagne Crystal",
+        "Sun Spot Tortoise"
+      ]
+    }
+  },
+  "accessories": {
+    "lastacraft-once-daily": {
+      "name": "Colírio Lastacaft Once Daily",
+      "price": 131.9
+    },
+    "refresh-optive-mega-3-lubricant-eye-ointment": {
+      "name": "Colírio Lubrificante Refresh Optive® MEGA-3",
+      "price": 120.9
+    },
+    "refresh-pm-lubricant-eye-ointment": {
+      "name": "Pomada Oftálmica Lubrificante Refresh P.M.®",
+      "price": 92.9
+    },
+    "refresh-digital-pf-preservative-free": {
+      "name": "Refresh® DIGITAL PF Sem Conservantes",
+      "price": 117.9
+    },
+    "refresh-relieva-for-contacts-lubricant-eye-drops": {
+      "name": "Colírio Lubrificante Refresh® RELIEVA para Lentes de Contato",
+      "price": 81.9
+    },
+    "refresh-relieva-pf-preservative-free": {
+      "name": "Refresh® RELIEVA PF Sem Conservantes",
+      "price": 125.9
+    },
+    "refresh-revlieva-preservative-free": {
+      "name": "Refresh® RELIEVA Sem Conservantes",
+      "price": 109.9
+    },
+    "sight-saver-contact-lens-case": {
+      "name": "Estojo para Lentes de Contato Sight Savers®",
+      "price": 7.9
+    },
+    "alaway": {
+      "name": "Alaway",
+      "price": 70.9
+    },
+    "avenova-eye-compress": {
+      "name": "Compressa para os Olhos Avenova",
+      "price": 109.9
+    },
+    "avenova-otc-antimicrobial-spray-solution": {
+      "name": "Solução Antimicrobiana em Spray Avenova",
+      "price": 164.9
+    },
+    "biotrue-hydration-boost-new": {
+      "name": "Colírio Biotrue Hydration Boost",
+      "price": 70.9
+    },
+    "biotrue-hydration-plus-new": {
+      "name": "Solução para Lentes de Contato Biotrue Hydration Plus",
+      "price": 65.9
+    },
+    "eyeleve-by-bruder-contact-lens-compress": {
+      "name": "Compressa de Calor Úmido Bruder para Sinusite e Alergia",
+      "price": 109.9
+    },
+    "2-oz-classic-lens-care-kits": {
+      "name": "Kit de Cuidados com Lentes Classic",
+      "price": 43.9
+    },
+    "lumify": {
+      "name": "Colírio Lumify",
+      "price": 125.9
+    },
+    "novawipes-dry-soft-hypoallergenic-absorbent-wipes-for-applying-avenova": {
+      "name": "NovaWipes",
+      "price": 32.9
+    },
+    "ocuvite-blue-light": {
+      "name": "Ocuvite Blue Light",
+      "price": 87.9
+    },
+    "ocuvite-eye-health": {
+      "name": "Ocuvite Eye Health",
+      "price": 65.9
+    },
+    "optiplus-anti-fog-lens-wipes": {
+      "name": "Lenços Antiembaçantes para Lentes OptiPlus",
+      "price": 109.9
+    },
+    "optiplus-anti-fog-microfiber-cloth": {
+      "name": "Flanela de Microfibra Antiembaçante OptiPlus",
+      "price": 32.9
+    },
+    "opti-plus-ultra-soft-lens-wipes": {
+      "name": "Lenços Ultramacios para Lentes OptiPlus",
+      "price": 54.9
+    }
+  }
+}

@@ -1,0 +1,180 @@
+/* =========================================================
+   Hubble Brasil — ponte com o backend (/api/public/*).
+   - fetch com timeout (mesma origem, JSON)
+   - UTMs da 1ª visita com UTM + id de sessão (localStorage)
+   - funil (visitas/produto/checkout) para o /admin
+   - Pixel do Meta (ID vindo de /api/public/settings) + espelho na API de Conversões
+   Exposto em window.HBAPI. Carregar em toda página DEPOIS de app.js.
+   ========================================================= */
+(function(){
+'use strict';
+const LS = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, v); }catch(e){} }
+};
+const SS = {
+  get(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } },
+  set(k,v){ try{ sessionStorage.setItem(k, v); }catch(e){} }
+};
+
+/* ---------- HTTP ---------- */
+async function request(method, path, body, timeoutMs){
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const t = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs || 20000) : null;
+  try{
+    const res = await fetch(path, {
+      method, credentials: 'same-origin', cache: 'no-store',
+      headers: body !== undefined ? {'Content-Type':'application/json', 'Accept':'application/json'} : {'Accept':'application/json'},
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: ctrl ? ctrl.signal : undefined
+    });
+    let data = null; try{ data = await res.json(); }catch(e){}
+    if(!res.ok || !data || data.ok === false){
+      return {ok:false, status:res.status, data, error:(data && data.error) || (res.status >= 500 ? 'Serviço indisponível no momento. Tente novamente em instantes.' : 'Não foi possível concluir. Tente novamente.')};
+    }
+    return {ok:true, status:res.status, data};
+  }catch(e){
+    return {ok:false, status:0, data:null, error:'Sem conexão com o servidor. Verifique sua internet e tente novamente.'};
+  }finally{ if(t) clearTimeout(t); }
+}
+const get = (path, timeoutMs) => request('GET', path, undefined, timeoutMs);
+const post = (path, body, timeoutMs) => request('POST', path, body, timeoutMs);
+const beacon = (path, body) => { post(path, body, 8000); };
+
+/* ---------- Sessão + UTMs (port de tracking.ts) ---------- */
+const SESSION_KEY = 'hubble-br-session', UTM_KEY = 'hubble-br-utms';
+const uuid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c === 'x' ? r : (r&3|8)).toString(16); });
+function sessionId(){
+  let id = LS.get(SESSION_KEY);
+  if(!id || !/^[\w-]{8,64}$/.test(id)){ id = uuid(); LS.set(SESSION_KEY, id); }
+  return id;
+}
+const UTM_KEYS = ['src','sck','utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
+/** Guarda as UTMs da última visita que chegou com UTM, para enviá-las na venda. */
+function utms(){
+  const p = new URLSearchParams(location.search), fromUrl = {};
+  UTM_KEYS.forEach(k => { const v = p.get(k); if(v) fromUrl[k] = v.slice(0,300); });
+  if(Object.keys(fromUrl).length){ LS.set(UTM_KEY, JSON.stringify(fromUrl)); return fromUrl; }
+  try{ return JSON.parse(LS.get(UTM_KEY) || '{}') || {}; }catch(e){ return {}; }
+}
+
+/* ---------- Funil (/admin) ---------- */
+function track(type, extra){
+  const e = extra || {};
+  beacon('/api/public/event', {
+    sessionId: sessionId(), type, path: location.pathname + location.search.slice(0, 200),
+    productId: e.productId, productName: e.productName, value: e.value,
+    referrer: document.referrer ? document.referrer.slice(0, 500) : undefined, utm: utms()
+  });
+}
+const sentSteps = new Set();
+/** Etapa concluída do checkout (checkouts abandonados). Envia cada etapa uma vez por página. */
+function checkoutStep(step, data){
+  if(sentSteps.has(step)) return; sentSteps.add(step);
+  beacon('/api/public/checkout-step', Object.assign({sessionId: sessionId(), step, utm: utms()}, data || {}));
+}
+
+/* ---------- Meta Pixel (port de meta-pixel.ts) ---------- */
+let pixelId = null, pixelReady = false;
+const pending = [];
+function cookie(name){ const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : null; }
+/** fbc a partir do fbclid da URL quando o cookie ainda não existe. */
+function getFbc(){ const c = cookie('_fbc'); if(c) return c; const id = new URLSearchParams(location.search).get('fbclid'); return id ? `fb.1.${Date.now()}.${id}` : null; }
+function metaCookies(){ return {fbp: cookie('_fbp'), fbc: getFbc()}; }
+function loadPixel(id){
+  if(pixelReady || !id) return;
+  if(!window.fbq){
+    const n = function(){ n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+    n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+    window.fbq = n; window._fbq = n;
+    const s = document.createElement('script'); s.async = true; s.src = 'https://connect.facebook.net/en_US/fbevents.js';
+    document.head.appendChild(s);
+  }
+  window.fbq('init', id);
+  pixelId = id; pixelReady = true;
+  pending.splice(0).forEach(fn => fn());
+}
+/** Evento no navegador + espelho no servidor (CAPI) com o mesmo event_id. */
+function metaTrack(eventName, data){
+  if(!pixelReady){ pending.push(() => metaTrack(eventName, data)); return; }
+  const d = data || {};
+  const eventId = `${eventName}-${uuid()}`;
+  const custom = d.value !== undefined ? {value: d.value, currency:'BRL', content_name: d.contentName, content_ids: d.contentIds, content_type:'product'} : {};
+  window.fbq('track', eventName, custom, {eventID: eventId});
+  const c = metaCookies();
+  beacon('/api/public/meta-event', {eventName, eventId, url: location.href.slice(0, 1000), fbp: c.fbp, fbc: c.fbc, value: d.value, contentName: d.contentName, contentIds: d.contentIds});
+}
+/** Purchase no navegador com o mesmo event_id usado no servidor (purchase-<orderId>). */
+function metaPurchase(orderId, value, contentName){
+  if(!pixelReady){ pending.push(() => metaPurchase(orderId, value, contentName)); return; }
+  window.fbq('track', 'Purchase', {value, currency:'BRL', content_name: contentName, content_type:'product'}, {eventID: `purchase-${orderId}`});
+}
+async function settings(){
+  const cached = SS.get('hubble-br-settings');
+  if(cached){ try{ return JSON.parse(cached); }catch(e){} }
+  const r = await get('/api/public/settings', 8000);
+  if(r.ok){ SS.set('hubble-br-settings', JSON.stringify(r.data)); return r.data; }
+  return {};
+}
+
+/* ---------- Carrinho → itens da API ---------- */
+/** Converte HB.cart.items() no formato validado pelo servidor (sem preços: o servidor calcula). */
+function cartItems(items){
+  return (items || []).map(it => {
+    const d = it.details || {}, qty = Math.max(1, Math.min(10, +it.qty || 1));
+    if(it.kind === 'lente'){
+      const months = d.months || (String(d.plan||'').match(/\d+/) || [1])[0];
+      const eye = e => e && e.kind && e.sph !== '' && e.sph != null ? {kind: e.kind, sph: String(e.sph)} : null;
+      return {kind:'lente', id: it.id, planId: `${months}m`, od: eye(d.od), oe: eye(d.oe), qty};
+    }
+    if(it.kind === 'oculos'){
+      const eye = e => e ? {sph: String(e.sph ?? ''), cyl: e.cyl != null ? String(e.cyl) : null, axis: e.axis != null ? String(e.axis) : null} : null;
+      const o = {kind:'oculos', id: it.id, tipo: d.tipo === 'sol' ? 'sol' : 'grau', color: d.color, uso: d.uso || 'sem-grau',
+        lente: d.lente || 'policarbonato', filtroAzul: !!d.filtroAzul, rx: d.rx || null, qty};
+      if(d.leitura) o.leitura = String(d.leitura);
+      if(d.od) o.od = eye(d.od);
+      if(d.oe) o.oe = eye(d.oe);
+      if(d.dp) o.dp = String(d.dp);
+      return o;
+    }
+    return {kind:'acessorio', id: it.id, qty};
+  });
+}
+
+/** POST /api/public/checkout com UTMs, sessão e cookies do Meta. */
+function checkout(body){
+  const c = metaCookies();
+  return post('/api/public/checkout', Object.assign({}, body, {utm: utms(), sessionId: sessionId(), fbp: c.fbp, fbc: c.fbc, url: location.href.slice(0, 1000)}), 45000);
+}
+/** GET /api/public/order — status do pedido (repassa fbp/fbc para o Purchase do servidor). */
+function order(id){
+  const c = metaCookies(), q = new URLSearchParams({id});
+  if(c.fbp) q.set('fbp', c.fbp); if(c.fbc) q.set('fbc', c.fbc);
+  return get('/api/public/order?' + q.toString(), 15000);
+}
+const rastreio = (pedido, cpf) => get('/api/public/rastreio?' + new URLSearchParams({pedido, cpf}).toString(), 15000);
+
+window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaPurchase, metaCookies, cartItems, checkout, order, rastreio};
+
+/* ---------- Inicialização por página ---------- */
+const page = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
+utms(); // captura as UTMs já na entrada
+track('page_view');
+const qsId = new URLSearchParams(location.search).get('id');
+if(page === 'lente' || page === 'oculos-produto' || page === 'acessorio'){
+  const HB = window.HB || {}, f = HB.find || {};
+  const p = page === 'lente' ? (f.lens && f.lens(qsId)) : page === 'acessorio' ? (f.accessory && f.accessory(qsId)) : (f.glasses && f.glasses(qsId));
+  if(p) track('product_view', {productId: p.id, productName: p.name});
+}
+settings().then(s => { if(s && s.metaPixelId) loadPixel(String(s.metaPixelId)); });
+metaTrack('PageView');
+if(page === 'lente'){
+  const l = window.HB && HB.find && HB.find.lens(qsId);
+  if(l) metaTrack('ViewContent', {value: (l.packs && l.packs[0] && (l.packs[0].total || l.packs[0].sale)) || undefined, contentName: l.name, contentIds: [l.id]});
+}
+if(page === 'checkout' && window.HB && HB.cart && HB.cart.items().length){
+  track('checkout_click', {value: HB.cart.subtotal()});
+  metaTrack('InitiateCheckout', {value: +HB.cart.subtotal().toFixed(2), contentIds: HB.cart.items().map(i => i.id)});
+}
+})();

@@ -23,7 +23,7 @@
   .pill.ok{background:#d8f2e2;color:#1f8a5b}
   .pill.no{background:#fde2e0;color:#a3291f}
   .qr{margin:18px auto 0;width:220px;height:220px;border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}
-  .qr svg{width:100%;height:100%}
+  .qr svg{width:100%;height:100%;display:block}
   .amt{font-size:14px;color:var(--muted);margin-top:16px}
   .amt b{font-size:15px;color:#1f8a5b}
   .codebox{margin-top:16px;background:var(--lav-solid);border-radius:8px;padding:12px 16px;text-align:left;font-size:12px;color:var(--muted);word-break:break-all;font-family:ui-monospace,Menlo,monospace}
@@ -72,52 +72,29 @@
 </div>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function(){
   const {$, brl, esc, sup, img, user, ICON} = HB;
   $('#ckLogo').innerHTML = ICON.logo; $('#yr').textContent = new Date().getFullYear();
   const root = $('#root');
   const n = HB.qs('n') || '';
-  let timer = null;
+  const qsId = HB.qs('id') || '';
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  let timer = null, poll = null, remote = null, apiDown = false, purchaseSent = false;
   const EXPIRES = 30*60*1000;
 
-  const hashStr = s => { let h = 2166136261; for(const c of String(s)){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
-  const prng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-  const digits = (r, k) => { let s = ''; for(let i = 0; i < k; i++) s += Math.floor(r() * 10); return s; };
-  function qrSVG(seed){
-    const N = 29, q = 3, S = 6, r = prng(hashStr(seed)), cells = [];
-    const finder = (x, y) => { for(let i = 0; i < 7; i++) for(let j = 0; j < 7; j++){ const edge = i === 0 || i === 6 || j === 0 || j === 6, core = i >= 2 && i <= 4 && j >= 2 && j <= 4; if(edge || core) cells.push([x + i, y + j]); } };
-    const inFinder = (x, y) => (x < 8 && y < 8) || (x >= N - 8 && y < 8) || (x < 8 && y >= N - 8);
-    finder(0, 0); finder(N - 7, 0); finder(0, N - 7);
-    for(let x = 0; x < N; x++) for(let y = 0; y < N; y++){
-      if(inFinder(x, y)) continue;
-      if(y === 6 || x === 6){ if((x + y) % 2 === 0) cells.push([x, y]); continue; }
-      if(r() < 0.5) cells.push([x, y]);
-    }
-    const W = (N + q * 2) * S;
-    const d = cells.map(([x, y]) => `M${(x + q) * S} ${(y + q) * S}h${S}v${S}h-${S}z`).join('');
-    return `<svg width="200" height="200" viewBox="0 0 ${W} ${W}" role="img" aria-label="QR Code Pix" xmlns="http://www.w3.org/2000/svg"><rect width="${W}" height="${W}" fill="#fff"/><path d="${d}" fill="#2b3235"/></svg>`;
-  }
-  const tlv = (id, val) => id + String(val.length).padStart(2, '0') + val;
-  function crc16(str){ let c = 0xFFFF; for(let i = 0; i < str.length; i++){ c ^= str.charCodeAt(i) << 8; for(let b = 0; b < 8; b++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF; } return c.toString(16).toUpperCase().padStart(4, '0'); }
-  function pixCode(o){
-    const r = prng(hashStr(o.number + 'pix'));
-    const hex = k => Array.from({length: k}, () => Math.floor(r() * 16).toString(16)).join('');
-    const key = `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}`;
-    const txid = o.number.replace(/-/g, '');
-    const p = tlv('00', '01') + tlv('26', tlv('00', 'br.gov.bcb.pix') + tlv('01', key)) + tlv('52', '0000') + tlv('53', '986') + tlv('54', o.totals.total.toFixed(2)) + tlv('58', 'BR') + tlv('59', 'HUBBLE BRASIL') + tlv('60', 'SAO PAULO') + tlv('62', tlv('05', txid)) + '6304';
-    return p + crc16(p);
+  /* QR Code real do Pix copia e cola (biblioteca qrcode-generator via cdnjs). */
+  function qrHTML(text){
+    if(!text) return '';
+    try{
+      if(typeof window.qrcode !== 'function') throw new Error('qr lib');
+      const q = window.qrcode(0, 'M'); q.addData(text); q.make();
+      return q.createSvgTag({cellSize: 4, margin: 2, scalable: true}).replace('<svg ', '<svg role="img" aria-label="QR Code Pix" ');
+    }catch(e){ return '<p class="lead" style="padding-top:80px">Use o código Pix copia e cola abaixo.</p>'; }
   }
   function addBusinessDays(ts, k){ const d = new Date(ts); while(k > 0){ d.setDate(d.getDate() + 1); const w = d.getDay(); if(w !== 0 && w !== 6) k--; } return d; }
-  function boletoLine(o, due){
-    const r = prng(hashStr(o.number + 'boleto'));
-    const days = Math.floor((Date.UTC(due.getFullYear(), due.getMonth(), due.getDate()) - Date.UTC(1997, 9, 7)) / 864e5);
-    const factor = String(days > 9999 ? ((days - 10000) % 9000) + 1000 : days).padStart(4, '0');
-    const amount = String(Math.round(o.totals.total * 100)).padStart(10, '0').slice(-10);
-    const raw = digits(r, 10) + digits(r, 11) + digits(r, 11) + digits(r, 1) + factor + amount; // 47 dígitos
-    const fmt = `${raw.slice(0,5)}.${raw.slice(5,10)} ${raw.slice(10,15)}.${raw.slice(15,21)} ${raw.slice(21,26)}.${raw.slice(26,32)} ${raw[32]} ${raw.slice(33)}`;
-    return {raw, fmt};
-  }
   async function copyText(t){
     try{ if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(t); return true; } }catch(e){}
     try{ const ta = document.createElement('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; }catch(e){ return false; }
@@ -150,35 +127,83 @@
     ]).map((t,i)=>`<li><i>${i+1}</i><span>${t}</span></li>`).join('')}</ol></div>`;
 
   function detailsHTML(o){
-    const t = o.totals, a = o.address || {}, rxm = o.rx && o.rx.method;
+    const t = o.totals || {}, a = o.address || {}, rxm = o.rx && o.rx.method;
     const subs = HB.store.get('subs', []).filter(s => s.order === o.number && s.status !== 'cancelada');
     const next = [];
     if(rxm === 'depois') next.push(`Envie a foto ou o PDF da sua receita para <b>receitas@hubble.com.br</b> informando o número <b>${esc(o.number)}</b>.`);
     if(rxm === 'medico') next.push('Vamos entrar em contato com o consultório do seu oftalmologista para confirmar a receita.');
-    if(rxm === 'upload') next.push('Nossa equipe vai conferir a receita enviada em até 1 dia útil.');
+    if(rxm === 'upload') next.push(`Envie também a foto da receita para <b>receitas@hubble.com.br</b> com o número <b>${esc(o.number)}</b> — nossa equipe confere em até 1 dia útil.`);
     if(subs.length) next.push(`Sua assinatura está ativa: a próxima entrega será em ${fmtDate(Math.min(...subs.map(s => s.next)))}. Você pode alterar, pausar ou cancelar em Minha Conta.`);
     next.push(`Prazo de entrega: ${o.shipping ? esc(o.shipping.eta) : '5 a 10 dias úteis'} após a ${needsRx(o)?'validação da receita':'confirmação do pagamento'}.`);
+    next.push(`Acompanhe a entrega em <a href="rastreio.html?pedido=${encodeURIComponent(o.number)}" class="link-u">Rastrear pedido</a>.`);
     return `
       <div class="card"><h3>Andamento</h3>${timelineHTML(o)}</div>
       <div class="card"><h3>Próximos passos</h3><ul class="next">${next.map(x=>`<li>${x}</li>`).join('')}</ul></div>
       <div class="card"><h3>Pedido ${esc(o.number)}</h3>
-        ${o.items.map(it=>`<div class="it"><img src="${img(it.image,140)}" alt=""><div><div>${sup(it.name)}${it.qty>1?` × ${it.qty}`:''}</div><div class="m">${(it.meta||[]).map(esc).join('<br>')}</div></div><span class="v">${brl(it.price*it.qty)}</span></div>`).join('')}
+        ${(o.items||[]).map(it=>`<div class="it">${it.image?`<img src="${img(it.image,140)}" alt="">`:''}<div><div>${sup(it.name)}${it.qty>1?` × ${it.qty}`:''}</div><div class="m">${(it.meta||[]).map(esc).join('<br>')}</div></div><span class="v">${brl(it.price*it.qty)}</span></div>`).join('')}
         <div style="margin-top:8px">
           <div class="ln"><span>Produtos</span><span>${brl(t.sub)}</span></div>
           ${t.discount?`<div class="ln"><span>Cupom</span><span class="g">-${brl(t.discount)}</span></div>`:''}
-          ${t.pix?`<div class="ln"><span>Desconto Pix (5%)</span><span class="g">-${brl(t.pix)}</span></div>`:''}
+          ${t.pix?`<div class="ln"><span>Desconto Pix</span><span class="g">-${brl(t.pix)}</span></div>`:''}
           <div class="ln"><span>Frete</span><span class="g">${t.shipping?brl(t.shipping):'Grátis'}</span></div>
           <div class="ln t"><span>Total</span><span>${brl(t.total)}</span></div>
         </div></div>
-      <div class="card"><h3>Entrega</h3><p style="font-size:13px">${esc(o.name)}<br>${esc(a.rua)}, ${esc(a.numero)}${a.complemento?' - '+esc(a.complemento):''}<br>${esc(a.bairro)}, ${esc(a.cidade)}/${esc(a.uf)} ${esc(a.cep)}</p></div>
+      ${a.rua ? `<div class="card"><h3>Entrega</h3><p style="font-size:13px">${esc(o.name)}<br>${esc(a.rua)}, ${esc(a.numero)}${a.complemento?' - '+esc(a.complemento):''}<br>${esc(a.bairro)}, ${esc(a.cidade)}/${esc(a.uf)} ${esc(a.cep)}</p></div>` : ''}
       <div class="acts"><a href="conta.html#pedidos" class="btn block">Acompanhar em Minha Conta</a><a href="index.html" class="btn ghost block">Continuar comprando</a></div>`;
   }
 
-  function render(){
+  /* Pedido do servidor (outro navegador/dispositivo) no formato local. */
+  function fromRemote(d){
+    return {number:d.number, orderId:d.id, date:Date.parse(d.createdAt)||Date.now(), email:'', name:d.firstName||'',
+      items:(d.items||[]).map(i=>({kind:i.kind, id:i.id, name:i.name, qty:i.qty, price:i.price, meta:i.meta, image:(i.kind==='acessorio' && HB.find.accessory(i.id)||{}).image||''})),
+      totals:{sub:d.totals.sub, discount:d.totals.discount, pix:0, shipping:d.totals.shipping, total:d.totals.total},
+      shipping:d.totals.frete, address:{}, payment:{method:'pix'}, rx:{method:d.rxMethod||'nao-precisa'},
+      status:'Pagamento pendente', qrcode:d.qrcode, pixExpires:Date.parse(d.expiresAt)||undefined, remoteOnly:true};
+  }
+  const orderId = o => (o && o.orderId) || (UUID.test(qsId) ? qsId : '');
+
+  function apply(o, d){
+    if(!d) return o;
+    if(d.paid && o.status === 'Pagamento pendente'){
+      o.status = needsRx(o) ? 'Receita em análise' : 'Em preparação';
+      o.paidAt = Date.parse(d.paidAt) || Date.now();
+      o.qrcode = null;
+      if(!purchaseSent && window.HBAPI){ purchaseSent = true; HBAPI.metaPurchase(d.id, d.amount, (o.items||[]).map(i=>i.name).join(' + ').slice(0,120)); }
+    }
+    if(!d.paid && d.status === 'expired') o.pixExpired = true;
+    if(!d.paid && d.qrcode && !o.qrcode) o.qrcode = d.qrcode;
+    if(d.expiresAt) o.pixExpires = Date.parse(d.expiresAt) || o.pixExpires;
+    if(!o.remoteOnly) user.saveOrder(o);
+    return o;
+  }
+
+  async function check(o){
+    const id = orderId(o);
+    if(!id || !window.HBAPI) return;
+    const r = await HBAPI.order(id);
+    if(!r.ok){
+      if(r.status === 0 || r.status >= 500){ apiDown = true; const w = $('#apiWarn'); if(w) w.textContent = 'Não conseguimos verificar o pagamento agora. Vamos tentar de novo automaticamente.'; }
+      return;
+    }
+    apiDown = false; const w = $('#apiWarn'); if(w) w.textContent = '';
+    const before = o.status, hadQr = !!o.qrcode, wasExpired = !!o.pixExpired;
+    remote = r.data; apply(o, r.data);
+    if(o.status !== before || !!o.qrcode !== hadQr || !!o.pixExpired !== wasExpired){ render(o); if(o.status !== before) window.scrollTo(0,0); }
+  }
+  function startPolling(o){
+    clearInterval(poll);
+    if(!orderId(o) || o.status !== 'Pagamento pendente') return;
+    poll = setInterval(() => { if(o.status !== 'Pagamento pendente' || o.pixExpired){ clearInterval(poll); return; } check(o); }, 5000);
+  }
+  function redoOrder(o){
+    (o.items||[]).filter(i => !(i.meta||[]).includes('Oferta do checkout')).forEach(i => { const {key, ...rest} = i; HB.cart.add(rest); });
+    location.href = 'checkout.html';
+  }
+
+  function render(o){
     clearInterval(timer);
-    const o = n ? user.getOrder(n) : null;
     if(!o){
-      root.innerHTML = `<h1>Pedido não encontrado</h1><p class="lead">Não encontramos ${n ? `o pedido <b>${esc(n)}</b>` : 'um número de pedido'} neste navegador.</p><div class="acts"><a href="conta.html" class="btn block">Ir para Minha Conta</a><a href="index.html" class="btn ghost block">Voltar ao início</a></div>`;
+      root.innerHTML = `<h1>Pedido não encontrado</h1><p class="lead">Não encontramos ${n ? `o pedido <b>${esc(n)}</b>` : 'um número de pedido'} neste navegador.</p><div class="acts"><a href="rastreio.html${n?`?pedido=${encodeURIComponent(n)}`:''}" class="btn block">Rastrear pedido</a><a href="conta.html" class="btn ghost block">Ir para Minha Conta</a></div>`;
       return;
     }
     document.title = `Pedido ${o.number} | Hubble`;
@@ -189,48 +214,69 @@
     }
     if(pending && p.method === 'pix'){
       const exp = o.pixExpires || (o.date + EXPIRES);
-      const code = pixCode(o);
+      const code = o.qrcode || '';
+      const expired = o.pixExpired || (code && exp <= Date.now() && !orderId(o));
+      if(expired){
+        root.innerHTML = `<h1>O código Pix expirou</h1>
+          <p class="lead">O Pix do pedido <b>${esc(o.number)}</b> não foi pago dentro de 30 minutos. Se você já pagou, aguarde: a confirmação aparece aqui automaticamente.</p>
+          <span class="pill no">Pix expirado</span>
+          <div class="acts"><button type="button" class="btn block" id="redo">Refazer o pedido</button><a href="contato.html" class="btn ghost block">Falar com a equipe</a></div>
+          <p class="lead" id="apiWarn" role="status" style="margin-top:12px"></p>`;
+        $('#redo').onclick = () => redoOrder(o);
+        return;
+      }
+      if(!code){
+        root.innerHTML = `<h1>Quase lá...</h1>
+          <p class="lead">Não conseguimos carregar o código Pix do pedido <b>${esc(o.number)}</b> agora.</p>
+          <span class="pill wait">Aguardando pagamento</span>
+          <p class="lead" style="margin-top:16px">Atualize a página em alguns instantes. Se o problema continuar, <a href="contato.html" class="link-u">fale com a nossa equipe</a> informando o número do pedido.</p>
+          <p class="lead" id="apiWarn" role="status" style="margin-top:12px"></p>`;
+        return;
+      }
       root.innerHTML = `<h1>Quase lá...</h1>
         <p class="lead" id="pixLead">Pague via Pix em até <b id="mmss">30:00</b> para confirmar seu pedido.</p>
         <span class="pill wait">Aguardando pagamento</span>
-        <div class="qr">${qrSVG(o.number)}</div>
+        <div class="qr">${qrHTML(code)}</div>
         <p class="amt">Total via Pix: <b>${brl(o.totals.total)}</b></p>
         <div class="codebox" id="code">${esc(code)}</div>
         <button type="button" class="copy" id="copyBtn">${COPY_IC} <span>Copiar código</span></button>
-        <p class="paid-link">Já pagou? <button type="button" id="paidBtn">Confirmar pagamento</button></p>
+        <p class="paid-link" id="apiWarn" role="status">${orderId(o) ? 'Assim que o pagamento for confirmado, esta página atualiza sozinha.' : ''}</p>
         ${howTo(true)}
-        <p class="lead" style="margin-top:30px">Pedido <b>${esc(o.number)}</b> · confirmação enviada para <b>${esc(o.email)}</b></p>`;
+        <p class="lead" style="margin-top:30px">Pedido <b>${esc(o.number)}</b>${o.email?` · confirmação enviada para <b>${esc(o.email)}</b>`:''}</p>`;
       const tick = () => { const left = Math.max(0, exp - Date.now()); const m = Math.floor(left/60000), s = Math.floor(left%60000/1000);
-        if(left <= 0){ clearInterval(timer); $('#pixLead').innerHTML = 'O código Pix expirou. <button type="button" class="link-u" id="renew" style="font-size:14px">Gerar novo código</button>'; $('#renew').onclick = () => { o.pixExpires = Date.now() + EXPIRES; user.saveOrder(o); render(); }; return; }
+        if(left <= 0){ clearInterval(timer); $('#pixLead').innerHTML = 'O prazo do código Pix terminou. Se você já pagou, aguarde a confirmação.'; if(orderId(o)) check(o); else { o.pixExpired = true; render(o); } return; }
         $('#mmss').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
       tick(); timer = setInterval(tick, 1000);
       $('#copyBtn').onclick = async () => { const ok = await copyText(code); $('#copyBtn span').textContent = ok ? 'Código copiado!' : 'Não foi possível copiar'; setTimeout(()=>{ const s = $('#copyBtn span'); if(s) s.textContent = 'Copiar código'; }, 2500); };
-      $('#paidBtn').onclick = () => { o.status = needsRx(o) ? 'Receita em análise' : 'Em preparação'; user.saveOrder(o); render(); window.scrollTo(0,0); };
       return;
     }
     if(pending && p.method === 'boleto'){
-      const due = addBusinessDays(o.date, 3), line = boletoLine(o, due);
+      const due = addBusinessDays(o.date, 3);
       root.innerHTML = `<h1>Quase lá...</h1>
         <p class="lead">Pague o boleto até <b>${due.toLocaleDateString('pt-BR')}</b> para confirmar seu pedido.</p>
         <span class="pill wait">Aguardando pagamento</span>
-        <p class="amt">Valor do boleto: <b style="color:var(--ink)">${brl(o.totals.total)}</b></p>
-        <div class="codebox">${line.fmt}</div>
-        <button type="button" class="copy" id="copyBtn">${COPY_IC} <span>Copiar código</span></button>
-        <p class="lead" style="font-size:12.5px;margin-top:10px">A compensação leva até 3 dias úteis. Também enviamos o boleto para ${esc(o.email)}.</p>
-        ${howTo(false)}
-        <p class="lead" style="margin-top:30px">Pedido <b>${esc(o.number)}</b></p>`;
-      $('#copyBtn').onclick = async () => { const ok = await copyText(line.raw); $('#copyBtn span').textContent = ok ? 'Código copiado!' : 'Não foi possível copiar'; setTimeout(()=>{ const s = $('#copyBtn span'); if(s) s.textContent = 'Copiar código'; }, 2500); };
+        <p class="lead" style="margin-top:16px">Pedido <b>${esc(o.number)}</b>. Em caso de dúvidas, <a href="contato.html" class="link-u">fale com a nossa equipe</a>.</p>`;
       return;
     }
-    const inst = p.method === 'cartao' ? (o.totals.inst || {n:p.inst||1, value:o.totals.total/(p.inst||1)}) : null;
     root.innerHTML = `<div class="okic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><path d="M5 12.5l4.5 4.5L19 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <h1>Obrigado, ${esc((o.name||'').split(' ')[0])}!</h1>
-      <p class="lead">Seu pedido <b>${esc(o.number)}</b> foi confirmado. Enviamos os detalhes para <b>${esc(o.email)}</b>.</p>
+      <h1>Obrigado${o.name?`, ${esc((o.name||'').split(' ')[0])}`:''}!</h1>
+      <p class="lead">Seu pedido <b>${esc(o.number)}</b> foi confirmado.${o.email?` Enviamos os detalhes para <b>${esc(o.email)}</b>.`:''}</p>
       <span class="pill ok">Pagamento aprovado</span>
-      ${inst ? `<p class="lead" style="margin-top:12px">${esc(p.brand||'Cartão')} •••• ${esc(p.last4||'')} · ${inst.n}x de ${brl(inst.value)} sem juros</p>` : ''}
       ${detailsHTML(o)}`;
   }
-  render();
+
+  async function start(){
+    let o = n ? user.getOrder(n) : null;
+    if(o && !o.orderId && UUID.test(qsId)){ o.orderId = qsId; user.saveOrder(o); }
+    if(!o && UUID.test(qsId) && window.HBAPI){
+      root.innerHTML = '<p class="lead">Carregando pedido…</p>';
+      const r = await HBAPI.order(qsId);
+      if(r.ok && (!n || r.data.number === n)){ o = fromRemote(r.data); apply(o, r.data); }
+    }
+    render(o);
+    if(o && orderId(o) && o.status === 'Pagamento pendente'){ check(o); startPolling(o); }
+  }
+  start();
 })();
 </script>
 </body>
