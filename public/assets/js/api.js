@@ -157,8 +157,18 @@ const rastreio = (pedido, cpf) => get('/api/public/rastreio?' + new URLSearchPar
 
 window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaPurchase, metaCookies, cartItems, checkout, order, rastreio};
 
+/* ---------- Pixel da UTMify (todas as páginas da loja) ---------- */
+(function utmifyPixel(){
+  if(document.querySelector('script[src*="cdn.utmify.com.br/scripts/pixel/pixel.js"]')) return; // nunca carrega duplicado
+  window.pixelId = '6abb27848b76c002bc343089';
+  const s = document.createElement('script');
+  s.src = 'https://cdn.utmify.com.br/scripts/pixel/pixel.js';
+  s.async = true; s.defer = true;
+  (document.head || document.documentElement).appendChild(s);
+})();
+
 /* ---------- Inicialização por página ---------- */
-const page = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
+const page =(location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
 utms(); // captura as UTMs já na entrada
 track('page_view');
 const qsId = new URLSearchParams(location.search).get('id');
