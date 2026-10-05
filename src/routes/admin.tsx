@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Activity, CreditCard, Eye, Loader2, LogOut, ShoppingBag, Users } from "lucide-react";
 import { getAdminFunnel, getAdminHealth, verifyAdminPassword } from "@/lib/admin.functions";
 import type { FunnelEventRow } from "@/lib/db-types";
+import { GatewayCard } from "@/components/admin/GatewayCard";
 import { UtmifyCard } from "@/components/admin/UtmifyCard";
 import { MetaPixelCard } from "@/components/admin/MetaPixelCard";
 import { OrdersTab } from "@/components/admin/OrdersTab";
@@ -205,6 +206,7 @@ function AdminPage() {
 
           <TabsContent value="integracoes" className="space-y-3">
             <HealthCard password={password} />
+            <GatewayCard password={password} />
             <UtmifyCard password={password} />
             <MetaPixelCard password={password} />
           </TabsContent>
@@ -369,7 +371,11 @@ function HealthCard({ password }: { password: string }) {
         label="Banco (Supabase)"
         env="SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY"
       />
-      <Item ok={h?.pixgate} label="Gateway Pix (PixGate)" env="PIXGATE_API_KEY" />
+      <Item
+        ok={h?.gateway.configured}
+        label={`Gateway Pix ativo (${h?.gateway.label ?? "…"})`}
+        env="chave no card Gateway de pagamento"
+      />
       <Item ok={h?.rastrocode} label="Rastreio (RastroCode)" env="RASTROCODE_API_KEY" />
       <p className="pt-2 text-xs text-muted-foreground">
         URL pública (postback do Pix):{" "}

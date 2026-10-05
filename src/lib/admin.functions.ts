@@ -279,9 +279,12 @@ export const getAdminHealth = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     assertAdmin(data.password);
     const has = (k: string) => Boolean(process.env[k]);
+    const { getActiveGateway, isGatewayConfigured } = await import("@/lib/gateway.server");
+    const { GATEWAYS } = await import("@/lib/gateway-id");
+    const active = await getActiveGateway();
     return {
       supabase: has("SUPABASE_URL") && has("SUPABASE_SERVICE_ROLE_KEY"),
-      pixgate: has("PIXGATE_API_KEY"),
+      gateway: { label: GATEWAYS[active], configured: await isGatewayConfigured(active) },
       rastrocode: has("RASTROCODE_API_KEY"),
       publicSiteUrl: process.env["PUBLIC_SITE_URL"] ?? null,
     };

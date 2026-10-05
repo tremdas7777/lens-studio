@@ -18,6 +18,7 @@ import { Route as ApiPublicMetaEventRouteImport } from './routes/api/public/meta
 import { Route as ApiPublicOrderRouteImport } from './routes/api/public/order'
 import { Route as ApiPublicPixWebhookRouteImport } from './routes/api/public/pix-webhook'
 import { Route as ApiPublicRastreioRouteImport } from './routes/api/public/rastreio'
+import { Route as ApiPublicSagacepayWebhookRouteImport } from './routes/api/public/sagacepay-webhook'
 import { Route as ApiPublicSettingsRouteImport } from './routes/api/public/settings'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +66,12 @@ const ApiPublicRastreioRoute = ApiPublicRastreioRouteImport.update({
   path: '/api/public/rastreio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSagacepayWebhookRoute =
+  ApiPublicSagacepayWebhookRouteImport.update({
+    id: '/api/public/sagacepay-webhook',
+    path: '/api/public/sagacepay-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicSettingsRoute = ApiPublicSettingsRouteImport.update({
   id: '/api/public/settings',
   path: '/api/public/settings',
@@ -81,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/api/public/order': typeof ApiPublicOrderRoute
   '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
   '/api/public/rastreio': typeof ApiPublicRastreioRoute
+  '/api/public/sagacepay-webhook': typeof ApiPublicSagacepayWebhookRoute
   '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +101,7 @@ export interface FileRoutesByTo {
   '/api/public/order': typeof ApiPublicOrderRoute
   '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
   '/api/public/rastreio': typeof ApiPublicRastreioRoute
+  '/api/public/sagacepay-webhook': typeof ApiPublicSagacepayWebhookRoute
   '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRoutesById {
@@ -106,6 +115,7 @@ export interface FileRoutesById {
   '/api/public/order': typeof ApiPublicOrderRoute
   '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
   '/api/public/rastreio': typeof ApiPublicRastreioRoute
+  '/api/public/sagacepay-webhook': typeof ApiPublicSagacepayWebhookRoute
   '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/api/public/order'
     | '/api/public/pix-webhook'
     | '/api/public/rastreio'
+    | '/api/public/sagacepay-webhook'
     | '/api/public/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/api/public/order'
     | '/api/public/pix-webhook'
     | '/api/public/rastreio'
+    | '/api/public/sagacepay-webhook'
     | '/api/public/settings'
   id:
     | '__root__'
@@ -144,6 +156,7 @@ export interface FileRouteTypes {
     | '/api/public/order'
     | '/api/public/pix-webhook'
     | '/api/public/rastreio'
+    | '/api/public/sagacepay-webhook'
     | '/api/public/settings'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +170,7 @@ export interface RootRouteChildren {
   ApiPublicOrderRoute: typeof ApiPublicOrderRoute
   ApiPublicPixWebhookRoute: typeof ApiPublicPixWebhookRoute
   ApiPublicRastreioRoute: typeof ApiPublicRastreioRoute
+  ApiPublicSagacepayWebhookRoute: typeof ApiPublicSagacepayWebhookRoute
   ApiPublicSettingsRoute: typeof ApiPublicSettingsRoute
 }
 
@@ -225,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicRastreioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/sagacepay-webhook': {
+      id: '/api/public/sagacepay-webhook'
+      path: '/api/public/sagacepay-webhook'
+      fullPath: '/api/public/sagacepay-webhook'
+      preLoaderRoute: typeof ApiPublicSagacepayWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/settings': {
       id: '/api/public/settings'
       path: '/api/public/settings'
@@ -245,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicOrderRoute: ApiPublicOrderRoute,
   ApiPublicPixWebhookRoute: ApiPublicPixWebhookRoute,
   ApiPublicRastreioRoute: ApiPublicRastreioRoute,
+  ApiPublicSagacepayWebhookRoute: ApiPublicSagacepayWebhookRoute,
   ApiPublicSettingsRoute: ApiPublicSettingsRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,14 +1,25 @@
-// Gateway Pix (PixGate). Somente servidor. Chave em PIXGATE_API_KEY.
+// Gateway Pix (PixGate). Somente servidor.
+// Chave salva no /admin (private_settings) ou, como reserva, em PIXGATE_API_KEY.
 import { brand } from "@/lib/brand";
+import { getPrivateSettings } from "@/lib/private-settings.server";
 
 const API = "https://app.pixgateip.com/api";
 
 export const PIX_UNAVAILABLE = "Pagamento indisponível no momento.";
+export const PIXGATE_KEY = "pixgate_api_key";
 
-export const isPixGateConfigured = () => Boolean(process.env["PIXGATE_API_KEY"]);
+export async function getPixGateKey(): Promise<{
+  key: string | null;
+  source: "db" | "env" | null;
+}> {
+  const fromDb = (await getPrivateSettings([PIXGATE_KEY])).get(PIXGATE_KEY);
+  if (fromDb) return { key: fromDb, source: "db" };
+  const fromEnv = process.env["PIXGATE_API_KEY"];
+  return fromEnv ? { key: fromEnv, source: "env" } : { key: null, source: null };
+}
 
-function apiKey(): string {
-  const key = process.env["PIXGATE_API_KEY"];
+async function apiKey(): Promise<string> {
+  const { key } = await getPixGateKey();
   if (!key) throw new Error(PIX_UNAVAILABLE);
   return key;
 }
@@ -23,7 +34,11 @@ export async function gatewayCashin(o: {
   const valor = Number((o.amountCents / 100).toFixed(2));
   const res = await fetch(`${API}/v1/cashin`, {
     method: "POST",
-    headers: { Apikey: apiKey(), "Content-Type": "application/json", Accept: "application/json" },
+    headers: {
+      Apikey: await apiKey(),
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
     body: JSON.stringify({
       nome: o.name,
       cpf: o.cpf,
@@ -51,7 +66,7 @@ export async function gatewayCashin(o: {
 /** Consulta o status real no gateway. Valor devolvido em centavos. */
 export async function fetchGatewayStatus(id: string): Promise<{ status: string; amount: number }> {
   const res = await fetch(`${API}/stats/${encodeURIComponent(id)}`, {
-    headers: { Apikey: apiKey(), Accept: "application/json" },
+    headers: { Apikey: await apiKey(), Accept: "application/json" },
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const json = (await res.json().catch(() => null)) as any;

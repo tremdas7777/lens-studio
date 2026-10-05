@@ -7,13 +7,13 @@ import type { OrderItem, OrderRow, OrderTotals } from "@/lib/db-types";
 import { HttpError } from "@/lib/http.server";
 import { insertFunnelEvent } from "@/lib/funnel.server";
 import { sendCapiEvent } from "@/lib/meta.server";
-import { isPaidStatus } from "@/lib/pix-status";
 import {
-  PIX_UNAVAILABLE,
-  fetchGatewayStatus,
-  gatewayCashin,
-  isPixGateConfigured,
-} from "@/lib/pixgate.server";
+  checkCharge,
+  createCharge,
+  getActiveGateway,
+  isGatewayConfigured,
+} from "@/lib/gateway.server";
+import { PIX_UNAVAILABLE } from "@/lib/pixgate.server";
 import {
   FRETES,
   PricingError,
@@ -26,8 +26,6 @@ import {
 } from "@/lib/pricing";
 import { isRastroFinal, sendRastroOrder, type RastroResult } from "@/lib/rastrocode.server";
 import { sendUtmifyOrder, type UtmParams } from "@/lib/utmify.server";
-
-export { isPaidStatus };
 
 /** O código Pix vale 30 minutos depois de gerado. */
 export const PIX_TTL_MS = 30 * 60 * 1000;
@@ -137,7 +135,7 @@ export type CreatedOrder = {
   items: OrderItem[];
 };
 
-/** Cria o pedido: recalcula o valor, grava, gera o Pix na PixGate e avisa UTMify (pendente). */
+/** Cria o pedido: recalcula o valor, grava, gera o Pix no gateway ativo e avisa UTMify (pendente). */
 export async function createOrder(
   data: CheckoutInput,
   ctx: { ip: string | null; ua: string | null; origin: string },
@@ -165,8 +163,9 @@ export async function createOrder(
     : { method: "nao-precisa" as const };
 
   // Configuração conferida depois da validação: erros de cupom/itens aparecem mesmo sem gateway.
-  if (!isPixGateConfigured()) {
-    console.error("checkout: PIXGATE_API_KEY não configurada");
+  const gateway = await getActiveGateway();
+  if (!(await isGatewayConfigured(gateway))) {
+    console.error("checkout: chave do gateway não configurada", gateway);
     throw new HttpError(503, PIX_UNAVAILABLE);
   }
   if (!isSupabaseConfigured()) {
@@ -223,18 +222,26 @@ export async function createOrder(
   }
   if (!row) throw new HttpError(503, PIX_UNAVAILABLE);
 
-  // 2) Cobrança Pix.
+  // 2) Cobrança Pix no gateway ativo.
   // Usa o domínio em que o cliente está comprando (funciona em qualquer domínio conectado).
   // PUBLIC_SITE_URL só entra quando a origem não é pública (ex.: localhost).
-  const isPublicOrigin = /^https:\/\//.test(ctx.origin) && !/localhost|127\.0\.0\.1/.test(ctx.origin);
-  const postbackBase = (isPublicOrigin ? ctx.origin : process.env["PUBLIC_SITE_URL"] || ctx.origin).replace(/\/+$/, "");
+  const isPublicOrigin =
+    /^https:\/\//.test(ctx.origin) && !/localhost|127\.0\.0\.1/.test(ctx.origin);
+  const postbackBase = (
+    isPublicOrigin ? ctx.origin : process.env["PUBLIC_SITE_URL"] || ctx.origin
+  ).replace(/\/+$/, "");
   let charge;
   try {
-    charge = await gatewayCashin({
+    charge = await createCharge(gateway, {
+      orderId: row.id,
+      orderNumber: row.number,
       name: data.customer.name,
       cpf: data.customer.cpf,
+      email: data.customer.email,
+      phone: data.customer.phone,
       amountCents: q.totalCents,
-      postbackUrl: `${postbackBase}/api/public/pix-webhook`,
+      siteBase: postbackBase,
+      expiresInSeconds: PIX_TTL_MS / 1000,
     });
   } catch (e) {
     await supa
@@ -247,7 +254,7 @@ export async function createOrder(
   const { error: upErr } = await supa
     .from("orders")
     .update({
-      gateway_id: charge.id,
+      gateway_id: charge.ref,
       qrcode: charge.qrcode,
       status: "waiting_payment",
       expires_at: expiresAt,
@@ -515,8 +522,8 @@ export async function refreshOrder(
   if (lastCheck.size > 2000)
     for (const [k, t] of lastCheck) if (t < now - 60_000) lastCheck.delete(k);
   try {
-    const { status, amount } = await fetchGatewayStatus(o.gateway_id);
-    if (isPaidStatus(status) || retryReport) {
+    const { paid, amount } = await checkCharge(o.gateway_id);
+    if (paid || retryReport) {
       await reportPaidOnce(o.id, amount, extra);
       return (await getOrder(o.id)) ?? { ...o, status: "paid" };
     }

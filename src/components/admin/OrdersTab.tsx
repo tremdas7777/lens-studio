@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { gatewayLabel } from "@/lib/gateway-id";
 
 export interface OrdersTabProps {
   password: string;
@@ -471,7 +472,7 @@ function OrderDialog({
 
         <Section title="Técnico">
           <Row label="ID interno" value={o.id} />
-          <Row label="ID no gateway" value={o.gateway_id} />
+          <Row label="ID no gateway" value={o.gateway_id ? gatewayLabel(o.gateway_id) : null} />
           <Row label="IP" value={o.ip} />
           <Row label="User agent" value={o.ua} />
           <Row label="fbp" value={o.fbp} />
