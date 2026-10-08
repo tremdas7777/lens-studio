@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { assertAdmin } from "@/lib/admin-auth.server";
-import { getMetaConfig, saveMetaConfig, sendCapiEvent } from "@/lib/meta.server";
+import { getMetaConfig, saveMetaConfig, sendCapiEvent, setMetaSource } from "@/lib/meta.server";
 
 const pw = z.object({ password: z.string().min(1).max(200) });
 
@@ -15,7 +15,17 @@ export const getMetaAdmin = createServerFn({ method: "POST" })
       testCode: c.testCode ?? "",
       hasToken: Boolean(c.accessToken),
       tokenHint: c.accessToken ? `••••${c.accessToken.slice(-4)}` : "",
+      source: c.source,
     };
+  });
+
+/** Escolhe quem manda os eventos ao Meta: a loja ou a UTMify (nunca os dois). */
+export const setMetaSourceAdmin = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => pw.extend({ source: z.enum(["loja", "utmify"]) }).parse(d))
+  .handler(async ({ data }) => {
+    assertAdmin(data.password);
+    await setMetaSource(data.source);
+    return { source: data.source };
   });
 
 export const saveMetaAdmin = createServerFn({ method: "POST" })

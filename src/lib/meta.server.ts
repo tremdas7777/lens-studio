@@ -2,13 +2,24 @@
 // Config em private_settings (via /admin); META_PIXEL_ID / META_CAPI_TOKEN / META_TEST_CODE (env) são fallback.
 import { getPrivateSettings, setPrivateSettings } from "@/lib/private-settings.server";
 
+/**
+ * Quem manda os eventos ao Meta: a loja (pixel + API de Conversões daqui) ou a UTMify (pixel dela
+ * conectado ao Meta no painel da UTMify). Nunca os dois, senão tudo conta duas vezes.
+ * Sem escolha salva no /admin = UTMify.
+ */
+export type MetaSource = "loja" | "utmify";
+export const META_SOURCE_KEY = "meta_events_source";
+/** Contém "não configurado": o reportPaidOnce não fica tentando de novo. */
+export const STORE_META_OFF = "Envio pela loja não configurado: a UTMify manda os eventos ao Meta";
+
 export type MetaConfig = {
   pixelId: string | null;
   accessToken: string | null;
   testCode: string | null;
+  source: MetaSource;
 };
 
-const KEYS = ["meta_pixel_id", "meta_access_token", "meta_test_code"] as const;
+const KEYS = ["meta_pixel_id", "meta_access_token", "meta_test_code", META_SOURCE_KEY] as const;
 
 export async function getMetaConfig(): Promise<MetaConfig> {
   const m = await getPrivateSettings(KEYS);
@@ -16,7 +27,12 @@ export async function getMetaConfig(): Promise<MetaConfig> {
     pixelId: m.get("meta_pixel_id") || process.env["META_PIXEL_ID"] || null,
     accessToken: m.get("meta_access_token") || process.env["META_CAPI_TOKEN"] || null,
     testCode: m.get("meta_test_code") || process.env["META_TEST_CODE"] || null,
+    source: m.get(META_SOURCE_KEY) === "loja" ? "loja" : "utmify",
   };
+}
+
+export async function setMetaSource(source: MetaSource): Promise<void> {
+  await setPrivateSettings([{ key: META_SOURCE_KEY, value: source }]);
 }
 
 export async function saveMetaConfig(c: {
@@ -63,6 +79,7 @@ export type CapiEvent = {
 export async function sendCapiEvent(ev: CapiEvent): Promise<{ ok: boolean; error?: string }> {
   try {
     const cfg = await getMetaConfig();
+    if (cfg.source !== "loja") return { ok: false, error: STORE_META_OFF };
     if (!cfg.pixelId || !cfg.accessToken)
       return { ok: false, error: "Pixel ou token não configurado" };
     const u = ev.user;

@@ -143,10 +143,10 @@ function metaPurchase(orderId, value, contentName){
 /** Assinatura do carrinho atual (para eventos de checkout uma vez por carrinho). */
 const cartKey = () => ((window.HB && HB.cart && HB.cart.items()) || []).map(i => `${i.id}:${i.qty}:${i.price}`).join('|').slice(0, 300);
 async function settings(){
-  const cached = SS.get('hubble-br-settings');
+  const cached = SS.get('hubble-br-settings-v2');
   if(cached){ try{ return JSON.parse(cached); }catch(e){} }
   const r = await get('/api/public/settings', 8000);
-  if(r.ok){ if(r.data && r.data.metaPixelId) SS.set('hubble-br-settings', JSON.stringify(r.data)); return r.data; }
+  if(r.ok){ if(r.data && r.data.metaPixelId) SS.set('hubble-br-settings-v2', JSON.stringify(r.data)); return r.data; }
   return {};
 }
 

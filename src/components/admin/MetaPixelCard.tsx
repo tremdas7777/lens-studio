@@ -4,7 +4,12 @@ import { Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getMetaAdmin, saveMetaAdmin, testMetaAdmin } from "@/lib/meta.functions";
+import {
+  getMetaAdmin,
+  saveMetaAdmin,
+  setMetaSourceAdmin,
+  testMetaAdmin,
+} from "@/lib/meta.functions";
 
 export interface MetaPixelCardProps {
   password: string;
@@ -15,6 +20,8 @@ export function MetaPixelCard({ password }: MetaPixelCardProps) {
   const loadFn = useServerFn(getMetaAdmin);
   const saveFn = useServerFn(saveMetaAdmin);
   const testFn = useServerFn(testMetaAdmin);
+  const sourceFn = useServerFn(setMetaSourceAdmin);
+  const [source, setSource] = useState<"loja" | "utmify" | null>(null);
   const [pixelId, setPixelId] = useState("");
   const [token, setToken] = useState("");
   const [testCode, setTestCode] = useState("");
@@ -29,6 +36,7 @@ export function MetaPixelCard({ password }: MetaPixelCardProps) {
         setPixelId(r.pixelId);
         setTestCode(r.testCode);
         setTokenHint(r.tokenHint);
+        setSource(r.source);
       })
       .catch(() => setMsg("Não foi possível carregar."));
   }, [password, loadFn]);
@@ -44,6 +52,24 @@ export function MetaPixelCard({ password }: MetaPixelCardProps) {
       if (token) setTokenHint(`••••${token.slice(-4)}`);
       setToken("");
       setMsg("Salvo. O pixel já vale para todas as páginas da loja.");
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "Erro ao salvar.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const chooseSource = async (next: "loja" | "utmify") => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const r = await sourceFn({ data: { password, source: next } });
+      setSource(r.source);
+      setMsg(
+        r.source === "loja"
+          ? "A loja agora manda os eventos ao Meta. Tire o pixel do Meta do pixel da UTMify para não contar em dobro."
+          : "A UTMify agora manda os eventos ao Meta; a loja parou de enviar. Mantenha o pixel do Meta conectado no painel da UTMify.",
+      );
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Erro ao salvar.");
     } finally {
@@ -75,11 +101,26 @@ export function MetaPixelCard({ password }: MetaPixelCardProps) {
         <div>
           <div className="font-medium">Pixel do Meta (Facebook/Instagram)</div>
           <div className="text-xs text-muted-foreground">
-            Rastreia pelo navegador e pelo servidor (API de Conversões), sem contar em dobro. A loja
-            é a única fonte de eventos do Meta (carrinho, checkout e compra só quando paga): deixe o
-            pixel da UTMify sem pixel do Meta conectado no painel dela, senão tudo conta duas vezes.
+            Só um pode mandar os eventos ao Meta, senão tudo conta duas vezes. UTMify: o pixel do
+            Meta fica conectado no painel da UTMify e a loja não envia nada. Loja: pixel + API de
+            Conversões daqui (compra só quando paga) e o pixel do Meta sai do painel da UTMify.
           </div>
         </div>
+      </div>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="text-xs text-muted-foreground">Quem manda os eventos ao Meta:</span>
+        {(["utmify", "loja"] as const).map((s) => (
+          <Button
+            key={s}
+            type="button"
+            size="sm"
+            variant={source === s ? "default" : "outline"}
+            disabled={busy || source === null || source === s}
+            onClick={() => chooseSource(s)}
+          >
+            {s === "utmify" ? "UTMify" : "Loja"}
+          </Button>
+        ))}
       </div>
       <form onSubmit={save} className="grid gap-3 md:grid-cols-3">
         <label className="space-y-1 text-xs text-muted-foreground">
