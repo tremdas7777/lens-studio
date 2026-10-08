@@ -378,10 +378,10 @@ let openEye = null;
 const sameEl = $('#sameRx');
 function eyeLabel(e){ return e.sph ? fmtRx(e.sph) : 'Selecione'; }
 function renderRx(){
-  const noPower = st.tried && !hasKind('od') && !hasKind('oe');
+  const missing = eye => st.tried && !chosen(eye);
   const BC = Number(lens.bc).toFixed(2).replace('.', ',');
   const bcCell = eye => `<div><button type="button" class="rx-trig rx-bc${st[eye].sph ? ' set' : ''}" disabled aria-label="Curva base"><span>${st[eye].sph ? BC : 'Selecione'}</span><svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M5 6L9.33 0H.67z" fill="currentColor"/></svg></button></div>`;
-  const row = (eye, label) => `<div class="rx-row"><div class="rx-eye">${label}</div><div><button type="button" class="rx-trig${st[eye].sph ? ' set' : ''}${noPower ? ' err' : ''}${openEye === eye ? ' open' : ''}" data-eye="${eye}" aria-haspopup="listbox" aria-expanded="${openEye === eye}"><span>${eyeLabel(st[eye])}</span><svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M5 6L9.33 0H.67z" fill="currentColor"/></svg></button>${st[eye].kind === 'miopia' || st[eye].kind === 'hipermetropia' ? `<div class="rx-kind">${st[eye].kind === 'miopia' ? 'Miopia' : 'Hipermetropia'}</div>` : ''}</div>${bcCell(eye)}</div>`;
+  const row = (eye, label) => `<div class="rx-row"><div class="rx-eye">${label}</div><div><button type="button" class="rx-trig${st[eye].sph ? ' set' : ''}${missing(eye) ? ' err' : ''}${openEye === eye ? ' open' : ''}" data-eye="${eye}" aria-haspopup="listbox" aria-expanded="${openEye === eye}"><span>${eyeLabel(st[eye])}</span><svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M5 6L9.33 0H.67z" fill="currentColor"/></svg></button>${st[eye].kind === 'miopia' || st[eye].kind === 'hipermetropia' ? `<div class="rx-kind">${st[eye].kind === 'miopia' ? 'Miopia' : 'Hipermetropia'}</div>` : ''}</div>${bcCell(eye)}</div>`;
   $('#rxGrid').innerHTML = `<div class="rx-row rx-h"><div>Olho</div><div>Grau esférico</div><div>Curva base</div></div>` +
     (sameEl.checked ? row('od', 'Ambos') : row('oe', 'Esquerdo') + row('od', 'Direito'));
   $$('#rxGrid .rx-trig').forEach(b => b.onclick = () => openPop(b.dataset.eye, b));
@@ -417,7 +417,10 @@ document.addEventListener('click', e => { if(openEye && !e.target.closest('#grad
 sameEl.onchange = () => { if(sameEl.checked){ const src = st.od.sph ? st.od : st.oe; st.od = {...st.od, sph:src.sph, kind:src.kind}; st.oe = {...st.oe, sph:src.sph, kind:src.kind}; } renderRx(); };
 function validate(){
   const errs = [];
-  if(!hasKind('od') && !hasKind('oe')) errs.push('Selecione o grau de pelo menos um olho.');
+  // O plano é para os dois olhos: grau de cada olho, ou o mesmo grau marcado para os dois.
+  if(sameEl.checked ? !chosen('od') : !chosen('od') && !chosen('oe')) errs.push(sameEl.checked ? 'Selecione o grau para os dois olhos.' : 'Selecione o grau do olho esquerdo e do olho direito, ou marque “Mesmo grau nos dois olhos”.');
+  else if(!sameEl.checked && !chosen('oe')) errs.push('Selecione também o grau do olho esquerdo (ou marque “Mesmo grau nos dois olhos”).');
+  else if(!sameEl.checked && !chosen('od')) errs.push('Selecione também o grau do olho direito (ou marque “Mesmo grau nos dois olhos”).');
   if(lens.toric){
     [['od', 'olho direito'], ['oe', 'olho esquerdo']].forEach(([eye, n]) => {
       if(chosen(eye) && (st[eye].cyl === '' || st[eye].axis === '')) errs.push(`Selecione o cilíndrico e o eixo do ${n}.`);
@@ -455,6 +458,8 @@ $('#ovForm').onsubmit = e => {
   const em = $('#ovEmail').value.trim();
   if(!HB.valid.email(em)){ $('#ovErr').classList.remove('hidden'); $('#ovEmail').classList.add('err'); $('#ovEmail').focus(); return; }
   HB.store.set('checkout-email', em);
+  st.tried = true;
+  if(!validate()){ renderRx(); closeOv(); return; }
   HB.cart.add(buildLensItem(lens, st.pack, eyeData('od'), eyeData('oe')));
   window.HBAPI ? HBAPI.go('checkout.html') : location.href = 'checkout.html';
 };

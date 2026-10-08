@@ -145,7 +145,12 @@ function priceLens(it: Extract<CartItemInput, { kind: "lente" }>): PricedLine {
   const plan = LENS_PLANS[it.planId];
   const od = it.od ?? null;
   const oe = it.oe ?? null;
-  if (!od && !oe) throw new PricingError("Informe o grau de pelo menos um olho.");
+  // Grau dos dois olhos (ou o mesmo grau nos dois): o plano é sempre para os dois olhos.
+  if (!od || !oe) {
+    throw new PricingError(
+      "Informe o grau dos dois olhos (ou marque “Mesmo grau nos dois olhos”). Volte à página da lente e escolha de novo.",
+    );
+  }
   const label = { miopia: "Miopia", hipermetropia: "Hipermetropia" } as const;
   const meta: string[] = [];
   if (od) meta.push(`OD: ${label[od.kind]} ${fmtSph(od.sph)}`);

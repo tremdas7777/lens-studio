@@ -4,8 +4,11 @@ import { computeStatus } from "@/lib/rastreio";
 import { groupCheckoutEvents } from "@/lib/admin.functions";
 import catalog from "@/lib/catalog.generated.json";
 
-const lens = (planId: string, od: unknown = { kind: "miopia", sph: "-2.00" }, oe: unknown = null) =>
-  itemSchema.parse({ kind: "lente", id: "skyhy", planId, od, oe, qty: 1 });
+const lens = (
+  planId: string,
+  od: unknown = { kind: "miopia", sph: "-2.00" },
+  oe: unknown = { kind: "miopia", sph: "-2.00" },
+) => itemSchema.parse({ kind: "lente", id: "skyhy", planId, od, oe, qty: 1 });
 
 const anyFrame = Object.entries(catalog.frames)[0]!;
 const sunFrame = Object.entries(catalog.frames).find(([, f]) => f.sun)!;
@@ -14,19 +17,38 @@ const nonSunFrame = Object.entries(catalog.frames).find(([, f]) => !f.sun);
 describe("pricing", () => {
   it("cobra o ticket do plano SkyHy sem desconto Pix", () => {
     expect(quote({ items: [lens("1m")], bump: false, frete: "padrao" }).total).toBe(117);
-    expect(() => quote({ items: [lens("1m")], bump: false, frete: "gratis" })).toThrow(/acima de R\$ 100/);
+    expect(() => quote({ items: [lens("1m")], bump: false, frete: "gratis" })).toThrow(
+      /acima de R\$ 100/,
+    );
     expect(quote({ items: [lens("2m")], bump: false, frete: "gratis" }).total).toBe(147);
     expect(quote({ items: [lens("3m")], bump: false, frete: "gratis" }).totalCents).toBe(19700);
   });
 
-  it("valida o sinal do grau e exige um olho", () => {
+  it("valida o sinal do grau e exige os dois olhos", () => {
     expect(() => lens("1m", { kind: "miopia", sph: "+1.00" })).toThrow();
     expect(() => lens("1m", { kind: "hipermetropia", sph: "-1.00" })).toThrow();
     expect(() => lens("1m", { kind: "miopia", sph: "-1.10" })).toThrow();
     expect(() => quote({ items: [lens("1m", null, null)], bump: false, frete: "gratis" })).toThrow(
       PricingError,
     );
-    expect(lens("1m", null, { kind: "hipermetropia", sph: "+2.50" })).toBeTruthy();
+    // Um olho só não passa (nem pelo carrinho antigo): o plano é para os dois olhos.
+    for (const [od, oe] of [
+      [null, { kind: "hipermetropia", sph: "+2.50" }],
+      [{ kind: "miopia", sph: "-1.00" }, null],
+    ]) {
+      expect(() => quote({ items: [lens("2m", od, oe)], bump: false, frete: "gratis" })).toThrow(
+        /dois olhos/,
+      );
+    }
+    // Graus diferentes em cada olho continuam valendo.
+    const q = quote({
+      items: [
+        lens("2m", { kind: "miopia", sph: "-1.00" }, { kind: "hipermetropia", sph: "+0.75" }),
+      ],
+      bump: false,
+      frete: "gratis",
+    });
+    expect(q.total).toBe(147);
   });
 
   it("calcula óculos com adicionais", () => {
@@ -87,9 +109,9 @@ describe("pricing", () => {
 
   it("loja sem cupons: qualquer código é recusado", () => {
     for (const coupon of ["BEMVINDO10", "HUBBLE15", "XYZ"]) {
-      expect(() =>
-        quote({ items: [lens("3m")], bump: false, coupon, frete: "gratis" }),
-      ).toThrow(/inválido/);
+      expect(() => quote({ items: [lens("3m")], bump: false, coupon, frete: "gratis" })).toThrow(
+        /inválido/,
+      );
     }
   });
 
