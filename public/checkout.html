@@ -166,7 +166,7 @@
 
 <script src="assets/js/data.js?v=202610041850"></script>
 <script src="assets/js/app.js?v=202610041947"></script>
-<script src="assets/js/api.js?v=202610081100"></script>
+<script src="assets/js/api.js?v=202610081200"></script>
 <script src="assets/js/hypercash.js?v=1"></script>
 <script>
 (function(){
@@ -404,7 +404,7 @@ function trackSteps(){
   HBAPI.checkoutStep('checkout', stepPayload());
   if(S.step > stepNo('id')) HBAPI.checkoutStep('dados', Object.assign(stepPayload(), {name: S.id.name.trim(), email: S.id.email.trim().toLowerCase(), phone: digits(S.id.phone)}));
   if(S.step > stepNo('addr')) HBAPI.checkoutStep('entrega', Object.assign(stepPayload(), {name: S.id.name.trim(), email: S.id.email.trim().toLowerCase(), phone: digits(S.id.phone), cidade: S.addr.cidade, uf: S.addr.uf}));
-  if(S.step === stepNo('pay') && !trackSteps.payInfo){ trackSteps.payInfo = true; HBAPI.metaTrack('AddPaymentInfo', {value: totals().total, contentIds: cart.items().map(i => i.id)}); }
+  if(S.step === stepNo('pay') && !trackSteps.payInfo){ trackSteps.payInfo = true; HBAPI.metaOnce(HBAPI.cartKey(), 'AddPaymentInfo', {value: totals().total, contentIds: cart.items().map(i => i.id)}); }
 }
 function renderSummary(){
   const h = summaryHTML(), t = totals();

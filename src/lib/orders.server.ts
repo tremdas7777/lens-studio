@@ -617,40 +617,49 @@ export async function reportPaidOnce(
       Number.isFinite(gatewayAmount) && gatewayAmount > 0 ? gatewayAmount : o.amount_cents;
     const c = o.customer;
     const productName = `${brand.name} - ${o.summary}`.slice(0, 250);
-    const utmify = await sendUtmifyOrder({
-      orderId: o.number,
-      status: "paid",
-      createdAt: new Date(o.created_at).getTime(),
-      approvedAt: Date.now(),
-      customer: { name: c.name, email: c.email, phone: c.phone, document: c.cpf, ip: o.ip },
-      product: { id: "hubble-pedido", name: productName },
-      amountCents: amount,
-      utm: o.utm ?? {},
-    });
-    const meta = await sendCapiEvent({
-      eventName: "Purchase",
-      eventId: `purchase-${o.id}`,
-      url: extra?.url ?? o.url ?? undefined,
-      user: {
-        email: c.email,
-        phone: c.phone,
-        name: c.name,
-        cpf: c.cpf,
-        fbp: extra?.fbp ?? o.fbp ?? null,
-        fbc: extra?.fbc ?? o.fbc ?? null,
-        ip: extra?.ip ?? o.ip ?? null,
-        ua: extra?.ua ?? o.ua ?? null,
-      },
-      customData: {
-        value: amount / 100,
-        currency: "BRL",
-        content_name: o.summary,
-        content_ids: o.items.map((i) => i.id),
-        content_type: "product",
-        num_items: o.items.reduce((s, i) => s + i.qty, 0),
-        order_id: o.number,
-      },
-    });
+    // Canal que já confirmou numa tentativa anterior não recebe de novo (nunca duplica a venda).
+    const done = (o.report_result ?? {}) as {
+      utmify?: Awaited<ReturnType<typeof sendUtmifyOrder>>;
+      meta?: Awaited<ReturnType<typeof sendCapiEvent>>;
+    };
+    const utmify = done.utmify?.ok
+      ? done.utmify
+      : await sendUtmifyOrder({
+          orderId: o.number,
+          status: "paid",
+          createdAt: new Date(o.created_at).getTime(),
+          approvedAt: Date.now(),
+          customer: { name: c.name, email: c.email, phone: c.phone, document: c.cpf, ip: o.ip },
+          product: { id: "hubble-pedido", name: productName },
+          amountCents: amount,
+          utm: o.utm ?? {},
+        });
+    const meta = done.meta?.ok
+      ? done.meta
+      : await sendCapiEvent({
+          eventName: "Purchase",
+          eventId: `purchase-${o.id}`,
+          url: extra?.url ?? o.url ?? undefined,
+          user: {
+            email: c.email,
+            phone: c.phone,
+            name: c.name,
+            cpf: c.cpf,
+            fbp: extra?.fbp ?? o.fbp ?? null,
+            fbc: extra?.fbc ?? o.fbc ?? null,
+            ip: extra?.ip ?? o.ip ?? null,
+            ua: extra?.ua ?? o.ua ?? null,
+          },
+          customData: {
+            value: amount / 100,
+            currency: "BRL",
+            content_name: o.summary,
+            content_ids: o.items.map((i) => i.id),
+            content_type: "product",
+            num_items: o.items.reduce((s, i) => s + i.qty, 0),
+            order_id: o.number,
+          },
+        });
     // RastroCode: idempotente por transaction_id; respostas definitivas não são reenviadas.
     const prev = (o.report_result as { rastro?: RastroResult } | null)?.rastro;
     const a = o.address;

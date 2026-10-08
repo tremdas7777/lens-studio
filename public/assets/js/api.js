@@ -101,15 +101,18 @@ function loadPixel(id){
   }
   window.fbq('init', id);
   pixelId = id; pixelReady = true;
+  // PageView desta página primeiro; depois os eventos guardados (desta página ou da anterior).
   const queued = readQ(); writeQ([]);
-  queued.forEach(sendMeta);
   pending.splice(0).forEach(fn => fn());
+  queued.forEach(sendMeta);
 }
 /** Evento no navegador + espelho no servidor (CAPI) com o mesmo event_id (deduplicação). */
 function sendMeta(ev){
   const d = ev.data || {};
   const custom = d.value !== undefined ? {value: d.value, currency:'BRL', content_name: d.contentName, content_ids: d.contentIds, content_type:'product'} : {};
-  window.fbq('track', ev.eventName, custom, {eventID: ev.eventId});
+  // trackSingle: o evento vai só para o pixel da loja, nunca para outro pixel carregado na página
+  // (ex.: o que a UTMify inicializa), que de outro modo receberia uma cópia.
+  window.fbq('trackSingle', pixelId, ev.eventName, custom, {eventID: ev.eventId});
   const c = metaCookies();
   beacon('/api/public/meta-event', {eventName: ev.eventName, eventId: ev.eventId, url: ev.url, fbp: c.fbp, fbc: c.fbc, value: d.value, contentName: d.contentName, contentIds: d.contentIds});
 }
@@ -120,11 +123,25 @@ function metaTrack(eventName, data){
   if(eventName === 'PageView'){ pending.push(() => sendMeta(ev)); return; }
   const q = readQ(); q.push(ev); writeQ(q);
 }
-/** Purchase no navegador com o mesmo event_id usado no servidor (purchase-<orderId>). */
-function metaPurchase(orderId, value, contentName){
-  if(!pixelReady){ pending.push(() => metaPurchase(orderId, value, contentName)); return; }
-  window.fbq('track', 'Purchase', {value, currency:'BRL', content_name: contentName, content_type:'product'}, {eventID: `purchase-${orderId}`});
+/** Mesmo evento uma vez só nesta aba para a mesma chave (ex.: recarregar o checkout não repete). */
+function metaOnce(key, eventName, data){
+  const k = 'hb-meta-once:' + eventName + ':' + key;
+  if(SS.get(k)) return;
+  SS.set(k, '1');
+  metaTrack(eventName, data);
 }
+/** Purchase no navegador com o mesmo event_id usado no servidor (purchase-<orderId>).
+ *  Uma vez por pedido neste navegador: recarregar a página do pedido/obrigado não reenvia. */
+function metaPurchase(orderId, value, contentName){
+  if(noPixel) return;
+  if(!pixelReady){ pending.push(() => metaPurchase(orderId, value, contentName)); return; }
+  const k = 'hb-meta-purchase:' + orderId;
+  if(LS.get(k)) return;
+  LS.set(k, '1');
+  window.fbq('trackSingle', pixelId, 'Purchase', {value, currency:'BRL', content_name: contentName, content_type:'product'}, {eventID: `purchase-${orderId}`});
+}
+/** Assinatura do carrinho atual (para eventos de checkout uma vez por carrinho). */
+const cartKey = () => ((window.HB && HB.cart && HB.cart.items()) || []).map(i => `${i.id}:${i.qty}:${i.price}`).join('|').slice(0, 300);
 async function settings(){
   const cached = SS.get('hubble-br-settings');
   if(cached){ try{ return JSON.parse(cached); }catch(e){} }
@@ -187,7 +204,7 @@ function order(id){
 }
 const rastreio = (pedido, cpf) => get('/api/public/rastreio?' + new URLSearchParams({pedido, cpf}).toString(), 15000);
 
-window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaPurchase, metaCookies, cartItems, checkout, cardConfig, upsellOffers, upsell, flow, order, rastreio};
+window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaOnce, cartKey, metaPurchase, metaCookies, cartItems, checkout, cardConfig, upsellOffers, upsell, flow, order, rastreio};
 
 /* ---------- Pixel da UTMify (todas as páginas da loja) ---------- */
 (function utmifyPixel(){
@@ -230,6 +247,7 @@ if(window.HB && HB.cart && !HB.cart._metaWrapped){
 }
 if(page === 'checkout' && window.HB && HB.cart && HB.cart.items().length){
   track('checkout_click', {value: HB.cart.subtotal()});
-  metaTrack('InitiateCheckout', {value: +HB.cart.subtotal().toFixed(2), contentIds: HB.cart.items().map(i => i.id)});
+  // Uma vez por carrinho nesta aba (recarregar ou voltar ao checkout não conta outro início).
+  metaOnce(cartKey(), 'InitiateCheckout', {value: +HB.cart.subtotal().toFixed(2), contentIds: HB.cart.items().map(i => i.id)});
 }
 })();
