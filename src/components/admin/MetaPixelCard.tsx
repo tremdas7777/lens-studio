@@ -75,7 +75,9 @@ export function MetaPixelCard({ password }: MetaPixelCardProps) {
         <div>
           <div className="font-medium">Pixel do Meta (Facebook/Instagram)</div>
           <div className="text-xs text-muted-foreground">
-            Rastreia pelo navegador e pelo servidor (API de Conversões), sem contar em dobro.
+            Rastreia pelo navegador e pelo servidor (API de Conversões), sem contar em dobro. A loja
+            é a única fonte de eventos do Meta (carrinho, checkout e compra só quando paga): deixe o
+            pixel da UTMify sem pixel do Meta conectado no painel dela, senão tudo conta duas vezes.
           </div>
         </div>
       </div>
