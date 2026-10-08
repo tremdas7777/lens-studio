@@ -21,8 +21,14 @@ const FRAMES = catalog.frames as Record<string, Frame>;
 const ACCESSORIES = catalog.accessories as Record<string, Accessory>;
 export const FRAME_PRICES = catalog.prices as { glasses: number; sunglasses: number };
 
-/** Desconto do Pix. Hoje 0: o Pix é a única forma de pagamento e o preço já é o final. */
+/** Desconto do Pix. Hoje 0: Pix e cartão custam o mesmo. */
 export const PIX_OFF = 0;
+
+/** Cartão: até 12x sem juros, parcela mínima de R$ 30 (mesma regra de HB.installments no site). */
+export const MAX_INSTALLMENTS = 12;
+export const MIN_INSTALLMENT = 30;
+export const maxInstallments = (total: number) =>
+  Math.max(1, Math.min(MAX_INSTALLMENTS, Math.floor(total / MIN_INSTALLMENT)));
 
 /* ---------------- Lentes de contato ---------------- */
 export const LENS = { id: "skyhy", name: "SkyHy by Hubble® Diária" } as const;

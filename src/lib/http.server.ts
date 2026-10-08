@@ -59,6 +59,17 @@ export function clientMeta(request: Request) {
   };
 }
 
+/** Domínio público onde o cliente está comprando: Origin do navegador (já validado como mesma
+ * origem), depois cabeçalhos do proxy, por fim a própria URL da requisição. */
+export function publicOrigin(request: Request): string {
+  const o = request.headers.get("origin");
+  if (o && /^https?:\/\//.test(o)) return o;
+  const host = request.headers.get("x-forwarded-host");
+  if (host)
+    return `${request.headers.get("x-forwarded-proto") ?? "https"}://${host.split(",")[0]!.trim()}`;
+  return new URL(request.url).origin;
+}
+
 /**
  * Limite simples por IP (melhor esforço: memória do isolate/worker). Evita abuso
  * grosseiro do endpoint de checkout sem depender de infraestrutura extra.

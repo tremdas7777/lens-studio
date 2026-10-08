@@ -1,23 +1,33 @@
-// Pedidos Pix guardados no servidor (tabela orders) para que a aprovação seja reportada
+// Pedidos (Pix e cartão) guardados no servidor (tabela orders) para que a aprovação seja reportada
 // (UTMify + Meta CAPI + RastroCode) mesmo que o cliente feche a página. Somente servidor.
 import { z } from "zod";
 import { brand } from "@/lib/brand";
 import { isSupabaseConfigured } from "@/lib/db.server";
-import type { OrderItem, OrderRow, OrderTotals } from "@/lib/db-types";
+import type { OrderItem, OrderPayment, OrderRow, OrderTotals } from "@/lib/db-types";
 import { HttpError } from "@/lib/http.server";
 import { insertFunnelEvent } from "@/lib/funnel.server";
 import { sendCapiEvent } from "@/lib/meta.server";
+import { encodeGatewayRef, isCardRef, type GatewayId } from "@/lib/gateway-id";
 import {
   checkCharge,
   createCharge,
   getActiveGateway,
   isGatewayConfigured,
 } from "@/lib/gateway.server";
+import {
+  CARD_UNAVAILABLE,
+  cardAvailability,
+  createCardTransaction,
+  isHypercashRefused,
+} from "@/lib/hypercash.server";
+import { isPaidStatus } from "@/lib/pix-status";
 import { PIX_UNAVAILABLE } from "@/lib/pixgate.server";
 import {
   FRETES,
+  MAX_INSTALLMENTS,
   PricingError,
   itemSchema,
+  maxInstallments,
   needsRx,
   quote,
   summarize,
@@ -112,6 +122,19 @@ export const checkoutSchema = z.object({
   url: z.string().max(1000).optional(),
   /** Total exibido ao cliente; se divergir do recalculado, o pedido não é criado. */
   expectedTotal: z.number().min(0).max(1_000_000).optional(),
+  payment: z
+    .discriminatedUnion("method", [
+      z.object({ method: z.literal("pix") }),
+      z.object({
+        method: z.literal("card"),
+        // Token gerado pelo SDK da HyperCash no navegador. O número do cartão nunca chega aqui.
+        cardHash: z.string().min(10).max(4000),
+        installments: z.number().int().min(1).max(MAX_INSTALLMENTS),
+      }),
+    ])
+    .default({ method: "pix" }),
+  /** Senha do /admin (mesma aba): libera o cartão para teste mesmo desligado. */
+  adminPassword: z.string().max(200).optional(),
 });
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 
@@ -127,19 +150,269 @@ const toItem = (l: PricedLine): OrderItem => ({ ...l, details: l.details as Orde
 export type CreatedOrder = {
   orderId: string;
   number: string;
-  qrcode: string;
+  method: "pix" | "card";
+  /** waiting_payment (Pix gerado / cartão em análise) ou paid (cartão aprovado na hora). */
+  status: string;
+  paid: boolean;
+  qrcode: string | null;
   amount: number;
   amountCents: number;
-  expiresAt: string;
+  expiresAt: string | null;
   totals: OrderTotals;
   items: OrderItem[];
 };
 
-/** Cria o pedido: recalcula o valor, grava, gera o Pix no gateway ativo e avisa UTMify (pendente). */
-export async function createOrder(
-  data: CheckoutInput,
-  ctx: { ip: string | null; ua: string | null; origin: string },
+/** Como o pedido vai ser cobrado: Pix no gateway ativo ou cartão (token do SDK) na HyperCash. */
+export type Charge =
+  | { method: "pix"; gateway: GatewayId }
+  | { method: "card"; cardHash: string; installments: number };
+
+/** Dados gravados do pedido (checkout ou pós-compra). */
+export type NewOrder = {
+  customer: OrderRow["customer"];
+  address: OrderRow["address"];
+  items: OrderItem[];
+  totals: OrderTotals;
+  summary: string;
+  amountCents: number;
+  rx: OrderRow["rx"];
+  sessionId: string | null;
+  utm: UtmParams;
+  fbp: string | null;
+  fbc: string | null;
+  url: string | null;
+};
+
+type ReqCtx = { ip: string | null; ua: string | null; origin: string };
+
+/**
+ * Confere se a forma de pagamento está disponível antes de gravar o pedido.
+ * `adminPassword` (mesma aba do /admin) libera o cartão para teste mesmo desligado.
+ */
+export async function preparePayment(
+  card: { cardHash: string; installments: number } | null,
+  adminPassword?: string,
+): Promise<Charge> {
+  let charge: Charge;
+  if (card) {
+    if (!(await cardAvailability(adminPassword)).enabled) {
+      throw new HttpError(503, CARD_UNAVAILABLE);
+    }
+    charge = { method: "card", ...card };
+  } else {
+    const gateway = await getActiveGateway();
+    if (!(await isGatewayConfigured(gateway))) {
+      console.error("checkout: chave do gateway não configurada", gateway);
+      throw new HttpError(503, PIX_UNAVAILABLE);
+    }
+    charge = { method: "pix", gateway };
+  }
+  if (!isSupabaseConfigured()) {
+    console.error("checkout: Supabase não configurado (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)");
+    throw new HttpError(503, PIX_UNAVAILABLE);
+  }
+  return charge;
+}
+
+/** Grava o pedido antes de cobrar (número único; tenta de novo em colisão). */
+export async function insertOrder(
+  o: NewOrder,
+  ctx: ReqCtx,
+  createdAt: number,
+): Promise<Pick<OrderRow, "id" | "number">> {
+  const supa = await db();
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const { data: ins, error } = await supa
+      .from("orders")
+      .insert({
+        number: orderNumber(),
+        status: "creating",
+        amount_cents: o.amountCents,
+        customer: o.customer,
+        address: o.address,
+        items: o.items,
+        totals: o.totals,
+        summary: o.summary,
+        rx: o.rx,
+        session_id: o.sessionId,
+        utm: o.utm ?? {},
+        fbp: o.fbp,
+        fbc: o.fbc,
+        ip: ctx.ip,
+        ua: ctx.ua,
+        url: o.url,
+        created_at: new Date(createdAt).toISOString(),
+      })
+      .select("id,number")
+      .single();
+    if (!error) return ins as Pick<OrderRow, "id" | "number">;
+    if (error.code !== "23505") {
+      console.error("createOrder insert error", error.message);
+      throw new HttpError(503, PIX_UNAVAILABLE);
+    }
+  }
+  throw new HttpError(503, PIX_UNAVAILABLE);
+}
+
+/** Domínio dos postbacks: o domínio em que o cliente está comprando (funciona em qualquer domínio
+ * conectado). PUBLIC_SITE_URL só entra quando a origem não é pública (ex.: localhost). */
+function postbackBase(origin: string): string {
+  const isPublicOrigin = /^https:\/\//.test(origin) && !/localhost|127\.0\.0\.1/.test(origin);
+  return (isPublicOrigin ? origin : process.env["PUBLIC_SITE_URL"] || origin).replace(/\/+$/, "");
+}
+
+/**
+ * Cobra o pedido já gravado — Pix no gateway ativo ou cartão na HyperCash — e avisa a UTMify
+ * (pendente). Cartão aprovado na hora já é reportado como venda; recusado vira HttpError 402.
+ */
+export async function chargeOrder(
+  row: Pick<OrderRow, "id" | "number">,
+  o: NewOrder,
+  charge: Charge,
+  createdAt: number,
+  ctx: ReqCtx,
 ): Promise<CreatedOrder> {
+  const supa = await db();
+  const base = postbackBase(ctx.origin);
+  const totals: OrderTotals = { ...o.totals };
+  const markFailed = () =>
+    supa
+      .from("orders")
+      .update({ status: "failed", updated_at: new Date().toISOString() })
+      .eq("id", row.id);
+
+  let qrcode: string | null = null;
+  let expiresAt: string | null = null;
+  let paid = false;
+  let paidAmount = 0;
+  if (charge.method === "card") {
+    const a = o.address;
+    const address = {
+      street: a.rua,
+      streetNumber: a.numero,
+      complement: a.complemento || "Sem complemento",
+      zipCode: a.cep,
+      neighborhood: a.bairro,
+      city: a.cidade,
+      state: a.uf,
+      country: "BR" as const,
+    };
+    const shippingCents = Math.round(totals.shipping * 100);
+    let tx;
+    try {
+      tx = await createCardTransaction({
+        amount: o.amountCents,
+        cardHash: charge.cardHash,
+        installments: charge.installments,
+        customer: o.customer,
+        address,
+        shippingFee: shippingCents,
+        // Nome genérico (igual ao Pix) — sem detalhes dos produtos na fatura.
+        items: [
+          { title: brand.chargeDescription, unitPrice: o.amountCents - shippingCents, quantity: 1 },
+        ],
+        postbackUrl: `${base}/api/public/hypercash-webhook`,
+        ip: ctx.ip,
+      });
+    } catch (e) {
+      await markFailed();
+      throw new HttpError(
+        502,
+        e instanceof Error ? e.message : "Não foi possível processar o cartão.",
+      );
+    }
+    const refused = isHypercashRefused(tx.status);
+    paid = isPaidStatus(tx.status);
+    paidAmount = tx.amount;
+    totals.payment = {
+      method: "card",
+      installments: charge.installments,
+      card: tx.card,
+      refusedReason: tx.refusedReason,
+    };
+    const { error: upErr } = await supa
+      .from("orders")
+      .update({
+        gateway_id: encodeGatewayRef("hypercash", tx.id),
+        status: refused ? "refused" : "waiting_payment",
+        totals,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", row.id);
+    if (upErr) console.error("createOrder update error", row.id, upErr.message);
+    if (refused) {
+      throw new HttpError(
+        402,
+        `Pagamento recusado: ${tx.refusedReason ?? "o banco emissor não informou o motivo"}. Confira os dados do cartão ou pague com Pix.`,
+      );
+    }
+  } else {
+    let c;
+    try {
+      c = await createCharge(charge.gateway, {
+        orderId: row.id,
+        orderNumber: row.number,
+        name: o.customer.name,
+        cpf: o.customer.cpf,
+        email: o.customer.email,
+        phone: o.customer.phone,
+        amountCents: o.amountCents,
+        siteBase: base,
+        expiresInSeconds: PIX_TTL_MS / 1000,
+      });
+    } catch (e) {
+      await markFailed();
+      throw new HttpError(502, e instanceof Error ? e.message : "Não foi possível gerar o Pix.");
+    }
+    qrcode = c.qrcode;
+    expiresAt = new Date(createdAt + PIX_TTL_MS).toISOString();
+    const { error: upErr } = await supa
+      .from("orders")
+      .update({
+        gateway_id: c.ref,
+        qrcode,
+        status: "waiting_payment",
+        expires_at: expiresAt,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", row.id);
+    if (upErr) console.error("createOrder update error", row.id, upErr.message);
+  }
+
+  if (paid) {
+    // Cartão aprovado na hora: venda reportada já (UTMify paid + Meta CAPI + RastroCode).
+    await reportPaidOnce(row.id, paidAmount);
+  } else {
+    // Pix gerado / cartão em análise → UTMify como pendente (não é conversão).
+    await reportPendingToUtmify({
+      id: row.id,
+      number: row.number,
+      amountCents: o.amountCents,
+      customer: o.customer,
+      summary: o.summary,
+      utm: o.utm,
+      ip: ctx.ip,
+      createdAt,
+    });
+  }
+
+  return {
+    orderId: row.id,
+    number: row.number,
+    method: charge.method,
+    status: paid ? "paid" : "waiting_payment",
+    paid,
+    qrcode,
+    amount: o.amountCents / 100,
+    amountCents: o.amountCents,
+    expiresAt,
+    totals,
+    items: o.items,
+  };
+}
+
+/** Cria o pedido do checkout: recalcula o valor, grava e cobra (Pix ou cartão). */
+export async function createOrder(data: CheckoutInput, ctx: ReqCtx): Promise<CreatedOrder> {
   // Preço sempre definido no servidor — nunca confiar no cliente.
   let q;
   try {
@@ -163,114 +436,54 @@ export async function createOrder(
     : { method: "nao-precisa" as const };
 
   // Configuração conferida depois da validação: erros de cupom/itens aparecem mesmo sem gateway.
-  const gateway = await getActiveGateway();
-  if (!(await isGatewayConfigured(gateway))) {
-    console.error("checkout: chave do gateway não configurada", gateway);
-    throw new HttpError(503, PIX_UNAVAILABLE);
-  }
-  if (!isSupabaseConfigured()) {
-    console.error("checkout: Supabase não configurado (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)");
-    throw new HttpError(503, PIX_UNAVAILABLE);
-  }
-
-  const totals: OrderTotals = {
-    sub: q.sub,
-    discount: q.discount,
-    coupon: q.coupon,
-    pix: q.pix,
-    shipping: q.shipping,
-    total: q.total,
-    frete: q.frete,
-    bump: q.bump ? toItem(q.bump) : null,
-  };
-  const items = [...q.lines, ...(q.bump ? [q.bump] : [])].map(toItem);
-  const summary = summarize(q);
-  const createdAt = Date.now();
-  const supa = await db();
-
-  // 1) Grava o pedido antes de cobrar (número único; tenta de novo em colisão).
-  let row: Pick<OrderRow, "id" | "number"> | null = null;
-  for (let attempt = 0; attempt < 4 && !row; attempt++) {
-    const { data: ins, error } = await supa
-      .from("orders")
-      .insert({
-        number: orderNumber(),
-        status: "creating",
-        amount_cents: q.totalCents,
-        customer: data.customer,
-        address: data.address,
-        items,
-        totals,
-        summary,
-        rx: rx ?? null,
-        session_id: data.sessionId ?? null,
-        utm: data.utm ?? {},
-        fbp: data.fbp ?? null,
-        fbc: data.fbc ?? null,
-        ip: ctx.ip,
-        ua: ctx.ua,
-        url: data.url ?? null,
-        created_at: new Date(createdAt).toISOString(),
-      })
-      .select("id,number")
-      .single();
-    if (!error) row = ins as Pick<OrderRow, "id" | "number">;
-    else if (error.code !== "23505") {
-      console.error("createOrder insert error", error.message);
-      throw new HttpError(503, PIX_UNAVAILABLE);
+  const card = data.payment.method === "card" ? data.payment : null;
+  if (card) {
+    const max = maxInstallments(q.total);
+    if (card.installments > max) {
+      throw new HttpError(422, `Este pedido pode ser parcelado em até ${max}x sem juros.`);
     }
   }
-  if (!row) throw new HttpError(503, PIX_UNAVAILABLE);
+  const charge = await preparePayment(
+    card ? { cardHash: card.cardHash, installments: card.installments } : null,
+    data.adminPassword,
+  );
 
-  // 2) Cobrança Pix no gateway ativo.
-  // Usa o domínio em que o cliente está comprando (funciona em qualquer domínio conectado).
-  // PUBLIC_SITE_URL só entra quando a origem não é pública (ex.: localhost).
-  const isPublicOrigin =
-    /^https:\/\//.test(ctx.origin) && !/localhost|127\.0\.0\.1/.test(ctx.origin);
-  const postbackBase = (
-    isPublicOrigin ? ctx.origin : process.env["PUBLIC_SITE_URL"] || ctx.origin
-  ).replace(/\/+$/, "");
-  let charge;
-  try {
-    charge = await createCharge(gateway, {
-      orderId: row.id,
-      orderNumber: row.number,
-      name: data.customer.name,
-      cpf: data.customer.cpf,
-      email: data.customer.email,
-      phone: data.customer.phone,
-      amountCents: q.totalCents,
-      siteBase: postbackBase,
-      expiresInSeconds: PIX_TTL_MS / 1000,
-    });
-  } catch (e) {
-    await supa
-      .from("orders")
-      .update({ status: "failed", updated_at: new Date().toISOString() })
-      .eq("id", row.id);
-    throw new HttpError(502, e instanceof Error ? e.message : "Não foi possível gerar o Pix.");
-  }
-  const expiresAt = new Date(createdAt + PIX_TTL_MS).toISOString();
-  const { error: upErr } = await supa
-    .from("orders")
-    .update({
-      gateway_id: charge.ref,
-      qrcode: charge.qrcode,
-      status: "waiting_payment",
-      expires_at: expiresAt,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", row.id);
-  if (upErr) console.error("createOrder update error", row.id, upErr.message);
+  const order: NewOrder = {
+    customer: data.customer,
+    address: data.address,
+    items: [...q.lines, ...(q.bump ? [q.bump] : [])].map(toItem),
+    totals: {
+      sub: q.sub,
+      discount: q.discount,
+      coupon: q.coupon,
+      pix: q.pix,
+      shipping: q.shipping,
+      total: q.total,
+      frete: q.frete,
+      bump: q.bump ? toItem(q.bump) : null,
+      payment: card ? { method: "card", installments: card.installments } : { method: "pix" },
+    },
+    summary: summarize(q),
+    amountCents: q.totalCents,
+    rx: rx as OrderRow["rx"],
+    sessionId: data.sessionId ?? null,
+    utm: data.utm ?? {},
+    fbp: data.fbp ?? null,
+    fbc: data.fbc ?? null,
+    url: data.url ?? null,
+  };
+  const createdAt = Date.now();
+  const row = await insertOrder(order, ctx, createdAt);
+  const created = await chargeOrder(row, order, charge, createdAt, ctx);
 
-  // 3) Funil (etapa "pix") + UTMify pendente. Nenhum dos dois pode quebrar a compra.
+  // Funil (etapa "pix" = pedido finalizado, Pix ou cartão). Não pode quebrar a compra.
   if (data.sessionId) {
     await insertFunnelEvent({
       session_id: data.sessionId,
       event_type: "checkout_step",
       path: "/checkout.html",
       bundle_id: q.lines[0]?.id ?? null,
-      bundle_name: summary.slice(0, 120),
+      bundle_name: order.summary.slice(0, 120),
       value: q.total,
       utm: data.utm,
       metadata: {
@@ -284,30 +497,11 @@ export async function createOrder(
         uf: data.address.uf,
         frete: data.frete,
         bump: !!q.bump,
+        method: charge.method,
       },
     });
   }
-  await reportPendingToUtmify({
-    id: row.id,
-    number: row.number,
-    amountCents: q.totalCents,
-    customer: data.customer,
-    summary,
-    utm: data.utm,
-    ip: ctx.ip,
-    createdAt,
-  });
-
-  return {
-    orderId: row.id,
-    number: row.number,
-    qrcode: charge.qrcode,
-    amount: q.total,
-    amountCents: q.totalCents,
-    expiresAt,
-    totals,
-    items,
-  };
+  return created;
 }
 
 /* ---------------- Leitura ---------------- */
@@ -460,22 +654,28 @@ export async function reportPaidOnce(
     // RastroCode: idempotente por transaction_id; respostas definitivas não são reenviadas.
     const prev = (o.report_result as { rastro?: RastroResult } | null)?.rastro;
     const a = o.address;
+    // Compras pós-compra vão no mesmo envio do pedido principal: não geram outro rastreio.
     const rastro: RastroResult = isRastroFinal(prev)
       ? prev!
-      : await sendRastroOrder({
-          transactionId: o.number,
-          customer: { name: c.name, email: c.email, phone: c.phone, document: c.cpf },
-          address: {
-            street: a.rua,
-            number: a.numero,
-            complement: a.complemento,
-            neighborhood: a.bairro,
-            city: a.cidade,
-            state: a.uf,
-            zipcode: a.cep,
-          },
-          products: o.items.map((i) => ({ name: i.name, quantity: i.qty, price: i.unitPrice })),
-        });
+      : o.totals?.upsell
+        ? {
+            ok: true,
+            details: `pós-compra do pedido ${o.totals.upsell.number}: vai no mesmo envio`,
+          }
+        : await sendRastroOrder({
+            transactionId: o.number,
+            customer: { name: c.name, email: c.email, phone: c.phone, document: c.cpf },
+            address: {
+              street: a.rua,
+              number: a.numero,
+              complement: a.complemento,
+              neighborhood: a.bairro,
+              city: a.cidade,
+              state: a.uf,
+              zipcode: a.cep,
+            },
+            products: o.items.map((i) => ({ name: i.name, quantity: i.qty, price: i.unitPrice })),
+          });
     // Sem token configurado não adianta ficar tentando de novo a cada consulta.
     const notConfigured = (r: { ok: boolean; error?: string | undefined }) =>
       !r.ok && /não configurad/i.test(r.error ?? "");
@@ -522,10 +722,21 @@ export async function refreshOrder(
   if (lastCheck.size > 2000)
     for (const [k, t] of lastCheck) if (t < now - 60_000) lastCheck.delete(k);
   try {
-    const { paid, amount } = await checkCharge(o.gateway_id);
+    const { paid, refused, amount } = await checkCharge(o.gateway_id);
     if (paid || retryReport) {
       await reportPaidOnce(o.id, amount, extra);
       return (await getOrder(o.id)) ?? { ...o, status: "paid" };
+    }
+    if (refused && pending) {
+      // Cartão que estava em análise e o banco recusou depois.
+      await (
+        await db()
+      )
+        .from("orders")
+        .update({ status: "refused", updated_at: new Date().toISOString() })
+        .eq("id", o.id)
+        .eq("status", o.status);
+      return { ...o, status: "refused" };
     }
   } catch (e) {
     console.error("refreshOrder failed", o.id, e);
@@ -542,12 +753,21 @@ export function publicOrder(o: OrderRow) {
     !!o.expires_at &&
     new Date(o.expires_at).getTime() < Date.now();
   const status = paid ? "paid" : expired ? "expired" : o.status;
+  const pay = o.totals?.payment;
   return {
     ok: true,
     id: o.id,
     number: o.number,
     status,
     paid,
+    method: isCardRef(o.gateway_id) || pay?.method === "card" ? "card" : "pix",
+    installments: pay?.method === "card" ? pay.installments : null,
+    card:
+      pay?.method === "card" && pay.card
+        ? { brand: pay.card.brand ?? null, last4: pay.card.lastDigits ?? null }
+        : null,
+    /** Compra pós-compra: pedido principal (id/número) e o que foi comprado nesta cobrança. */
+    upsell: o.totals?.upsell ?? null,
     amount: o.amount_cents / 100,
     amountCents: o.amount_cents,
     qrcode: paid || expired ? null : o.qrcode,

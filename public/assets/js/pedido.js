@@ -1,4 +1,6 @@
-/* Página do pedido (pedido-confirmado.html) e página de obrigado (obrigado.html). */
+/* Página do pedido (pedido-confirmado.html) e página de obrigado (obrigado.html).
+   Depois do pagamento (fluxo desta aba, HBAPI.flow): pedido principal → oferta.html (mesmo
+   plano 50% OFF + seguro) → entrega-prioritaria.html → obrigado.html do pedido principal. */
 (function(){
   const {$, brl, esc, sup, img, user, ICON} = HB;
   $('#ckLogo').innerHTML = ICON.logo; $('#yr').textContent = new Date().getFullYear();
@@ -60,7 +62,8 @@
     ]).map((t,i)=>`<li><i>${i+1}</i><span>${t}</span></li>`).join('')}</ol></div>`;
 
   function detailsHTML(o){
-    const t = o.totals || {}, a = o.address || {}, rxm = null;
+    const t = o.totals || {}, a = o.address || {}, rxm = null, pay = o.payment || {};
+    const extras = orderId(o) ? HB.store.get('orders', []).filter(x => x.upsellOf === orderId(o) && x.status !== 'Pagamento pendente' && x.status !== 'Cancelado') : [];
     const subs = HB.store.get('subs', []).filter(s => s.order === o.number && s.status !== 'cancelada');
     const next = [];
     if(rxm === 'depois') next.push(`Envie a foto ou o PDF da sua receita para <b>receitas@hubble.com.br</b> informando o número <b>${esc(o.number)}</b>.`);
@@ -80,7 +83,9 @@
           ${t.pix?`<div class="ln"><span>Desconto Pix</span><span class="g">-${brl(t.pix)}</span></div>`:''}
           <div class="ln"><span>Frete</span><span class="g">${t.shipping?brl(t.shipping):'Grátis'}</span></div>
           <div class="ln t"><span>Total</span><span>${brl(t.total)}</span></div>
+          <div class="ln"><span>Pagamento</span><span>${pay.method === 'cartao' ? `Cartão${pay.inst && pay.inst.n > 1 ? ` · ${pay.inst.n}x de ${brl(pay.inst.value)}` : ' · à vista'}` : 'Pix'}</span></div>
         </div></div>
+      ${extras.length ? `<div class="card"><h3>Adicionados ao seu pedido</h3>${extras.map(x => (x.items||[]).map(it=>`<div class="it">${it.image?`<img src="${img(it.image,140)}" alt="">`:''}<div><div>${sup(it.name)}</div><div class="m">${(it.meta||[]).map(esc).join('<br>')}</div></div><span class="v">${brl(it.price*it.qty)}</span></div>`).join('')).join('')}<p class="lead" style="text-align:left;margin-top:8px">Vão no mesmo envio do pedido ${esc(o.number)}.</p></div>` : ''}
       ${a.rua ? `<div class="card"><h3>Entrega</h3><p style="font-size:13px">${esc(o.name)}<br>${esc(a.rua)}, ${esc(a.numero)}${a.complemento?' - '+esc(a.complemento):''}<br>${esc(a.bairro)}, ${esc(a.cidade)}/${esc(a.uf)} ${esc(a.cep)}</p></div>` : ''}
       <div class="acts"><a href="conta.html#pedidos" class="btn block">Acompanhar em Minha Conta</a><a href="index.html" class="btn ghost block">Continuar comprando</a></div>`;
   }
@@ -90,7 +95,9 @@
     return {number:d.number, orderId:d.id, date:Date.parse(d.createdAt)||Date.now(), email:'', name:d.firstName||'',
       items:(d.items||[]).map(i=>({kind:i.kind, id:i.id, name:i.name, qty:i.qty, price:i.price, meta:i.meta, image:(i.kind==='acessorio' && HB.find.accessory(i.id)||{}).image||''})),
       totals:{sub:d.totals.sub, discount:d.totals.discount, pix:0, shipping:d.totals.shipping, total:d.totals.total},
-      shipping:d.totals.frete, address:{}, payment:{method:'pix'}, rx:{method:d.rxMethod||'nao-precisa'},
+      shipping:d.totals.frete, address:{}, rx:{method:d.rxMethod||'nao-precisa'},
+      payment: d.method === 'card' ? {method:'cartao', brand:(d.card||{}).brand||'', last4:(d.card||{}).last4||'', inst: d.installments ? {n:d.installments, value:d.amount/d.installments} : null} : {method:'pix'},
+      upsellOf: d.upsell ? d.upsell.of : undefined,
       status:'Pagamento pendente', qrcode:d.qrcode, pixExpires:Date.parse(d.expiresAt)||undefined, remoteOnly:true};
   }
   const orderId = o => (o && o.orderId) || (UUID.test(qsId) ? qsId : '');
@@ -104,6 +111,7 @@
       if(!purchaseSent && window.HBAPI){ purchaseSent = true; HBAPI.metaPurchase(d.id, d.amount, (o.items||[]).map(i=>i.name).join(' + ').slice(0,120)); }
     }
     if(!d.paid && d.status === 'expired') o.pixExpired = true;
+    if(!d.paid && d.status === 'refused') o.cardRefused = true;
     if(!d.paid && d.qrcode && !o.qrcode) o.qrcode = d.qrcode;
     if(d.expiresAt) o.pixExpires = Date.parse(d.expiresAt) || o.pixExpires;
     if(!o.remoteOnly) user.saveOrder(o);
@@ -119,18 +127,45 @@
       return;
     }
     apiDown = false; const w = $('#apiWarn'); if(w) w.textContent = '';
-    const before = o.status, hadQr = !!o.qrcode, wasExpired = !!o.pixExpired;
+    const before = o.status, hadQr = !!o.qrcode, wasExpired = !!o.pixExpired, wasRefused = !!o.cardRefused;
     remote = r.data; apply(o, r.data);
-    if(o.status !== before || !!o.qrcode !== hadQr || !!o.pixExpired !== wasExpired){ render(o); if(o.status !== before) window.scrollTo(0,0); }
+    if(o.status !== before || !!o.qrcode !== hadQr || !!o.pixExpired !== wasExpired || !!o.cardRefused !== wasRefused){ render(o); if(o.status !== before) window.scrollTo(0,0); }
   }
   function startPolling(o){
     clearInterval(poll);
     if(!orderId(o) || o.status !== 'Pagamento pendente') return;
-    poll = setInterval(() => { if(o.status !== 'Pagamento pendente' || o.pixExpired){ clearInterval(poll); return; } check(o); }, 5000);
+    poll = setInterval(() => { if(o.status !== 'Pagamento pendente' || o.pixExpired || o.cardRefused){ clearInterval(poll); return; } check(o); }, 5000);
+  }
+  /** Compra pós-compra: pedido principal ({number, orderId}) e se é a etapa da entrega prioritária. */
+  function upsellOf(o){
+    const u = remote && remote.upsell;
+    if(u) return {main: {number: u.number, orderId: u.of}, express: (u.products||[]).includes('expresso')};
+    if(o && o.upsellOf){ const m = (HB.store.get('orders', []).find(x => x.orderId === o.upsellOf)) || {}; return {main: {number: m.number || '', orderId: o.upsellOf}, express: (o.upsellItems||[]).includes('expresso')}; }
+    return null;
   }
   function redoOrder(o){
+    // Pós-compra: volta para a oferta (com Pix, se o cartão falhou), não para o carrinho.
+    const up = upsellOf(o);
+    if(up){
+      if(window.HBAPI) HBAPI.flow.set(up.main.orderId, {stage: up.express ? 'express' : 'offers', cardFailed: true});
+      location.href = pageUrl(up.express ? 'entrega-prioritaria.html' : 'oferta.html', up.main); return;
+    }
     (o.items||[]).filter(i => !(i.meta||[]).includes('Oferta do checkout')).forEach(i => { const {key, ...rest} = i; HB.cart.add(rest); });
     location.href = 'checkout.html';
+  }
+  /** Para onde ir depois do pagamento confirmado (fluxo pós-compra desta aba). */
+  function nextAfterPaid(o){
+    const F = window.HBAPI && HBAPI.flow, up = upsellOf(o);
+    if(up){
+      const f = F && F.get(up.main.orderId);
+      if(f && !up.express && f.stage !== 'done'){ F.set(up.main.orderId, {stage:'express', upsellPaid:true}); return ['entrega-prioritaria.html', up.main]; }
+      if(f) F.set(up.main.orderId, {stage:'done'});
+      return ['obrigado.html', up.main];
+    }
+    const f = F && orderId(o) && F.get(orderId(o));
+    if(f && f.stage === 'offers') return ['oferta.html', o];
+    if(f && f.stage === 'express') return ['entrega-prioritaria.html', o];
+    return ['obrigado.html', o];
   }
 
   function render(o){
@@ -144,7 +179,7 @@
     const pending = o.status === 'Pagamento pendente';
     // Pago = confirmado pelo gateway (o servidor consulta a PixGate). O status salvo no navegador não vale.
     const paid = !!(remote && remote.paid);
-    if(paid && !THANKS){ root.innerHTML = '<p class="lead">Pagamento confirmado! Abrindo seu pedido…</p>'; goTo('obrigado.html', o, purchaseSent ? 1200 : 0); return; }
+    if(paid && !THANKS){ const [page, to] = nextAfterPaid(o); root.innerHTML = '<p class="lead">Pagamento confirmado! Abrindo…</p>'; goTo(page, to, purchaseSent ? 1200 : 0); return; }
     if(!paid && THANKS){ goTo('pedido-confirmado.html', o); return; }
     if(!paid && !pending && o.status !== 'Cancelado'){ o.status = 'Pagamento pendente'; return render(o); }
     if(THANKS) document.title = `Obrigado! Pedido ${o.number} | Hubble`;
@@ -187,6 +222,25 @@
         $('#mmss').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
       tick(); timer = setInterval(tick, 1000);
       $('#copyBtn').onclick = async () => { const ok = await copyText(code); $('#copyBtn span').textContent = ok ? 'Código copiado!' : 'Não foi possível copiar'; setTimeout(()=>{ const s = $('#copyBtn span'); if(s) s.textContent = 'Copiar código'; }, 2500); };
+      return;
+    }
+    if(pending && p.method === 'cartao'){
+      const up = upsellOf(o);
+      if(o.cardRefused){
+        root.innerHTML = `<h1>Pagamento não aprovado</h1>
+          <p class="lead">O banco não aprovou o pagamento do pedido <b>${esc(o.number)}</b> no cartão. Nenhum valor foi cobrado.</p>
+          <span class="pill no">Cartão recusado</span>
+          <div class="acts"><button type="button" class="btn block" id="redo">${up ? 'Voltar à oferta' : 'Tentar de novo'}</button><a href="contato.html" class="btn ghost block">Falar com a equipe</a></div>`;
+        $('#redo').onclick = () => redoOrder(o);
+        return;
+      }
+      const inst = p.inst && p.inst.n > 1 ? ` em ${p.inst.n}x de ${brl(p.inst.value)}` : '';
+      root.innerHTML = `<h1>Pagamento em análise</h1>
+        <p class="lead">Recebemos o pedido <b>${esc(o.number)}</b>. O banco está confirmando o pagamento no cartão — costuma levar só alguns segundos.</p>
+        <span class="pill wait">Processando pagamento</span>
+        <p class="amt">Total no cartão: <b>${brl(o.totals.total)}</b>${inst}</p>
+        <p class="paid-link" id="apiWarn" role="status">${orderId(o) ? 'Esta página atualiza sozinha assim que o banco responder.' : ''}</p>
+        <p class="lead" style="margin-top:30px">Pedido <b>${esc(o.number)}</b>${o.email?` · confirmação enviada para <b>${esc(o.email)}</b>`:''}</p>`;
       return;
     }
     if(pending && p.method === 'boleto'){

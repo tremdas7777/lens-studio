@@ -11,15 +11,18 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ApiPublicCardConfigRouteImport } from './routes/api/public/card-config'
 import { Route as ApiPublicCheckoutRouteImport } from './routes/api/public/checkout'
 import { Route as ApiPublicCheckoutStepRouteImport } from './routes/api/public/checkout-step'
 import { Route as ApiPublicEventRouteImport } from './routes/api/public/event'
+import { Route as ApiPublicHypercashWebhookRouteImport } from './routes/api/public/hypercash-webhook'
 import { Route as ApiPublicMetaEventRouteImport } from './routes/api/public/meta-event'
 import { Route as ApiPublicOrderRouteImport } from './routes/api/public/order'
 import { Route as ApiPublicPixWebhookRouteImport } from './routes/api/public/pix-webhook'
 import { Route as ApiPublicRastreioRouteImport } from './routes/api/public/rastreio'
 import { Route as ApiPublicSagacepayWebhookRouteImport } from './routes/api/public/sagacepay-webhook'
 import { Route as ApiPublicSettingsRouteImport } from './routes/api/public/settings'
+import { Route as ApiPublicUpsellRouteImport } from './routes/api/public/upsell'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCardConfigRoute = ApiPublicCardConfigRouteImport.update({
+  id: '/api/public/card-config',
+  path: '/api/public/card-config',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicCheckoutRoute = ApiPublicCheckoutRouteImport.update({
@@ -46,6 +54,12 @@ const ApiPublicEventRoute = ApiPublicEventRouteImport.update({
   path: '/api/public/event',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHypercashWebhookRoute =
+  ApiPublicHypercashWebhookRouteImport.update({
+    id: '/api/public/hypercash-webhook',
+    path: '/api/public/hypercash-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicMetaEventRoute = ApiPublicMetaEventRouteImport.update({
   id: '/api/public/meta-event',
   path: '/api/public/meta-event',
@@ -77,101 +91,127 @@ const ApiPublicSettingsRoute = ApiPublicSettingsRouteImport.update({
   path: '/api/public/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicUpsellRoute = ApiPublicUpsellRouteImport.update({
+  id: '/api/public/upsell',
+  path: '/api/public/upsell',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/public/card-config': typeof ApiPublicCardConfigRoute
   '/api/public/checkout': typeof ApiPublicCheckoutRoute
   '/api/public/checkout-step': typeof ApiPublicCheckoutStepRoute
   '/api/public/event': typeof ApiPublicEventRoute
+  '/api/public/hypercash-webhook': typeof ApiPublicHypercashWebhookRoute
   '/api/public/meta-event': typeof ApiPublicMetaEventRoute
   '/api/public/order': typeof ApiPublicOrderRoute
   '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
   '/api/public/rastreio': typeof ApiPublicRastreioRoute
   '/api/public/sagacepay-webhook': typeof ApiPublicSagacepayWebhookRoute
   '/api/public/settings': typeof ApiPublicSettingsRoute
+  '/api/public/upsell': typeof ApiPublicUpsellRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/public/card-config': typeof ApiPublicCardConfigRoute
   '/api/public/checkout': typeof ApiPublicCheckoutRoute
   '/api/public/checkout-step': typeof ApiPublicCheckoutStepRoute
   '/api/public/event': typeof ApiPublicEventRoute
+  '/api/public/hypercash-webhook': typeof ApiPublicHypercashWebhookRoute
   '/api/public/meta-event': typeof ApiPublicMetaEventRoute
   '/api/public/order': typeof ApiPublicOrderRoute
   '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
   '/api/public/rastreio': typeof ApiPublicRastreioRoute
   '/api/public/sagacepay-webhook': typeof ApiPublicSagacepayWebhookRoute
   '/api/public/settings': typeof ApiPublicSettingsRoute
+  '/api/public/upsell': typeof ApiPublicUpsellRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/api/public/card-config': typeof ApiPublicCardConfigRoute
   '/api/public/checkout': typeof ApiPublicCheckoutRoute
   '/api/public/checkout-step': typeof ApiPublicCheckoutStepRoute
   '/api/public/event': typeof ApiPublicEventRoute
+  '/api/public/hypercash-webhook': typeof ApiPublicHypercashWebhookRoute
   '/api/public/meta-event': typeof ApiPublicMetaEventRoute
   '/api/public/order': typeof ApiPublicOrderRoute
   '/api/public/pix-webhook': typeof ApiPublicPixWebhookRoute
   '/api/public/rastreio': typeof ApiPublicRastreioRoute
   '/api/public/sagacepay-webhook': typeof ApiPublicSagacepayWebhookRoute
   '/api/public/settings': typeof ApiPublicSettingsRoute
+  '/api/public/upsell': typeof ApiPublicUpsellRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
+    | '/api/public/card-config'
     | '/api/public/checkout'
     | '/api/public/checkout-step'
     | '/api/public/event'
+    | '/api/public/hypercash-webhook'
     | '/api/public/meta-event'
     | '/api/public/order'
     | '/api/public/pix-webhook'
     | '/api/public/rastreio'
     | '/api/public/sagacepay-webhook'
     | '/api/public/settings'
+    | '/api/public/upsell'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
+    | '/api/public/card-config'
     | '/api/public/checkout'
     | '/api/public/checkout-step'
     | '/api/public/event'
+    | '/api/public/hypercash-webhook'
     | '/api/public/meta-event'
     | '/api/public/order'
     | '/api/public/pix-webhook'
     | '/api/public/rastreio'
     | '/api/public/sagacepay-webhook'
     | '/api/public/settings'
+    | '/api/public/upsell'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/api/public/card-config'
     | '/api/public/checkout'
     | '/api/public/checkout-step'
     | '/api/public/event'
+    | '/api/public/hypercash-webhook'
     | '/api/public/meta-event'
     | '/api/public/order'
     | '/api/public/pix-webhook'
     | '/api/public/rastreio'
     | '/api/public/sagacepay-webhook'
     | '/api/public/settings'
+    | '/api/public/upsell'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  ApiPublicCardConfigRoute: typeof ApiPublicCardConfigRoute
   ApiPublicCheckoutRoute: typeof ApiPublicCheckoutRoute
   ApiPublicCheckoutStepRoute: typeof ApiPublicCheckoutStepRoute
   ApiPublicEventRoute: typeof ApiPublicEventRoute
+  ApiPublicHypercashWebhookRoute: typeof ApiPublicHypercashWebhookRoute
   ApiPublicMetaEventRoute: typeof ApiPublicMetaEventRoute
   ApiPublicOrderRoute: typeof ApiPublicOrderRoute
   ApiPublicPixWebhookRoute: typeof ApiPublicPixWebhookRoute
   ApiPublicRastreioRoute: typeof ApiPublicRastreioRoute
   ApiPublicSagacepayWebhookRoute: typeof ApiPublicSagacepayWebhookRoute
   ApiPublicSettingsRoute: typeof ApiPublicSettingsRoute
+  ApiPublicUpsellRoute: typeof ApiPublicUpsellRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -188,6 +228,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/card-config': {
+      id: '/api/public/card-config'
+      path: '/api/public/card-config'
+      fullPath: '/api/public/card-config'
+      preLoaderRoute: typeof ApiPublicCardConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/checkout': {
@@ -209,6 +256,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/event'
       fullPath: '/api/public/event'
       preLoaderRoute: typeof ApiPublicEventRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hypercash-webhook': {
+      id: '/api/public/hypercash-webhook'
+      path: '/api/public/hypercash-webhook'
+      fullPath: '/api/public/hypercash-webhook'
+      preLoaderRoute: typeof ApiPublicHypercashWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/meta-event': {
@@ -253,21 +307,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/upsell': {
+      id: '/api/public/upsell'
+      path: '/api/public/upsell'
+      fullPath: '/api/public/upsell'
+      preLoaderRoute: typeof ApiPublicUpsellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  ApiPublicCardConfigRoute: ApiPublicCardConfigRoute,
   ApiPublicCheckoutRoute: ApiPublicCheckoutRoute,
   ApiPublicCheckoutStepRoute: ApiPublicCheckoutStepRoute,
   ApiPublicEventRoute: ApiPublicEventRoute,
+  ApiPublicHypercashWebhookRoute: ApiPublicHypercashWebhookRoute,
   ApiPublicMetaEventRoute: ApiPublicMetaEventRoute,
   ApiPublicOrderRoute: ApiPublicOrderRoute,
   ApiPublicPixWebhookRoute: ApiPublicPixWebhookRoute,
   ApiPublicRastreioRoute: ApiPublicRastreioRoute,
   ApiPublicSagacepayWebhookRoute: ApiPublicSagacepayWebhookRoute,
   ApiPublicSettingsRoute: ApiPublicSettingsRoute,
+  ApiPublicUpsellRoute: ApiPublicUpsellRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

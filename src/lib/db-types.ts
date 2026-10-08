@@ -33,7 +33,8 @@ export type OrderAddress = {
 export type OrderCustomer = { name: string; email: string; phone: string; cpf: string };
 
 export type OrderItem = {
-  kind: "lente" | "oculos" | "acessorio";
+  /** "servico" = seguro de entrega / entrega prioritária (pós-compra). */
+  kind: "lente" | "oculos" | "acessorio" | "servico";
   id: string;
   name: string;
   qty: number;
@@ -51,7 +52,20 @@ export type OrderTotals = {
   total: number;
   frete: { id: string; name: string; eta: string; price: number };
   bump: OrderItem | null;
+  /** Forma de pagamento (pedidos sem o campo são Pix). */
+  payment?: OrderPayment;
+  /** Compra pós-compra (oferta/entrega prioritária) ligada ao pedido principal. */
+  upsell?: { of: string; number: string; products: ("kit" | "seguro" | "expresso")[] };
 };
+
+export type OrderPayment =
+  | { method: "pix" }
+  | {
+      method: "card";
+      installments: number;
+      card?: { brand?: string; lastDigits?: string } | null;
+      refusedReason?: string | null;
+    };
 
 export type OrderRow = {
   id: string;

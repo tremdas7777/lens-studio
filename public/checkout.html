@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Checkout Seguro | Hubble</title>
-<meta name="description" content="Finalize sua compra Hubble com segurança. Pagamento via Pix e frete grátis acima de R$ 100 para todo o Brasil.">
+<meta name="description" content="Finalize sua compra Hubble com segurança. Pagamento via Pix ou cartão e frete grátis acima de R$ 100 para todo o Brasil.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,6 +93,11 @@
   .pay.on .pay-b{display:block}
   .pay-b p{font-size:13.5px;color:var(--muted);margin:10px 0}
   .pay-b p b{color:var(--ck-ok)}
+  .pay-h .tg.c{color:var(--ck-accent);background:#e8e9fb}
+  .ck-cardf{display:grid;gap:14px;padding-top:8px}
+  .ck-safe{font-size:12px;line-height:1.5;color:var(--muted);text-align:center}
+  .ck-safe svg{vertical-align:-1px;margin-right:4px}
+  .pay-h .nm{white-space:nowrap}
   .ck-terms{display:flex;gap:10px;font-size:12.5px;color:var(--muted);margin:14px 0;align-items:flex-start}
   .ck-terms input{margin-top:2px;width:16px;height:16px;accent-color:var(--ck-accent);flex:none}
   .ck-terms a{text-decoration:underline;color:var(--ink)}
@@ -161,7 +166,8 @@
 
 <script src="assets/js/data.js?v=202610041850"></script>
 <script src="assets/js/app.js?v=202610041947"></script>
-<script src="assets/js/api.js?v=202610041943"></script>
+<script src="assets/js/api.js?v=202610072230"></script>
+<script src="assets/js/hypercash.js?v=1"></script>
 <script>
 (function(){
 const {D, $, $$, brl, esc, img, sup, cart, user, valid, mask, store, ICON} = HB;
@@ -227,6 +233,9 @@ const SKEY = 'hb-br-ck2';
 let S = {step:1, id:{name:'',email:'',cpf:'',phone:''}, addr:{cep:'',rua:'',numero:'',bairro:'',complemento:'',cidade:'',uf:''}, frete:'gratis', rx:{method:'',doctor:{nome:'',crm:'',uf:'',tel:'',clinica:''}, fileName:'', ok:false}, pay:'pix', inst:1, bump:false, terms:true, create:false};
 try{ const s = JSON.parse(sessionStorage.getItem(SKEY)); if(s) S = {...S, ...s, pay:'pix', id:{...S.id,...s.id}, addr:{...S.addr,...s.addr}, rx:{...S.rx,...s.rx, doctor:{...S.rx.doctor,...((s.rx||{}).doctor||{})}}}; }catch(e){}
 let card = {num:'', name:'', exp:'', cvv:''}, rxFile = null, rxPreview = '', pass = '';
+/* Cartão (HyperCash): só aparece quando ativo no /admin (ou para quem está logado no admin nesta aba). */
+let CARD = null;
+const LOCK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 const save = () => { try{ sessionStorage.setItem(SKEY, JSON.stringify(S)); }catch(e){} };
 (function prefill(){
   const p = user.profile(), pre = store.get('checkout-email','');
@@ -259,6 +268,7 @@ const payValid = () => S.terms && (S.pay !== 'cartao' || cardValid());
 /* ---------- Totais ---------- */
 function totals(){
   fixFrete();
+  if(!CARD && S.pay === 'cartao') S.pay = 'pix';
   const items = cart.items();
   const sub = items.reduce((s,x)=>s + x.price*x.qty, 0) + (S.bump && BUMP ? BUMP.price : 0);
   const cp = cart.coupon(); const discount = cp ? +(sub*cp.pct).toFixed(2) : 0;
@@ -338,19 +348,28 @@ function bumpHTML(){
 function payCard(){
   const n = stepNo('pay');
   if(S.step < n) return `<div class="ck-card muted">${head('Pagamento','pay', S.step === n-1 ? 'Todas as transações são seguras e criptografadas.' : `Preencha os dados ${needRx && S.step===stepNo('rx')?'da receita':'de entrega'} para continuar`)}</div>`;
-  const t = totals(), brand = cardBrand(card.num);
+  const t = totals(), brand = cardBrand(card.num), isCard = S.pay === 'cartao';
   if(S.inst > t.inst.n) S.inst = 1;
-  const instOpts = Array.from({length:t.inst.n},(_,i)=>i+1).map(k=>`<option value="${k}" ${k===S.inst?'selected':''}>${k}x de ${brl(t.total/k)} sem juros</option>`).join('');
+  const instOpts = Array.from({length:t.inst.n},(_,i)=>i+1).map(k=>`<option value="${k}" ${k===S.inst?'selected':''}>${k===1?`1x de ${brl(t.total)} à vista`:`${k}x de ${brl(t.total/k)} sem juros`}</option>`).join('');
+  const cardOpt = CARD ? `<div class="pay ${isCard?'on':''}"><button type="button" class="pay-h" data-pay="cartao"><span class="radio ${isCard?'on':''}"></span><span class="ic">${CARD_SVG}</span><span class="nm">Cartão de crédito</span><span class="tg c">${t.inst.n > 1 ? `Até ${t.inst.n}x` : 'À vista'}</span></button>
+        <div class="pay-b"><div class="ck-cardf">
+          <label class="ck-f"><span class="l">Número do cartão ${brand?`<small>· ${brand}</small>`:''}</span><span class="ck-in ${valid.card(card.num)?'is-ok':''}"><input id="cNum" value="${esc(card.num)}" class="${card.num?'filled':''}" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000">${CHECK}</span></label>
+          <label class="ck-f"><span class="l">Nome impresso no cartão</span><span class="ck-in"><input id="cName" value="${esc(card.name)}" class="${card.name?'filled':''}" autocomplete="cc-name"></span></label>
+          <div class="ck-row"><label class="ck-f" style="flex:1"><span class="l">Validade</span><span class="ck-in ${valid.expiry(card.exp)?'is-ok':''}"><input id="cExp" value="${esc(card.exp)}" class="${card.exp?'filled':''}" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA">${CHECK}</span></label><label class="ck-f" style="flex:1"><span class="l">CVV</span><span class="ck-in"><input id="cCvv" value="${esc(card.cvv)}" class="${card.cvv?'filled':''}" inputmode="numeric" autocomplete="cc-csc" maxlength="4"></span></label></div>
+          <label class="ck-f"><span class="l">Parcelas</span><span class="ck-in"><select id="cInst">${instOpts}</select></span></label>
+          <p class="ck-safe">${LOCK} Os dados do cartão são criptografados e não ficam salvos na loja.</p>
+        </div></div></div>` : '';
   return `<div class="ck-card">${head('Pagamento','pay','Todas as transações são seguras e criptografadas.')}
     <form class="ck-form" id="fPay" novalidate style="gap:0">
       ${bumpHTML()}
       <div style="height:20px"></div>
-      <div class="pay on"><button type="button" class="pay-h" data-pay="pix"><span class="radio on"></span><span class="ic">${PIX_SVG}</span><span class="nm">PIX</span><span class="tg">Aprovação imediata</span></button>
+      <div class="pay ${isCard?'':'on'}"><button type="button" class="pay-h" data-pay="pix"><span class="radio ${isCard?'':'on'}"></span><span class="ic">${PIX_SVG}</span><span class="nm">PIX</span><span class="tg">Aprovação imediata</span></button>
         <div class="pay-b"><p>O código Pix expira em 30 minutos após finalizar a compra.</p><p>Valor no Pix: <b>${brl(t.total)}</b></p></div></div>
+      ${cardOpt}
       <label class="ck-terms"><input type="checkbox" id="terms" ${S.terms?'checked':''}><span>Li e concordo com os <a href="legal.html?doc=termos" target="_blank">Termos de Serviço</a> e a <a href="legal.html?doc=privacidade" target="_blank">Política de Privacidade</a>.</span></label>
       <button class="ck-btn" id="finish" ${payValid()?'':'disabled'}>Finalizar Compra</button>
       <p class="ck-err" id="ckErr" role="alert" aria-live="assertive"></p>
-      <p class="demo">O código Pix é gerado na próxima tela e vale por 30 minutos.</p>
+      ${isCard ? '' : '<p class="demo">O código Pix é gerado na próxima tela e vale por 30 minutos.</p>'}
     </form></div>`;
 }
 function summaryHTML(){
@@ -435,7 +454,7 @@ function bind(){
   $$('[data-rx]').forEach(b => b.onclick = () => { S.rx.method = b.dataset.rx; render(); });
   const rxOk = $('#rxOk'); if(rxOk) rxOk.onchange = () => { S.rx.ok = rxOk.checked; refreshButtons(); save(); };
   const rf = $('#rxFile'); if(rf) rf.onchange = () => { const f = rf.files[0]; if(!f) return; if(f.size > 10*1024*1024){ HB.toast('Arquivo muito grande (máx. 10 MB).'); rf.value=''; return; } rxFile = f; S.rx.fileName = f.name; rxPreview = f.type.startsWith('image/') ? URL.createObjectURL(f) : ''; render(); };
-  $$('[data-pay]').forEach(b => b.onclick = () => { S.pay = b.dataset.pay; render(); });
+  $$('[data-pay]').forEach(b => b.onclick = () => { S.pay = b.dataset.pay; render(); if(S.pay === 'cartao' && CARD && window.HBCard) HBCard.load(CARD.publicKey).catch(() => {}); });
   const bc = $('#bumpChk'); if(bc) bc.onchange = () => { S.bump = bc.checked; render(); };
   const tm = $('#terms'); if(tm) tm.onchange = () => { S.terms = tm.checked; refreshButtons(); save(); };
   const cardIn = (id, key, m) => { const el = $(id); if(!el) return; el.addEventListener('input', () => { if(m) el.value = mask[m](el.value); card[key] = el.value; el.classList.toggle('filled', !!el.value);
@@ -454,33 +473,58 @@ async function finish(){
   const btn = $('#finish'), err = $('#ckErr');
   const fail = msg => { if(err) err.textContent = msg; btn.disabled = false; btn.textContent = 'Finalizar Compra'; };
   if(!window.HBAPI) return fail('Não foi possível conectar ao pagamento. Atualize a página e tente novamente.');
-  btn.disabled = true; btn.textContent = 'Gerando Pix…'; if(err) err.textContent = '';
+  const isCard = S.pay === 'cartao' && !!CARD;
+  btn.disabled = true; btn.textContent = isCard ? 'Processando pagamento…' : 'Gerando Pix…'; if(err) err.textContent = '';
   const t = totals();
   const cartList = cart.items().map(x => ({...x}));
   const rx = needRx ? {method:S.rx.method, fileName:S.rx.method==='upload' ? (S.rx.fileName||'').slice(0,200) || undefined : undefined,
     doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica||'', telefone:S.rx.doctor.tel||''} : undefined} : (rxLater ? {method:'depois'} : {method:'nao-precisa'});
-  const r = await HBAPI.checkout({
+  const body = {
     customer: {name:S.id.name.trim(), email:S.id.email.trim().toLowerCase(), cpf:digits(S.id.cpf), phone:digits(S.id.phone)},
     address: {cep:digits(S.addr.cep), rua:S.addr.rua, numero:S.addr.numero, complemento:S.addr.complemento||'', bairro:S.addr.bairro, cidade:S.addr.cidade, uf:S.addr.uf},
     frete: S.frete, coupon: (cart.coupon()||{}).code || null, bump: !!(S.bump && BUMP),
     items: HBAPI.cartItems(cartList), rx, expectedTotal: t.total
-  });
+  };
+  let paidCard = null;
+  if(isCard){
+    if(!window.HBCard) return fail('Não foi possível carregar o pagamento com cartão. Atualize a página ou pague com Pix.');
+    // O SDK da HyperCash transforma o cartão em token direto com o gateway (com 3DS quando o banco pede).
+    const [mm, yy] = card.exp.split('/').map(x => x.trim());
+    let cardHash;
+    try{
+      cardHash = await HBCard.tokenize(CARD.publicKey,
+        {number: digits(card.num), holderName: card.name.trim().toUpperCase(), expMonth: mm, expYear: '20' + yy, cvv: digits(card.cvv)},
+        {amount: Math.round(t.total * 100), installments: S.inst,
+          customer: {name: body.customer.name, email: body.customer.email, phoneNumber: body.customer.phone},
+          address: {street: S.addr.rua, streetNumber: S.addr.numero, complement: S.addr.complemento || 'Sem complemento', zipCode: body.address.cep, neighborhood: S.addr.bairro, city: S.addr.cidade, state: S.addr.uf, country: 'BR'}},
+        on => { btn.textContent = on ? 'Aguardando autenticação do banco…' : 'Processando pagamento…'; });
+    }catch(e){
+      return fail(`Não foi possível validar o cartão${e && e.message ? ': ' + e.message : ''}. Confira os dados e tente novamente.`);
+    }
+    body.payment = {method:'card', cardHash, installments: S.inst};
+    paidCard = {hash: cardHash, brand: cardBrand(card.num), last4: digits(card.num).slice(-4), inst: {n: S.inst, value: +(t.total / S.inst).toFixed(2)}};
+  }
+  const r = await HBAPI.checkout(body);
   if(!r.ok) return fail(r.error);
   const d = r.data, now = Date.now(), st = d.totals || {};
   const items = cartList;
   if(S.bump && BUMP) items.push({kind:'acessorio', id:BUMP.acc.id, name:BUMP.acc.name, image:BUMP.acc.image, qty:1, price:BUMP.price, meta:['Oferta do checkout'], details:{}, sub:null});
   const order = {
-    number: d.number, orderId: d.orderId, date: now, email: S.id.email.trim().toLowerCase(), name: S.id.name.trim(), phone: S.id.phone, cpf: S.id.cpf,
+    number: d.number, orderId: d.orderId, date: now, email: body.customer.email, name: body.customer.name, phone: S.id.phone, cpf: S.id.cpf,
     items, totals: {sub: st.sub ?? t.sub, discount: st.discount ?? t.discount, coupon: st.coupon ?? t.coupon, pix: st.pix ?? 0, shipping: st.shipping ?? t.shipping, total: d.amount, inst: t.inst},
     shipping: FRETES.find(f=>f.id===S.frete),
     address: {...S.addr},
-    payment: {method:'pix'},
+    payment: paidCard ? {method:'cartao', brand: paidCard.brand, last4: paidCard.last4, inst: paidCard.inst} : {method:'pix'},
     rx: needRx ? {method:S.rx.method, fileName:S.rx.fileName||undefined, doctor: S.rx.method==='medico' ? {nome:S.rx.doctor.nome, crm:S.rx.doctor.crm, uf:S.rx.doctor.uf, clinica:S.rx.doctor.clinica, telefone:S.rx.doctor.tel} : undefined} : {method:'nao-precisa'},
     status: 'Pagamento pendente',
-    qrcode: d.qrcode,
-    pixExpires: Date.parse(d.expiresAt) || now + 30*60*1000
+    qrcode: d.qrcode || null,
+    pixExpires: paidCard ? undefined : Date.parse(d.expiresAt) || now + 30*60*1000
   };
   user.saveOrder(order);
+  // Pós-compra (ofertas → entrega prioritária) nesta aba. No cartão, o token permite cobrar as
+  // ofertas no mesmo cartão com um clique; fica só no sessionStorage desta aba.
+  HBAPI.flow.set(d.orderId, {number: d.number, method: paidCard ? 'card' : 'pix', cardHash: paidCard ? paidCard.hash : undefined, stage: 'offers', at: now});
+  card = {num:'', name:'', exp:'', cvv:''};
   const subs = store.get('subs', []);
   items.filter(i => i.sub).forEach((it,i) => subs.push({id:`S${now.toString(36)}${i}`, order:d.number, email:order.email, name:it.name, image:it.image, meta:it.meta||[], everyDays:it.sub.everyDays, price:+(it.sub.price*it.qty).toFixed(2), next: now + it.sub.everyDays*864e5, status:'ativa'}));
   store.set('subs', subs);
@@ -490,6 +534,12 @@ async function finish(){
   location.href = 'pedido-confirmado.html?n=' + encodeURIComponent(d.number) + '&id=' + encodeURIComponent(d.orderId);
 }
 render();
+if(window.HBAPI) HBAPI.cardConfig().then(r => {
+  if(!r.ok || !r.data || !r.data.enabled || !r.data.publicKey) return;
+  CARD = {publicKey: String(r.data.publicKey)};
+  $('#pixFoot').insertAdjacentHTML('afterend', `<span>${CARD_SVG.replace('width="20" height="20"','width="14" height="14"')}</span>`);
+  if(S.step === stepNo('pay')) render();
+});
 })();
 </script>
 </body>

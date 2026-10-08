@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { gatewayLabel } from "@/lib/gateway-id";
+import { gatewayLabel, isCardRef } from "@/lib/gateway-id";
 
 export interface OrdersTabProps {
   password: string;
@@ -329,6 +329,7 @@ export function OrdersTab({ password }: OrdersTabProps) {
 
       <OrderDialog
         order={selected}
+        all={orders}
         password={password}
         onClose={() => setSelected(null)}
         onChanged={() => void load()}
@@ -339,11 +340,14 @@ export function OrdersTab({ password }: OrdersTabProps) {
 
 function OrderDialog({
   order: o,
+  all,
   password,
   onClose,
   onChanged,
 }: {
   order: AdminOrder | null;
+  /** Pedidos carregados: liga o pedido principal às compras pós-compra. */
+  all: AdminOrder[];
   password: string;
   onClose: () => void;
   onChanged: () => void;
@@ -359,6 +363,7 @@ function OrderDialog({
     ? `https://wa.me/55${c.phone.replace(/\D/g, "").replace(/^55/, "")}`
     : null;
   const rx = o.rx as { method?: string; fileName?: string; doctor?: Record<string, string> } | null;
+  const addOns = all.filter((x) => x.totals?.upsell?.of === o.id);
 
   const doRecheck = async () => {
     setBusy(true);
@@ -456,7 +461,22 @@ function OrderDialog({
             }
           />
           <Row label="Total" value={brl(o.amount_cents)} />
-          <Row label="Pagamento" value="Pix" />
+          <Row label="Pagamento" value={paymentLabel(o)} />
+          {t?.payment?.method === "card" && t.payment.refusedReason && (
+            <Row label="Motivo da recusa" value={t.payment.refusedReason} />
+          )}
+          {t?.upsell && <Row label="Pós-compra do pedido" value={t.upsell.number} />}
+          {addOns.length > 0 && (
+            <Row
+              label="Pós-compra"
+              value={addOns
+                .map(
+                  (a) =>
+                    `${a.number} · ${a.summary.replace(/^Pós-compra [^:]+: /, "")} (${statusLabel(a.status)})`,
+                )
+                .join(" | ")}
+            />
+          )}
           <Row label="Criado em" value={fmtDate(o.created_at)} />
           <Row label="Pago em" value={isPaid(o) ? fmtDate(o.paid_at ?? o.updated_at) : null} />
           <Row label="Atualizado em" value={fmtDate(o.updated_at)} />
@@ -551,11 +571,24 @@ function Stat({
   );
 }
 
+function paymentLabel(o: AdminOrder) {
+  const p = o.totals?.payment;
+  if (p?.method !== "card" && !isCardRef(o.gateway_id)) return "Pix";
+  const parts = ["Cartão (HyperCash)"];
+  if (p?.method === "card") {
+    parts.push(`${p.installments}x`);
+    if (p.card?.brand || p.card?.lastDigits)
+      parts.push(`${p.card.brand ?? ""} •••• ${p.card.lastDigits ?? ""}`.trim());
+  }
+  return parts.join(" · ");
+}
+
 function statusLabel(status: string) {
   if (status === "paid") return "Pago";
   if (status === "waiting_payment" || status === "pending") return "Aguardando";
   if (status === "expired") return "Expirado";
-  if (status === "failed") return "Falhou (Pix não gerado)";
+  if (status === "failed") return "Falhou (cobrança não gerada)";
+  if (status === "refused") return "Cartão recusado";
   if (status === "refunded") return "Reembolsado";
   return status;
 }
@@ -564,7 +597,7 @@ function StatusBadge({ status }: { status: string }) {
   const cls =
     status === "paid"
       ? "bg-green-100 text-green-800"
-      : status === "failed"
+      : status === "failed" || status === "refused"
         ? "bg-red-100 text-red-700"
         : "bg-amber-100 text-amber-800";
   return (

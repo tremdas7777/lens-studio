@@ -1,13 +1,16 @@
 // Escolha do gateway Pix. Somente servidor.
 // - Pix NOVOS usam o gateway ativo (escolhido no /admin; padrão PixGate).
-// - Conferência de pagamento usa SEMPRE o gateway em que o Pix foi criado (prefixo em gateway_id).
+// - Conferência de pagamento usa SEMPRE o gateway em que a cobrança foi criada (prefixo em
+//   gateway_id) — inclusive cartão (HyperCash).
 import {
   GATEWAYS,
   decodeGatewayRef,
   encodeGatewayRef,
   isGatewayId,
   type GatewayId,
+  type PaymentGatewayId,
 } from "@/lib/gateway-id";
+import { getCardTransaction, isHypercashRefused } from "@/lib/hypercash.server";
 import { isPaidStatus as isPixGatePaid } from "@/lib/pix-status";
 import { fetchGatewayStatus, gatewayCashin, getPixGateKey } from "@/lib/pixgate.server";
 import { getPrivateSettings, setPrivateSettings } from "@/lib/private-settings.server";
@@ -95,12 +98,31 @@ export async function createCharge(
   return { ref: encodeGatewayRef(gateway, c.id), qrcode: c.qrcode };
 }
 
-/** Confere o pagamento no gateway em que o Pix foi criado. */
-export async function checkCharge(
-  ref: string,
-): Promise<{ gateway: GatewayId; paid: boolean; status: string; amount: number }> {
+/**
+ * Confere o pagamento no gateway em que a cobrança foi criada (Pix ou cartão).
+ * `refused` = cartão recusado/cancelado (o Pix não tem esse estado: só expira).
+ */
+export async function checkCharge(ref: string): Promise<{
+  gateway: PaymentGatewayId;
+  paid: boolean;
+  refused: boolean;
+  status: string;
+  amount: number;
+}> {
   const { gateway, txId } = decodeGatewayRef(ref);
+  if (gateway === "hypercash") {
+    const tx = await getCardTransaction(txId);
+    // HyperCash já devolve o valor em centavos.
+    const status = tx?.status ?? "processing";
+    return {
+      gateway,
+      paid: isPixGatePaid(status),
+      refused: isHypercashRefused(status),
+      status,
+      amount: tx?.amount ?? 0,
+    };
+  }
   const a = ADAPTERS[gateway];
   const { status, amount } = await a.status(txId);
-  return { gateway, paid: a.isPaid(status), status, amount };
+  return { gateway, paid: a.isPaid(status), refused: false, status, amount };
 }

@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { clientMeta, fail, handler, json, rateLimit, readJson } from "@/lib/http.server";
+import {
+  clientMeta,
+  fail,
+  handler,
+  json,
+  publicOrigin,
+  rateLimit,
+  readJson,
+} from "@/lib/http.server";
 
-// POST /api/public/checkout — cria o pedido e a cobrança Pix. O valor é recalculado no servidor.
+// POST /api/public/checkout — cria o pedido e a cobrança (Pix ou cartão). O valor é recalculado no servidor.
 export const Route = createFileRoute("/api/public/checkout")({
   server: {
     handlers: {
@@ -17,6 +25,9 @@ export const Route = createFileRoute("/api/public/checkout")({
           ok: true,
           orderId: o.orderId,
           number: o.number,
+          method: o.method,
+          status: o.status,
+          paid: o.paid,
           qrcode: o.qrcode,
           amount: o.amount,
           amountCents: o.amountCents,
@@ -35,13 +46,3 @@ export const Route = createFileRoute("/api/public/checkout")({
     },
   },
 });
-
-/** Domínio público onde o cliente está comprando: Origin do navegador (já validado como mesma
- * origem), depois cabeçalhos do proxy, por fim a própria URL da requisição. */
-function publicOrigin(request: Request): string {
-  const o = request.headers.get("origin");
-  if (o && /^https?:\/\//.test(o)) return o;
-  const host = request.headers.get("x-forwarded-host");
-  if (host) return `${request.headers.get("x-forwarded-proto") ?? "https"}://${host.split(",")[0]!.trim()}`;
-  return new URL(request.url).origin;
-}

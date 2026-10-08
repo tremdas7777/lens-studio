@@ -5,6 +5,7 @@ import { Activity, CreditCard, Eye, Loader2, LogOut, ShoppingBag, Users } from "
 import { getAdminFunnel, getAdminHealth, verifyAdminPassword } from "@/lib/admin.functions";
 import type { FunnelEventRow } from "@/lib/db-types";
 import { GatewayCard } from "@/components/admin/GatewayCard";
+import { HypercashCard } from "@/components/admin/HypercashCard";
 import { UtmifyCard } from "@/components/admin/UtmifyCard";
 import { MetaPixelCard } from "@/components/admin/MetaPixelCard";
 import { OrdersTab } from "@/components/admin/OrdersTab";
@@ -207,6 +208,7 @@ function AdminPage() {
           <TabsContent value="integracoes" className="space-y-3">
             <HealthCard password={password} />
             <GatewayCard password={password} />
+            <HypercashCard password={password} />
             <UtmifyCard password={password} />
             <MetaPixelCard password={password} />
           </TabsContent>

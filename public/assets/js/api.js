@@ -142,11 +142,28 @@ function cartItems(items){
   });
 }
 
+/** Senha do /admin salva nesta aba (login no admin): libera o cartão para teste mesmo desligado. */
+const adminPassword = () => SS.get('hubble_admin_pwd') || undefined;
+
 /** POST /api/public/checkout com UTMs, sessão e cookies do Meta. */
 function checkout(body){
   const c = metaCookies();
-  return post('/api/public/checkout', Object.assign({}, body, {utm: utms(), sessionId: sessionId(), fbp: c.fbp, fbc: c.fbc, url: location.href.slice(0, 1000)}), 45000);
+  return post('/api/public/checkout', Object.assign({}, body, {utm: utms(), sessionId: sessionId(), fbp: c.fbp, fbc: c.fbc, url: location.href.slice(0, 1000), adminPassword: adminPassword()}), 45000);
 }
+/** Cartão (HyperCash) disponível no checkout + chave pública do SDK. */
+const cardConfig = () => post('/api/public/card-config', {adminPassword: adminPassword()}, 10000);
+/** Ofertas pós-compra do pedido (preços do servidor) e cobrança da etapa escolhida. */
+const upsellOffers = id => get('/api/public/upsell?' + new URLSearchParams({id}).toString(), 15000);
+const upsell = body => post('/api/public/upsell', Object.assign({}, body, {adminPassword: adminPassword()}), 45000);
+/**
+ * Fluxo pós-compra desta aba (sessionStorage — nunca vai para o servidor): etapa atual
+ * (offers → express → done) e, na compra no cartão, o token do cartão gerado pelo SDK
+ * (expira em ~15 min) para cobrar as ofertas no mesmo cartão com um clique.
+ */
+const flow = {
+  get(id){ try{ return JSON.parse(SS.get('hb-flow:' + id) || 'null'); }catch(e){ return null; } },
+  set(id, patch){ const cur = Object.assign(flow.get(id) || {}, patch); SS.set('hb-flow:' + id, JSON.stringify(cur)); return cur; }
+};
 /** GET /api/public/order — status do pedido (repassa fbp/fbc para o Purchase do servidor). */
 function order(id){
   const c = metaCookies(), q = new URLSearchParams({id});
@@ -155,7 +172,7 @@ function order(id){
 }
 const rastreio = (pedido, cpf) => get('/api/public/rastreio?' + new URLSearchParams({pedido, cpf}).toString(), 15000);
 
-window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaPurchase, metaCookies, cartItems, checkout, order, rastreio};
+window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaPurchase, metaCookies, cartItems, checkout, cardConfig, upsellOffers, upsell, flow, order, rastreio};
 
 /* ---------- Pixel da UTMify (todas as páginas da loja) ---------- */
 (function utmifyPixel(){
