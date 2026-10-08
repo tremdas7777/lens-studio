@@ -10,6 +10,8 @@ import { UtmifyCard } from "@/components/admin/UtmifyCard";
 import { MetaPixelCard } from "@/components/admin/MetaPixelCard";
 import { OrdersTab } from "@/components/admin/OrdersTab";
 import { AbandonedTab } from "@/components/admin/AbandonedTab";
+import { RecentEvents, TrafficSources, type OriginFilter } from "@/components/admin/TrafficPanel";
+import type { TrafficSourceRow } from "@/lib/admin.functions";
 import { HubbleLogo } from "@/components/admin/HubbleLogo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -59,6 +61,8 @@ function AdminPage() {
   const [error, setError] = useState("");
 
   const [events, setEvents] = useState<FunnelEventRow[]>([]);
+  const [sources, setSources] = useState<TrafficSourceRow[]>([]);
+  const [originFilter, setOriginFilter] = useState<OriginFilter>(null);
   const [funnel, setFunnel] = useState<Funnel | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -93,6 +97,7 @@ function AdminPage() {
         const r = await fetchFunnel({ data: { password, windowMinutes, onlineMinutes } });
         if (!cancelled) {
           setEvents(r.recent);
+          setSources(r.sources);
           setFunnel(r.funnel);
           setLoadError(null);
         }
@@ -270,75 +275,20 @@ function AdminPage() {
               </div>
             </section>
 
-            <section>
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Eventos recentes ({events.length})
-                </h2>
-                {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-              </div>
-              <Card className="overflow-hidden">
-                <div className="max-h-[600px] overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 bg-muted/50">
-                      <tr className="text-left">
-                        <th className="px-4 py-2 font-medium">Hora</th>
-                        <th className="px-4 py-2 font-medium">Evento</th>
-                        <th className="px-4 py-2 font-medium">Sessão</th>
-                        <th className="px-4 py-2 font-medium">Página</th>
-                        <th className="px-4 py-2 font-medium">Produto</th>
-                        <th className="px-4 py-2 font-medium">Valor</th>
-                        <th className="px-4 py-2 font-medium">UTM</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {events.map((e) => (
-                        <tr key={e.id} className="border-t hover:bg-muted/30">
-                          <td className="whitespace-nowrap px-4 py-2 text-muted-foreground">
-                            {new Date(e.created_at).toLocaleString("pt-BR", {
-                              dateStyle: "short",
-                              timeStyle: "medium",
-                            })}
-                          </td>
-                          <td className="px-4 py-2">
-                            <EventBadge
-                              type={e.event_type}
-                              step={(e.metadata as { step?: string } | null)?.step}
-                            />
-                          </td>
-                          <td className="px-4 py-2 font-mono text-xs text-muted-foreground">
-                            {e.session_id.slice(0, 8)}
-                          </td>
-                          <td className="px-4 py-2 text-muted-foreground">{e.path}</td>
-                          <td className="px-4 py-2">{e.bundle_name ?? "—"}</td>
-                          <td className="px-4 py-2 tabular-nums">
-                            {e.value != null ? brl(Number(e.value)) : "—"}
-                          </td>
-                          <td className="px-4 py-2 text-xs text-muted-foreground">
-                            {e.utm_source ?? "—"}
-                          </td>
-                        </tr>
-                      ))}
-                      {events.length === 0 && !loading && (
-                        <tr>
-                          <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
-                            Nenhum evento ainda. Navegue na loja para gerar dados.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
-            </section>
+            <TrafficSources rows={sources} filter={originFilter} onFilter={setOriginFilter} />
+
+            <RecentEvents
+              events={events}
+              loading={loading}
+              filter={originFilter}
+              onFilter={setOriginFilter}
+            />
           </TabsContent>
         </Tabs>
       </main>
     </div>
   );
 }
-
-const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 function pct(part?: number, total?: number) {
   if (!total || !part) return 0;
@@ -414,30 +364,5 @@ function StatCard({
         <div className="mt-1 text-xs text-muted-foreground">{helper}</div>
       )}
     </Card>
-  );
-}
-
-const CHECKOUT_STEP_LABEL: Record<string, string> = {
-  checkout: "Checkout: entrou",
-  dados: "Checkout: dados",
-  entrega: "Checkout: entrega",
-  pix: "Checkout: Pix gerado",
-};
-
-function EventBadge({ type, step }: { type: string; step?: string | undefined }) {
-  const map: Record<string, { label: string; cls: string }> = {
-    page_view: { label: "Visita", cls: "bg-blue-100 text-blue-800" },
-    product_view: { label: "Produto", cls: "bg-indigo-100 text-indigo-800" },
-    checkout_click: { label: "Checkout", cls: "bg-green-100 text-green-800" },
-    checkout_step: {
-      label: CHECKOUT_STEP_LABEL[step ?? ""] ?? "Checkout: etapa",
-      cls: step === "pix" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800",
-    },
-  };
-  const m = map[type] ?? { label: type, cls: "bg-gray-100 text-gray-800" };
-  return (
-    <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${m.cls}`}>
-      {m.label}
-    </span>
   );
 }

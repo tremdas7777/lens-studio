@@ -21,8 +21,16 @@ export type FunnelInsert = {
   metadata?: Record<string, unknown> | null;
 };
 
+/** UTMs sem coluna própria (anúncio e termo) vão junto em metadata. */
+const EXTRA_UTMS = ["utm_content", "utm_term"] as const;
+
 export async function insertFunnelEvent(e: FunnelInsert): Promise<void> {
   if (!isSupabaseConfigured()) return;
+  const extra = Object.fromEntries(
+    EXTRA_UTMS.filter((k) => e.utm?.[k]).map((k) => [k, String(e.utm![k]).slice(0, 300)]),
+  );
+  const metadata =
+    e.metadata || Object.keys(extra).length ? { ...(e.metadata ?? {}), ...extra } : null;
   try {
     const { supabaseAdmin } = await import("@/lib/db.server");
     const { error } = await supabaseAdmin.from("funnel_events").insert({
@@ -37,7 +45,7 @@ export async function insertFunnelEvent(e: FunnelInsert): Promise<void> {
       utm_source: e.utm?.["utm_source"] ?? null,
       utm_medium: e.utm?.["utm_medium"] ?? null,
       utm_campaign: e.utm?.["utm_campaign"] ?? null,
-      metadata: e.metadata ?? null,
+      metadata,
     });
     if (error) console.error("insertFunnelEvent error", error.message);
   } catch (err) {

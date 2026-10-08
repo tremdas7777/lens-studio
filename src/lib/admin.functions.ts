@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import type { FunnelEventRow, OrderRow } from "@/lib/db-types";
 import { assertAdmin, checkAdminPassword } from "@/lib/admin-auth.server";
+import { originOf, type OriginInput } from "@/lib/traffic-origin";
 
 async function db() {
   const { supabaseAdmin } = await import("@/lib/db.server");
@@ -17,6 +19,64 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
       return { ok: false, error: "HUBBLE_ADMIN_PASSWORD não configurada" };
     return { ok: checkAdminPassword(data.password) };
   });
+
+export type TrafficSourceRow = {
+  source: string;
+  medium: string | null;
+  campaign: string | null;
+  visitors: number;
+  viewedProduct: number;
+  checkout: number;
+  /** Pedido gerado (Pix ou cartão). */
+  orders: number;
+};
+
+/**
+ * Sessões por origem (UTM, ou o site de onde veio, ou "Direto") e campanha. A origem da sessão é a
+ * do primeiro evento com UTM; sem UTM, a do primeiro evento. Eventos em ordem de criação. Função pura.
+ */
+export function trafficSources(
+  events: (OriginInput & { session_id: string; event_type: string })[],
+  ownHost: string | null,
+): TrafficSourceRow[] {
+  type S = { origin: ReturnType<typeof originOf>; types: Set<string> };
+  const bySession = new Map<string, S>();
+  for (const e of events) {
+    let s = bySession.get(e.session_id);
+    const o = originOf(e, ownHost);
+    if (!s) bySession.set(e.session_id, (s = { origin: o, types: new Set() }));
+    else if (!s.origin.tagged && o.tagged) s.origin = o;
+    s.types.add(e.event_type);
+    const step = (e.metadata as { step?: string } | null)?.step;
+    if (e.event_type === "checkout_step" && step === "pix") s.types.add("order");
+  }
+  const rows = new Map<string, TrafficSourceRow>();
+  for (const { origin, types } of bySession.values()) {
+    const key = `${origin.source}\u0000${origin.campaign ?? ""}`;
+    let r = rows.get(key);
+    if (!r) {
+      r = {
+        source: origin.source,
+        medium: origin.medium,
+        campaign: origin.campaign,
+        visitors: 0,
+        viewedProduct: 0,
+        checkout: 0,
+        orders: 0,
+      };
+      rows.set(key, r);
+    }
+    r.medium ??= origin.medium;
+    if (types.has("page_view") || types.has("product_view")) r.visitors++;
+    if (types.has("product_view")) r.viewedProduct++;
+    if (types.has("checkout_click") || types.has("checkout_step")) r.checkout++;
+    if (types.has("order")) r.orders++;
+  }
+  return [...rows.values()]
+    .filter((r) => r.visitors || r.checkout)
+    .sort((a, b) => b.visitors - a.visitors || b.checkout - a.checkout)
+    .slice(0, 30);
+}
 
 export const getAdminFunnel = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
@@ -46,14 +106,24 @@ export const getAdminFunnel = createServerFn({ method: "POST" })
         .limit(200),
       supa
         .from("funnel_events")
-        .select("session_id,event_type,created_at")
+        .select(
+          "session_id,event_type,created_at,referrer,utm_source,utm_medium,utm_campaign,metadata",
+        )
         .gte("created_at", since)
+        .order("created_at", { ascending: true })
         .limit(50000),
     ]);
 
     const events = (all ?? []) as Pick<
       FunnelEventRow,
-      "session_id" | "event_type" | "created_at"
+      | "session_id"
+      | "event_type"
+      | "created_at"
+      | "referrer"
+      | "utm_source"
+      | "utm_medium"
+      | "utm_campaign"
+      | "metadata"
     >[];
     const sessions = new Map<string, Set<string>>();
     const lastSeenBySession = new Map<string, string>();
@@ -77,6 +147,7 @@ export const getAdminFunnel = createServerFn({ method: "POST" })
 
     return {
       recent: (recent ?? []) as FunnelEventRow[],
+      sources: trafficSources(events, getRequest()?.headers.get("host") ?? null),
       funnel: {
         visited,
         viewedProduct,
