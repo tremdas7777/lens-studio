@@ -208,15 +208,27 @@ const rastreio = (pedido, cpf) => get('/api/public/rastreio?' + new URLSearchPar
 /* Pedidos do pixel da UTMify em andamento: a troca de página espera por eles, senão o navegador
    cancela o "carrinho"/"checkout" que o pixel acabou de mandar. */
 const utmifyInflight = new Set();
+/* Checkout iniciado (IC) na UTMify: registra quando um IC sai de verdade nesta aba, para o checkout
+   não contar de novo (ver "UTMify: checkout iniciado pelo endereço" mais abaixo). */
+const UTMIFY_IC_KEY = 'hb-utmify-ic-at', UTMIFY_IC_TTL = 30*60*1000;
+const utmifyIcRecent = () => Date.now() - (+SS.get(UTMIFY_IC_KEY) || 0) < UTMIFY_IC_TTL;
+/* O pixel da UTMify só passa a observar links/botões logo antes do primeiro evento (PageView). */
+let utmifyReadyResolve;
+const utmifyReady = new Promise(r => { utmifyReadyResolve = r; });
 if(window.fetch && !window.fetch._hbWrapped){
   const nativeFetch = window.fetch;
-  const wrapped = function(input){
+  const wrapped = function(input, init){
     const p = nativeFetch.apply(window, arguments);
     try{
       const url = typeof input === 'string' ? input : String((input && input.url) || input);
       if(/utmify\.com\.br|\/tracking\/v1\//.test(url)){
         utmifyInflight.add(p);
         p.then(() => utmifyInflight.delete(p), () => utmifyInflight.delete(p));
+        if(/\/tracking\/v1\/events/.test(url)){
+          utmifyReadyResolve();
+          const body = init && typeof init.body === 'string' ? init.body : '';
+          if(body.indexOf('"type":"InitiateCheckout"') >= 0) SS.set(UTMIFY_IC_KEY, String(Date.now()));
+        }
       }
     }catch(e){}
     return p;
@@ -290,7 +302,25 @@ if(window.HB && HB.cart && !HB.cart._metaWrapped){
   };
   HB.cart._metaWrapped = true;
 }
+/* UTMify: checkout iniciado pelo endereço. O painel marca IC por URL (".../checkout"), mas o pixel
+   só confere a URL quando um link é clicado — abrir o checkout direto (botão "Comprar agora",
+   recarregar, voltar, anúncio) não contava. Ao abrir o checkout, a loja "clica" este link invisível
+   para checkout.html: com a classe "link_interno" o pixel registra o IC e não navega. Uma vez a cada
+   30 min nesta aba (se o IC já saiu antes, ex.: no "Comprar agora", não conta de novo). */
+const utmifyIcLink = document.createElement('a');
+utmifyIcLink.href = 'checkout.html';
+utmifyIcLink.className = 'link_interno';
+utmifyIcLink.hidden = true;
+utmifyIcLink.tabIndex = -1;
+utmifyIcLink.setAttribute('aria-hidden', 'true');
+utmifyIcLink.id = 'hb-utmify-ic';
+utmifyIcLink.textContent = 'checkout';
+// Nunca navega por conta própria (se o pixel não reconhecer o link, nada acontece).
+utmifyIcLink.addEventListener('click', e => e.preventDefault());
+document.body.appendChild(utmifyIcLink);
+
 if(page === 'checkout' && window.HB && HB.cart && HB.cart.items().length){
+  utmifyReady.then(() => { if(!utmifyIcRecent()) utmifyIcLink.click(); });
   track('checkout_click', {value: HB.cart.subtotal()});
   // Uma vez por carrinho nesta aba (recarregar ou voltar ao checkout não conta outro início).
   metaOnce(cartKey(), 'InitiateCheckout', {value: +HB.cart.subtotal().toFixed(2), contentIds: HB.cart.items().map(i => i.id)});

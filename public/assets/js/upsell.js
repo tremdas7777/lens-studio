@@ -72,7 +72,7 @@
     root.innerHTML = banner + body
       + (err ? `<p class="up-err" role="alert">${esc(err)}${errCard ? ' <button type="button" id="usePix">Pagar com Pix</button>' : ''}</p>` : '')
       + `<button type="button" class="up-btn" id="buy" ${busy || !sel.length ? 'disabled' : ''}>
-          <span>${busy ? 'Processando…' : card ? 'Comprar com um clique' : 'Gerar Pix'}</span>
+          <span>${busy ? 'Processando…' : card ? 'Pagar com um clique' : 'Gerar Pix'}</span>
           <small>${!sel.length ? 'Marque uma oferta acima' : `${brl(total)} ${card ? 'no mesmo cartão' : 'no Pix'}`}</small></button>
         <button type="button" class="up-no" id="no" ${busy ? 'disabled' : ''}>${EXPRESS ? 'Não, obrigado. Pode enviar no prazo normal.' : 'Não, obrigado. Prefiro pagar o preço cheio depois.'}</button>`;
     root.querySelectorAll('[data-p]').forEach(c => c.onchange = () => {

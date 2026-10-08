@@ -166,7 +166,7 @@
 
 <script src="assets/js/data.js?v=202610041850"></script>
 <script src="assets/js/app.js?v=202610041947"></script>
-<script src="assets/js/api.js?v=202610081500"></script>
+<script src="assets/js/api.js?v=202610081700"></script>
 <script src="assets/js/hypercash.js?v=1"></script>
 <script>
 (function(){
@@ -368,7 +368,7 @@ function payCard(){
         <div class="pay-b"><p>O código Pix expira em 30 minutos após finalizar a compra.</p><p>Valor no Pix: <b>${brl(t.total)}</b></p></div></div>
       ${cardOpt}
       <label class="ck-terms"><input type="checkbox" id="terms" ${S.terms?'checked':''}><span>Li e concordo com os <a href="legal.html?doc=termos" target="_blank">Termos de Serviço</a> e a <a href="legal.html?doc=privacidade" target="_blank">Política de Privacidade</a>.</span></label>
-      <button class="ck-btn" id="finish" ${payValid()?'':'disabled'}>Finalizar Compra</button>
+      <button class="ck-btn" id="finish" ${payValid()?'':'disabled'}>Pagar agora</button>
       <p class="ck-err" id="ckErr" role="alert" aria-live="assertive"></p>
       ${isCard ? '' : '<p class="demo">O código Pix é gerado na próxima tela e vale por 30 minutos.</p>'}
     </form></div>`;
@@ -472,7 +472,7 @@ $('#sumMob > button').onclick = () => { const m = $('#sumMob'); m.classList.togg
 /* ---------- Finalizar ---------- */
 async function finish(){
   const btn = $('#finish'), err = $('#ckErr');
-  const fail = msg => { if(err) err.textContent = msg; btn.disabled = false; btn.textContent = 'Finalizar Compra'; };
+  const fail = msg => { if(err) err.textContent = msg; btn.disabled = false; btn.textContent = 'Pagar agora'; };
   if(!window.HBAPI) return fail('Não foi possível conectar ao pagamento. Atualize a página e tente novamente.');
   const isCard = S.pay === 'cartao' && !!CARD;
   btn.disabled = true; btn.textContent = isCard ? 'Processando pagamento…' : 'Gerando Pix…'; if(err) err.textContent = '';
