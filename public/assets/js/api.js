@@ -18,7 +18,7 @@ const SS = {
 };
 
 /* ---------- HTTP ---------- */
-async function request(method, path, body, timeoutMs){
+async function request(method, path, body, timeoutMs, keepalive){
   const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
   const t = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs || 20000) : null;
   try{
@@ -26,6 +26,7 @@ async function request(method, path, body, timeoutMs){
       method, credentials: 'same-origin', cache: 'no-store',
       headers: body !== undefined ? {'Content-Type':'application/json', 'Accept':'application/json'} : {'Accept':'application/json'},
       body: body !== undefined ? JSON.stringify(body) : undefined,
+      keepalive: !!keepalive,
       signal: ctrl ? ctrl.signal : undefined
     });
     let data = null; try{ data = await res.json(); }catch(e){}
@@ -38,8 +39,9 @@ async function request(method, path, body, timeoutMs){
   }finally{ if(t) clearTimeout(t); }
 }
 const get = (path, timeoutMs) => request('GET', path, undefined, timeoutMs);
-const post = (path, body, timeoutMs) => request('POST', path, body, timeoutMs);
-const beacon = (path, body) => { post(path, body, 8000); };
+const post = (path, body, timeoutMs, keepalive) => request('POST', path, body, timeoutMs, keepalive);
+/** Envio "dispare e esqueça" que não é cancelado quando a página troca (keepalive). */
+const beacon = (path, body) => { post(path, body, 8000, true); };
 
 /* ---------- Sessão + UTMs (port de tracking.ts) ---------- */
 const SESSION_KEY = 'hubble-br-session', UTM_KEY = 'hubble-br-utms';
@@ -76,8 +78,14 @@ function checkoutStep(step, data){
 }
 
 /* ---------- Meta Pixel (port de meta-pixel.ts) ---------- */
-let pixelId = null, pixelReady = false;
+let pixelId = null, pixelReady = false, noPixel = false;
 const pending = [];
+/* Eventos (menos PageView) disparados antes do pixel carregar ficam guardados nesta aba e saem
+   quando ele carregar — nesta página ou na próxima. Assim o AddToCart do "Comprar agora", que já
+   troca de página para o checkout, não se perde. */
+const QKEY = 'hb-meta-queue', QTTL = 30*60*1000;
+function readQ(){ try{ return (JSON.parse(SS.get(QKEY) || '[]') || []).filter(e => Date.now() - e.at < QTTL); }catch(e){ return []; } }
+function writeQ(q){ try{ if(q.length) sessionStorage.setItem(QKEY, JSON.stringify(q.slice(-20))); else sessionStorage.removeItem(QKEY); }catch(e){} }
 function cookie(name){ const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : null; }
 /** fbc a partir do fbclid da URL quando o cookie ainda não existe. */
 function getFbc(){ const c = cookie('_fbc'); if(c) return c; const id = new URLSearchParams(location.search).get('fbclid'); return id ? `fb.1.${Date.now()}.${id}` : null; }
@@ -93,17 +101,24 @@ function loadPixel(id){
   }
   window.fbq('init', id);
   pixelId = id; pixelReady = true;
+  const queued = readQ(); writeQ([]);
+  queued.forEach(sendMeta);
   pending.splice(0).forEach(fn => fn());
 }
-/** Evento no navegador + espelho no servidor (CAPI) com o mesmo event_id. */
-function metaTrack(eventName, data){
-  if(!pixelReady){ pending.push(() => metaTrack(eventName, data)); return; }
-  const d = data || {};
-  const eventId = `${eventName}-${uuid()}`;
+/** Evento no navegador + espelho no servidor (CAPI) com o mesmo event_id (deduplicação). */
+function sendMeta(ev){
+  const d = ev.data || {};
   const custom = d.value !== undefined ? {value: d.value, currency:'BRL', content_name: d.contentName, content_ids: d.contentIds, content_type:'product'} : {};
-  window.fbq('track', eventName, custom, {eventID: eventId});
+  window.fbq('track', ev.eventName, custom, {eventID: ev.eventId});
   const c = metaCookies();
-  beacon('/api/public/meta-event', {eventName, eventId, url: location.href.slice(0, 1000), fbp: c.fbp, fbc: c.fbc, value: d.value, contentName: d.contentName, contentIds: d.contentIds});
+  beacon('/api/public/meta-event', {eventName: ev.eventName, eventId: ev.eventId, url: ev.url, fbp: c.fbp, fbc: c.fbc, value: d.value, contentName: d.contentName, contentIds: d.contentIds});
+}
+function metaTrack(eventName, data){
+  if(noPixel) return;
+  const ev = {eventName, data: data || {}, eventId: `${eventName}-${uuid()}`, url: location.href.slice(0, 1000), at: Date.now()};
+  if(pixelReady) return sendMeta(ev);
+  if(eventName === 'PageView'){ pending.push(() => sendMeta(ev)); return; }
+  const q = readQ(); q.push(ev); writeQ(q);
 }
 /** Purchase no navegador com o mesmo event_id usado no servidor (purchase-<orderId>). */
 function metaPurchase(orderId, value, contentName){
@@ -194,7 +209,10 @@ if(page === 'lente' || page === 'oculos-produto' || page === 'acessorio'){
   const p = page === 'lente' ? (f.lens && f.lens(qsId)) : page === 'acessorio' ? (f.accessory && f.accessory(qsId)) : (f.glasses && f.glasses(qsId));
   if(p) track('product_view', {productId: p.id, productName: p.name});
 }
-settings().then(s => { if(s && s.metaPixelId) loadPixel(String(s.metaPixelId)); });
+settings().then(s => {
+  if(s && s.metaPixelId) loadPixel(String(s.metaPixelId));
+  else if(s && s.ok){ noPixel = true; pending.length = 0; writeQ([]); } // loja sem pixel do Meta
+});
 metaTrack('PageView');
 if(page === 'lente'){
   const l = window.HB && HB.find && HB.find.lens(qsId);
