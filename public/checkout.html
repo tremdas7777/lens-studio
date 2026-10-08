@@ -219,10 +219,11 @@ function shipBox(){
 const needRx = false; /* a receita não é pedida no checkout */
 const rxLater = cart.hasRx();
 const hasLens = cart.items().some(i => i.kind === 'lente');
-/* Oferta do checkout (order bump) */
+/* Oferta do checkout (order bump). Preço fixo do colírio = BUMP_PRICES de src/lib/pricing.ts. */
+const BUMP_PRICES = {'biotrue-hydration-boost-new': 29.9};
 const bumpAcc = HB.find.accessory(hasLens ? 'biotrue-hydration-boost-new' : 'optiplus-anti-fog-microfiber-cloth') || D.accessories[0];
 const BUMP = bumpAcc && !cart.items().some(i => i.id === bumpAcc.id) ? {
-  acc: bumpAcc, price: +(bumpAcc.price * 0.6).toFixed(2), compareAt: bumpAcc.price,
+  acc: bumpAcc, price: BUMP_PRICES[bumpAcc.id] ?? +(bumpAcc.price * 0.6).toFixed(2), compareAt: bumpAcc.price,
   q: hasLens ? 'Você vai usar lentes o dia todo. E o conforto dos seus olhos, está garantido?' : 'Seus óculos novos merecem lentes sempre limpas.',
   x: hasLens ? `O <b>${esc(bumpAcc.name)}</b> hidrata e alivia o ressecamento causado por telas, ar-condicionado e longas horas de uso das lentes.` : `A <b>${esc(bumpAcc.name)}</b> limpa e evita que suas lentes embacem com máscara, frio ou banho quente.`,
   b: hasLens ? ['Compatível com lentes de contato','Alívio imediato do ressecamento','Ideal para quem passa o dia em telas','Tamanho prático para levar na bolsa'] : ['Limpa sem riscar as lentes','Tratamento antiembaçante','Reutilizável e lavável','Cabe no estojo dos óculos']

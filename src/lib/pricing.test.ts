@@ -75,11 +75,11 @@ describe("pricing", () => {
   });
 
   it("aplica bump e frete na mesma ordem do checkout.html", () => {
-    const bumpAcc =
-      catalog.accessories["biotrue-hydration-boost-new" as keyof typeof catalog.accessories];
-    const bump = +(bumpAcc.price * 0.6).toFixed(2);
+    // Colírio na oferta do checkout: preço fixo de R$ 29,90 (de R$ 70,90).
+    const bump = 29.9;
     const q = quote({ items: [lens("2m")], bump: true, frete: "expresso" });
     expect(q.bump?.id).toBe("biotrue-hydration-boost-new");
+    expect(q.bump).toMatchObject({ unitPrice: 29.9, details: { compareAt: 70.9 } });
     expect(q.discount).toBe(0);
     expect(q.total).toBe(+(147 + bump + 37.53).toFixed(2));
     expect(quote({ items: [lens("1m")], bump: false, frete: "padrao" }).total).toBe(117);

@@ -48,6 +48,8 @@ export const GLASSES_ADDONS = { filtroAzul: 220, altoIndice: 165 } as const;
 export const BUMP_FACTOR = 0.6;
 export const BUMP_WITH_LENS = "biotrue-hydration-boost-new";
 export const BUMP_WITHOUT_LENS = "optiplus-anti-fog-microfiber-cloth";
+/** Preço fixo da oferta do checkout (mesmo valor em checkout.html). Sem preço aqui = 60% do preço. */
+export const BUMP_PRICES: Record<string, number> = { [BUMP_WITH_LENS]: 29.9 };
 
 /** Loja sem cupons: qualquer código é recusado. Para voltar, adicione aqui (ex.: BEMVINDO10: { code: "BEMVINDO10", pct: 0.1, label: "10% OFF" }). */
 export const COUPONS: Record<string, { code: string; pct: number; label: string; min?: number }> = {};
@@ -247,7 +249,7 @@ export function bumpOffer(items: { kind: string; id: string }[]): PricedLine | n
     id,
     name: acc.name,
     qty: 1,
-    unitPrice: +(acc.price * BUMP_FACTOR).toFixed(2),
+    unitPrice: BUMP_PRICES[id] ?? +(acc.price * BUMP_FACTOR).toFixed(2),
     meta: ["Oferta do checkout"],
     details: { bump: true, compareAt: acc.price },
   };
