@@ -243,7 +243,7 @@ body.ov-open{overflow:hidden}
 
 <script src="assets/js/data.js?v=202610041850"></script>
 <script src="assets/js/app.js?v=202610041947"></script>
-<script src="assets/js/api.js?v=202610081200"></script>
+<script src="assets/js/api.js?v=202610081500"></script>
 <script>
 (function(){
 const {D, $, $$, brl, esc, img, sup, find} = HB;
@@ -448,7 +448,7 @@ $('#buyForm').onsubmit = e => {
   const ok = validate(); renderRx();
   if(!ok){ const b = $('#rxGrid .rx-trig.err'); if(b) b.focus(); return; }
   HB.cart.add(buildLensItem(lens, st.pack, eyeData('od'), eyeData('oe')));
-  location.href = 'checkout.html';
+  window.HBAPI ? HBAPI.go('checkout.html') : location.href = 'checkout.html';
 };
 $('#ovForm').onsubmit = e => {
   e.preventDefault();
@@ -456,7 +456,7 @@ $('#ovForm').onsubmit = e => {
   if(!HB.valid.email(em)){ $('#ovErr').classList.remove('hidden'); $('#ovEmail').classList.add('err'); $('#ovEmail').focus(); return; }
   HB.store.set('checkout-email', em);
   HB.cart.add(buildLensItem(lens, st.pack, eyeData('od'), eyeData('oe')));
-  location.href = 'checkout.html';
+  window.HBAPI ? HBAPI.go('checkout.html') : location.href = 'checkout.html';
 };
 
 /* ================= Barra fixa (mobile) ================= */

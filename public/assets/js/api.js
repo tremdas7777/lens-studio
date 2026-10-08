@@ -204,7 +204,38 @@ function order(id){
 }
 const rastreio = (pedido, cpf) => get('/api/public/rastreio?' + new URLSearchParams({pedido, cpf}).toString(), 15000);
 
-window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaOnce, cartKey, metaPurchase, metaCookies, cartItems, checkout, cardConfig, upsellOffers, upsell, flow, order, rastreio};
+/* ---------- Troca de página sem perder rastreamento ---------- */
+/* Pedidos do pixel da UTMify em andamento: a troca de página espera por eles, senão o navegador
+   cancela o "carrinho"/"checkout" que o pixel acabou de mandar. */
+const utmifyInflight = new Set();
+if(window.fetch && !window.fetch._hbWrapped){
+  const nativeFetch = window.fetch;
+  const wrapped = function(input){
+    const p = nativeFetch.apply(window, arguments);
+    try{
+      const url = typeof input === 'string' ? input : String((input && input.url) || input);
+      if(/utmify\.com\.br|\/tracking\/v1\//.test(url)){
+        utmifyInflight.add(p);
+        p.then(() => utmifyInflight.delete(p), () => utmifyInflight.delete(p));
+      }
+    }catch(e){}
+    return p;
+  };
+  wrapped._hbWrapped = true;
+  window.fetch = wrapped;
+}
+/** Vai para outra página depois que os eventos de rastreamento saírem (mín. 350 ms, máx. 1,5 s). */
+function go(url){
+  const start = Date.now();
+  const tick = () => {
+    const waited = Date.now() - start;
+    if(waited >= 1500 || (waited >= 350 && !utmifyInflight.size)) location.href = url;
+    else setTimeout(tick, 50);
+  };
+  setTimeout(tick, 50);
+}
+
+window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, metaOnce, cartKey, metaPurchase, metaCookies, cartItems, checkout, cardConfig, upsellOffers, upsell, flow, order, rastreio, go};
 
 /* ---------- Pixel da UTMify (todas as páginas da loja) ---------- */
 (function utmifyPixel(){
@@ -235,12 +266,26 @@ if(page === 'lente'){
   const l = window.HB && HB.find && HB.find.lens(qsId);
   if(l) metaTrack('ViewContent', {value: (l.packs && l.packs[0] && (l.packs[0].total || l.packs[0].sale)) || undefined, contentName: l.name, contentIds: [l.id]});
 }
-/* AddToCart: envolve HB.cart.add (vale para lente, óculos e acessórios) */
+/* Carrinho na UTMify: o pixel dela só marca AddToCart quando um botão com o texto configurado no
+   painel ("Adicionar ao carrinho") é clicado. Este botão invisível é "clicado" toda vez que um item
+   entra de verdade no carrinho (depois da validação do grau), em qualquer página. Não aparece na
+   tela nem para leitores de tela. */
+const utmifyCartBtn = document.createElement('button');
+utmifyCartBtn.type = 'button';
+utmifyCartBtn.hidden = true;
+utmifyCartBtn.tabIndex = -1;
+utmifyCartBtn.setAttribute('aria-hidden', 'true');
+utmifyCartBtn.id = 'hb-utmify-add-to-cart';
+utmifyCartBtn.textContent = 'Adicionar ao carrinho';
+document.body.appendChild(utmifyCartBtn);
+
+/* AddToCart: envolve HB.cart.add (vale para lente, óculos e acessórios) — Meta + UTMify */
 if(window.HB && HB.cart && !HB.cart._metaWrapped){
   const add = HB.cart.add.bind(HB.cart);
   HB.cart.add = function(item){
     const r = add(item);
     try{ metaTrack('AddToCart', {value: +(item.price * (item.qty || 1)).toFixed(2), contentName: item.name, contentIds: [item.id]}); }catch(e){}
+    try{ utmifyCartBtn.click(); }catch(e){}
     return r;
   };
   HB.cart._metaWrapped = true;

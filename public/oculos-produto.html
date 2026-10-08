@@ -308,7 +308,7 @@ body.sun .grad-peach{background:linear-gradient(90deg,#3f9a6b,#2c7fa6);-webkit-b
 
 <script src="assets/js/data.js?v=202610041850"></script>
 <script src="assets/js/app.js?v=202610041947"></script>
-<script src="assets/js/api.js?v=202610081200"></script>
+<script src="assets/js/api.js?v=202610081500"></script>
 <script>
 /* Preço do óculos configurado — função pura (testável) */
 function oculosPrice(base, cfg, sun){
@@ -587,7 +587,7 @@ function addToCart(){
   }
   HB.cart.add({kind:'oculos', id:g.id, name:`${KIND} ${g.name}`, image: SUN ? (c.sunCard || c.card) : c.card,
     qty:1, price: pr.total, meta: meta(), sig: 'oculos-' + g.id + '-' + JSON.stringify(details), details, sub:null});
-  location.href = 'carrinho.html';
+  window.HBAPI ? HBAPI.go('carrinho.html') : location.href = 'carrinho.html';
 }
 $('#ovBtn').onclick = () => {
   if(!$('#vSum').classList.contains('hidden')) return addToCart();
