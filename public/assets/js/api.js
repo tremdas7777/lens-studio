@@ -177,7 +177,7 @@ window.HBAPI = {get, post, sessionId, utms, track, checkoutStep, metaTrack, meta
 /* ---------- Pixel da UTMify (todas as páginas da loja) ---------- */
 (function utmifyPixel(){
   if(document.querySelector('script[src*="cdn.utmify.com.br/scripts/pixel/pixel.js"]')) return; // nunca carrega duplicado
-  window.pixelId = '6abb27848b76c002bc343089';
+  window.pixelId = '6ac5b73aa1f25dc60b97fbf0';
   const s = document.createElement('script');
   s.src = 'https://cdn.utmify.com.br/scripts/pixel/pixel.js';
   s.async = true; s.defer = true;
