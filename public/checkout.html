@@ -220,7 +220,7 @@ const needRx = false; /* a receita não é pedida no checkout */
 const rxLater = cart.hasRx();
 const hasLens = cart.items().some(i => i.kind === 'lente');
 /* Oferta do checkout (order bump). Preço fixo do colírio = BUMP_PRICES de src/lib/pricing.ts. */
-const BUMP_PRICES = {'biotrue-hydration-boost-new': 29.9};
+const BUMP_PRICES = {'biotrue-hydration-boost-new': 37.9};
 const bumpAcc = HB.find.accessory(hasLens ? 'biotrue-hydration-boost-new' : 'optiplus-anti-fog-microfiber-cloth') || D.accessories[0];
 const BUMP = bumpAcc && !cart.items().some(i => i.id === bumpAcc.id) ? {
   acc: bumpAcc, price: BUMP_PRICES[bumpAcc.id] ?? +(bumpAcc.price * 0.6).toFixed(2), compareAt: bumpAcc.price,
